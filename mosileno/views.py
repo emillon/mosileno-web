@@ -16,6 +16,10 @@ def my_view(request):
         return Response(conn_err_msg, content_type='text/plain', status_int=500)
     return {'one':one, 'project':'mosileno'}
 
+@view_config(route_name='test', renderer='templates/page.pt')
+def view_test(request):
+    return {'content': 'This is only a test'}
+
 conn_err_msg = """\
 Pyramid is having a problem using your SQL database.  The problem
 might be caused by one of the following things:
