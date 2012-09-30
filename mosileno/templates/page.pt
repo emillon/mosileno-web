@@ -1,15 +1,21 @@
 <html>
     <head>
         <title>Mosileno</title>
+        <link rel="stylesheet"
+              href="${request.static_url('mosileno:static/mosileno.css')}"
+              type="text/css"
+              media="screen"
+              charset="utf-8"
+          />
     </head>
     <body>
-        <div class=header>
+        <div class=headerCont>
             <ul class=headerLeft>
                 <li><a href=#>Toto</a></li>
                 <li><a href=#>Titi</a></li>
                 <li><a href=#>Tutu</a></li>
             </ul>
-            <ul class=headerLeft>
+            <ul class=headerRight>
                 <li><a href=#>Bloblo</a></li>
                 <li><a href=#>Blibli</a></li>
                 <li><a href=#>Blublu</a></li>
