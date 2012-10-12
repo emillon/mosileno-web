@@ -2,4 +2,5 @@ pylint
 pyramid
 pyramid-debugtoolbar
 pyramid-tm
+SQLAlchemy
 waitress
