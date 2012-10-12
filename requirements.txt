@@ -1,4 +1,5 @@
 pylint
 pyramid
 pyramid-debugtoolbar
+pyramid-tm
 waitress
