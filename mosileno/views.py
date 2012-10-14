@@ -1,5 +1,10 @@
 from pyramid.response import Response
-from pyramid.view import view_config
+from pyramid.view import (
+        view_config,
+        forbidden_view_config,
+        )
+from pyramid.httpexceptions import HTTPFound
+from pyramid.security import remember
 
 from sqlalchemy.exc import DBAPIError
 
@@ -7,6 +12,8 @@ from .models import (
     DBSession,
     MyModel,
     )
+
+from .auth import auth_correct
 
 @view_config(route_name='home', renderer='templates/mytemplate.pt')
 def my_view(request):
@@ -25,6 +32,35 @@ def view_test(request):
         permission='testperm')
 def view_authtest(request):
     return {'content': 'Auth test'}
+
+@view_config(route_name='login',
+             renderer='templates/login.pt')
+@forbidden_view_config(renderer='templates/login.pt')
+def view_login(request):
+    login_url = request.resource_url(request.context, 'login')
+    referrer = request.url
+    if referrer == login_url:
+        referrer = '/' # never use the login form itself as came_from
+    came_from = request.params.get('came_from', referrer)
+    message = ''
+    login = ''
+    password = ''
+    if 'form.submitted' in request.params:
+        login = request.params['login']
+        password = request.params['password']
+        if auth_correct(login, password):
+            headers = remember(request, login)
+            return HTTPFound(location = came_from,
+                             headers = headers)
+        message = 'Failed login'
+
+    return dict(
+        message = message,
+        url = request.application_url + '/login',
+        came_from = came_from,
+        login = login,
+        password = password,
+        )
 
 conn_err_msg = """\
 Pyramid is having a problem using your SQL database.  The problem
