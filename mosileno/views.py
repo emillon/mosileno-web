@@ -20,15 +20,7 @@ from .models import (
 
 from .auth import auth_correct
 
-@view_config(route_name='home', renderer='templates/mytemplate.pt')
-def my_view(request):
-    try:
-        one = DBSession.query(MyModel).filter(MyModel.name=='one').first()
-    except DBAPIError:
-        return Response(conn_err_msg, content_type='text/plain', status_int=500)
-    return {'one':one, 'project':'mosileno'}
-
-@view_config(route_name='test', renderer='templates/page.pt')
+@view_config(route_name='home', renderer='templates/page.pt')
 def view_test(request):
     return dict(content='This is only a test',
                 logged_in=authenticated_userid(request)
