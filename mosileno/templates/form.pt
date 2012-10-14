@@ -1,20 +1,8 @@
-<html>
-  <head>
-  <!-- CSS -->
-  <tal:block repeat="reqt css_links|[]">
-    <link rel="stylesheet"
-          href="${request.static_url('deform:static/%s' % reqt)}"
-          type="text/css" />
-  </tal:block>
-  <!-- JavaScript -->
-  <tal:block repeat="reqt js_links|[]">
-    <script type="text/javascript"
-            src="${request.static_url('deform:static/%s' % reqt)}"
-     ></script>
-  </tal:block>
-  </head>
-  <body>
-    <h1>Edit</h1>
-    <form tal:replace="structure form" />
-  </body>
-</html>
+<metal:main
+    xmlns:tal="http://xml.zope.org/namespaces/tal"
+    xmlns:metal="http://xml.zope.org/namespaces/metal"
+    use-macro="load: page.pt">
+    <tal:block metal:fill-slot="content">
+        <form tal:replace="structure form" />
+    </tal:block>
+</metal:main>

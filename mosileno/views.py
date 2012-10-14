@@ -10,6 +10,7 @@ from pyramid.security import (
         authenticated_userid
         )
 from pyramid_deform import FormView
+from pyramid.renderers import get_renderer
 from colander import (
         Schema,
         SchemaNode,
@@ -108,17 +109,22 @@ class FeedSchema(Schema):
     url = SchemaNode(String())
 
 @view_config(route_name='feedadd',
-        renderer='templates/form.pt',
+        renderer='templates/form.pt'
         )
 class FeedAddView(FormView):
     schema=FeedSchema()
     buttons = ('save',)
 
     def appstruct(self):
-        context = self.request.context
+        request = self.request
         return dict()
 
     def save_success(self, appstruct):
         url = appstruct['url']
         feed = Feed(url)
         DBSession.add(feed)
+
+    def show(self, form):
+        d = super(FeedAddView, self).show(form)
+        d['logged_in'] = authenticated_userid(self.request)
+        return d

@@ -7,6 +7,16 @@
               media="screen"
               charset="utf-8"
           />
+          <tal:block repeat="reqt css_links|[]">
+            <link rel="stylesheet"
+                  href="${request.static_url('deform:static/%s' % reqt)}"
+                  type="text/css" />
+          </tal:block>
+          <tal:block repeat="reqt js_links|[]">
+            <script type="text/javascript"
+                    src="${request.static_url('deform:static/%s' % reqt)}"
+             ></script>
+          </tal:block>
     </head>
     <body>
         <div class=headerCont>
@@ -29,7 +39,8 @@
             </ul>
         </div>
         <div id=main>
-            ${content}
+            <tal:block metal:define-slot="content">
+            </tal:block>
         </div>
         <div class=footer>
             <ul>
