@@ -44,11 +44,16 @@ After you fix the problem, please restart the Pyramid application to
 try it again.
 """
 
+def tpl(request, **kwargs):
+    """
+    Fill in default values for template arguments.
+    """
+    args = dict(logged_in=authenticated_userid(request))
+    return dict (kwargs.items() + args.items())
+
 @view_config(route_name='home', renderer='templates/page.pt')
 def view_test(request):
-    return dict(content='This is only a test',
-                logged_in=authenticated_userid(request)
-               )
+    return tpl(request, content='This is only a test')
 
 @view_config(route_name='login',
              renderer='templates/login.pt')
@@ -71,13 +76,12 @@ def view_login(request):
                              headers = headers)
         message = 'Failed login'
 
-    return dict(
+    return tpl(request,
         message = message,
         url = request.application_url + '/login',
         came_from = came_from,
         login = login,
         password = password,
-        logged_in = authenticated_userid(request)
         )
 
 @view_config(route_name='logout')
@@ -96,9 +100,8 @@ def view_signup(request):
         user = User(login, password)
         DBSession.add(user)
         return HTTPFound(location = '/')
-    return dict(
+    return tpl(request,
         url = request.application_url + '/signup',
-        logged_in = authenticated_userid(request)
         )
 
 class FeedSchema(Schema):
@@ -124,5 +127,4 @@ class FeedAddView(FormView):
     # pylint: disable=E0202
     def show(self, form):
         d = super(FeedAddView, self).show(form)
-        d['logged_in'] = authenticated_userid(self.request)
-        return d
+        return tpl(self.request, **d)
