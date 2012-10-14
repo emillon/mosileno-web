@@ -19,6 +19,13 @@
                 <li><a href=#>Bloblo</a></li>
                 <li><a href=#>Blibli</a></li>
                 <li><a href=#>Blublu</a></li>
+                <span tal:condition="not logged_in">
+                    <li><a href="/login">Login</a></li>
+                </span>
+                <span tal:condition="logged_in">
+                    <li><a href="/logout">Logout</a></li>
+                </span>
+                <li>
             </ul>
         </div>
         <div id=main>

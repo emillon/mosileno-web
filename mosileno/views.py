@@ -4,7 +4,11 @@ from pyramid.view import (
         forbidden_view_config,
         )
 from pyramid.httpexceptions import HTTPFound
-from pyramid.security import remember
+from pyramid.security import (
+        remember,
+        forget,
+        authenticated_userid
+        )
 
 from sqlalchemy.exc import DBAPIError
 
@@ -25,7 +29,9 @@ def my_view(request):
 
 @view_config(route_name='test', renderer='templates/page.pt')
 def view_test(request):
-    return {'content': 'This is only a test'}
+    return dict(content='This is only a test',
+                logged_in=authenticated_userid(request)
+               )
 
 @view_config(route_name='authtest',
         renderer='templates/page.pt',
@@ -61,6 +67,12 @@ def view_login(request):
         login = login,
         password = password,
         )
+
+@view_config(route_name='logout')
+def logout(request):
+    headers = forget(request)
+    return HTTPFound(location = request.resource_url(request.context),
+                     headers = headers)
 
 conn_err_msg = """\
 Pyramid is having a problem using your SQL database.  The problem
