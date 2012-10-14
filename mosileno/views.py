@@ -50,12 +50,6 @@ def view_test(request):
                 logged_in=authenticated_userid(request)
                )
 
-@view_config(route_name='authtest',
-        renderer='templates/page.pt',
-        permission='testperm')
-def view_authtest(request):
-    return {'content': 'Auth test'}
-
 @view_config(route_name='login',
              renderer='templates/login.pt')
 @forbidden_view_config(renderer='templates/login.pt')
