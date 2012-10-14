@@ -5,3 +5,4 @@ local/
 mosileno.egg-info/
 mosileno.sqlite
 *.pyc
+secret.key

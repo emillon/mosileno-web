@@ -8,6 +8,23 @@ from .models import (
     Base,
     )
 
+from random import choice
+from string import ascii_uppercase, digits
+
+def generate_key(n):
+    return ''.join(choice(ascii_uppercase + digits) for x in range(n))
+
+def get_secret_key():
+    filename = 'secret.key'
+    try:
+       with open(filename) as f:
+           secret = f.read()
+    except IOError as e:
+        secret = generate_key(64)
+        with open(filename, 'w+') as f:
+            f.write(secret)
+    return secret
+
 def main(global_config, **settings):
     """ This function returns a Pyramid WSGI application.
     """
@@ -15,7 +32,7 @@ def main(global_config, **settings):
     DBSession.configure(bind=engine)
     Base.metadata.bind = engine
     config = Configurator(settings=settings)
-    secret_key = 'lolsecret' # TODO generate and persist in a file
+    secret_key = get_secret_key()
     authn = AuthTktAuthenticationPolicy(secret_key)
     authz = ACLAuthorizationPolicy()
     config.set_authentication_policy(authn)
