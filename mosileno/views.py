@@ -104,6 +104,7 @@ def view_signup(request):
         return HTTPFound(location = '/')
     return dict(
         url = request.application_url + '/signup',
+        logged_in = authenticated_userid(request)
         )
 
 class FeedSchema(Schema):
