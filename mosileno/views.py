@@ -118,11 +118,6 @@ class FeedAddView(TemplatedFormView):
     schema=FeedSchema()
     buttons = ('save',)
 
-    # pylint: disable=E0202
-    def appstruct(self):
-        request = self.request
-        return dict()
-
     def save_success(self, appstruct):
         url = appstruct['url']
         feed = Feed(url)
