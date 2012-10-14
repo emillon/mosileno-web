@@ -86,19 +86,27 @@ def logout(request):
     return HTTPFound(location = request.resource_url(request.context),
                      headers = headers)
 
+class SignupSchema(LoginSchema):
+    pass
+
 @view_config(route_name ='signup',
-        renderer='templates/signup.pt'
+        renderer='templates/form.pt'
         )
-def view_signup(request):
-    if 'form.submitted' in request.params:
-        login = request.params['login']
-        password = request.params['password']
+class SignupView(FormView):
+    schema=SignupSchema()
+    buttons=('signup',)
+
+    def signup_success(self, appstruct):
+        login = appstruct['login']
+        password = appstruct['password']
         user = User(login, password)
         DBSession.add(user)
         return HTTPFound(location = '/')
-    return tpl(request,
-        url = request.application_url + '/signup',
-        )
+
+    # pylint: disable=E0202
+    def show(self, form):
+        d = super(SignupView, self).show(form)
+        return tpl(self.request, **d)
 
 class FeedSchema(Schema):
     url = SchemaNode(String())
