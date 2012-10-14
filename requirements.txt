@@ -1,3 +1,4 @@
+py-bcrypt
 pylint
 pyramid
 pyramid-debugtoolbar

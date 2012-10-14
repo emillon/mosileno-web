@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html>
+    <body>
+        <form action="${url}" method="post">
+            <span>Login</span>
+            <input type="text" name="login" /><br/>
+            <span>Password</span>
+            <input type="password" name="password" />
+            <input type="submit" name="form.submitted" value="Sign up"/>
+        </form>
+    </body>
+</html>

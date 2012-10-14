@@ -1,3 +1,5 @@
+import bcrypt
+
 from sqlalchemy import (
     Column,
     Integer,
@@ -26,3 +28,12 @@ class MyModel(Base):
         self.name = name
         self.value = value
 
+class User(Base):
+    __tablename__ = 'users'
+    id = Column(Integer, primary_key=True)
+    name = Column(Text, unique=True, nullable=False)
+    password = Column(Text, nullable=False)
+
+    def __init__(self, login, password):
+        self.name = login
+        self.password = bcrypt.hashpw(password, bcrypt.gensalt())

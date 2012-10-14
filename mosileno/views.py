@@ -15,6 +15,7 @@ from sqlalchemy.exc import DBAPIError
 from .models import (
     DBSession,
     MyModel,
+    User,
     )
 
 from .auth import auth_correct
@@ -73,6 +74,20 @@ def logout(request):
     headers = forget(request)
     return HTTPFound(location = request.resource_url(request.context),
                      headers = headers)
+
+@view_config(route_name ='signup',
+        renderer='templates/signup.pt'
+        )
+def view_signup(request):
+    if 'form.submitted' in request.params:
+        login = request.params['login']
+        password = request.params['password']
+        user = User(login, password)
+        DBSession.add(user)
+        return HTTPFound(location = '/')
+    return dict(
+        url = request.application_url + '/signup',
+        )
 
 conn_err_msg = """\
 Pyramid is having a problem using your SQL database.  The problem
