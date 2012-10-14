@@ -117,6 +117,7 @@ class FeedAddView(FormView):
     schema=FeedSchema()
     buttons = ('save',)
 
+    # pylint: disable=E0202
     def appstruct(self):
         request = self.request
         return dict()
@@ -126,6 +127,7 @@ class FeedAddView(FormView):
         feed = Feed(url)
         DBSession.add(feed)
 
+    # pylint: disable=E0202
     def show(self, form):
         d = super(FeedAddView, self).show(form)
         d['logged_in'] = authenticated_userid(self.request)
