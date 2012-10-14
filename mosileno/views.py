@@ -20,6 +20,12 @@ def my_view(request):
 def view_test(request):
     return {'content': 'This is only a test'}
 
+@view_config(route_name='authtest',
+        renderer='templates/page.pt',
+        permission='testperm')
+def view_authtest(request):
+    return {'content': 'Auth test'}
+
 conn_err_msg = """\
 Pyramid is having a problem using your SQL database.  The problem
 might be caused by one of the following things:
