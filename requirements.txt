@@ -1,3 +1,4 @@
+feedparser
 py-bcrypt
 pylint
 pyramid

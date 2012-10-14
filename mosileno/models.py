@@ -1,4 +1,5 @@
 import bcrypt
+import feedparser
 
 from sqlalchemy import (
     Column,
@@ -42,6 +43,9 @@ class Feed(Base):
     __tablename__ = 'feeds'
     id = Column(Integer, primary_key=True)
     url = Column(Text, unique=True, nullable=False)
+    title = Column(Text, unique=True, nullable=False)
 
     def __init__(self, url):
         self.url = url
+        feed = feedparser.parse(url)
+        self.title = feed.feed.title
