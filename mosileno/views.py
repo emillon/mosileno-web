@@ -83,6 +83,7 @@ def view_login(request):
         came_from = came_from,
         login = login,
         password = password,
+        logged_in = authenticated_userid(request)
         )
 
 @view_config(route_name='logout')
