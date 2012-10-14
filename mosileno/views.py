@@ -56,29 +56,34 @@ def tpl(request, **kwargs):
 def view_test(request):
     return tpl(request, content='This is only a test')
 
+class TemplatedFormView(FormView):
+    """
+    A subclass of Formview that fills the template parameters with tpl().
+    """
+
+    # pylint: disable=E0202
+    def show(self, form):
+        d = FormView.show(self, form)
+        return tpl(self.request, **d)
+
 class LoginSchema(Schema):
-    login = SchemaNode(String())
+    username = SchemaNode(String())
     password = SchemaNode(String(), widget=PasswordWidget())
 
 @view_config(route_name='login',
              renderer='templates/form.pt')
 @forbidden_view_config(renderer='templates/form.pt')
-class LoginView(FormView):
+class LoginView(TemplatedFormView):
     schema=LoginSchema()
     buttons=('login',)
 
     def login_success(self, appstruct):
-        login = appstruct['login']
+        login = appstruct['username']
         password = appstruct['password']
         if auth_correct(login, password):
-            headers = remember(request, login)
+            headers = remember(self.request, login)
             return HTTPFound(location = '/',
                              headers = headers)
-
-    # pylint: disable=E0202
-    def show(self, form):
-        d = super(LoginView, self).show(form)
-        return tpl(self.request, **d)
 
 @view_config(route_name='logout')
 def logout(request):
@@ -92,21 +97,16 @@ class SignupSchema(LoginSchema):
 @view_config(route_name ='signup',
         renderer='templates/form.pt'
         )
-class SignupView(FormView):
+class SignupView(TemplatedFormView):
     schema=SignupSchema()
     buttons=('signup',)
 
     def signup_success(self, appstruct):
-        login = appstruct['login']
+        login = appstruct['username']
         password = appstruct['password']
         user = User(login, password)
         DBSession.add(user)
         return HTTPFound(location = '/')
-
-    # pylint: disable=E0202
-    def show(self, form):
-        d = super(SignupView, self).show(form)
-        return tpl(self.request, **d)
 
 class FeedSchema(Schema):
     url = SchemaNode(String())
@@ -114,7 +114,7 @@ class FeedSchema(Schema):
 @view_config(route_name='feedadd',
         renderer='templates/form.pt'
         )
-class FeedAddView(FormView):
+class FeedAddView(TemplatedFormView):
     schema=FeedSchema()
     buttons = ('save',)
 
@@ -127,8 +127,3 @@ class FeedAddView(FormView):
         url = appstruct['url']
         feed = Feed(url)
         DBSession.add(feed)
-
-    # pylint: disable=E0202
-    def show(self, form):
-        d = super(FeedAddView, self).show(form)
-        return tpl(self.request, **d)
