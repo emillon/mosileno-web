@@ -16,6 +16,7 @@ from colander import (
         SchemaNode,
         String,
         )
+from deform.widget import PasswordWidget
 
 from sqlalchemy.exc import DBAPIError
 
@@ -55,34 +56,29 @@ def tpl(request, **kwargs):
 def view_test(request):
     return tpl(request, content='This is only a test')
 
+class LoginSchema(Schema):
+    login = SchemaNode(String())
+    password = SchemaNode(String(), widget=PasswordWidget())
+
 @view_config(route_name='login',
-             renderer='templates/login.pt')
-@forbidden_view_config(renderer='templates/login.pt')
-def view_login(request):
-    login_url = request.resource_url(request.context, 'login')
-    referrer = request.url
-    if referrer == login_url:
-        referrer = '/' # never use the login form itself as came_from
-    came_from = request.params.get('came_from', referrer)
-    message = ''
-    login = ''
-    password = ''
-    if 'form.submitted' in request.params:
-        login = request.params['login']
-        password = request.params['password']
+             renderer='templates/form.pt')
+@forbidden_view_config(renderer='templates/form.pt')
+class LoginView(FormView):
+    schema=LoginSchema()
+    buttons=('login',)
+
+    def login_success(self, appstruct):
+        login = appstruct['login']
+        password = appstruct['password']
         if auth_correct(login, password):
             headers = remember(request, login)
-            return HTTPFound(location = came_from,
+            return HTTPFound(location = '/',
                              headers = headers)
-        message = 'Failed login'
 
-    return tpl(request,
-        message = message,
-        url = request.application_url + '/login',
-        came_from = came_from,
-        login = login,
-        password = password,
-        )
+    # pylint: disable=E0202
+    def show(self, form):
+        d = super(LoginView, self).show(form)
+        return tpl(self.request, **d)
 
 @view_config(route_name='logout')
 def logout(request):
