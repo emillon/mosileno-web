@@ -11,7 +11,7 @@
     <body>
         <div class=headerCont>
             <ul class=headerLeft>
-                <li><a href=#>Toto</a></li>
+                <li><a href="/feed/add">Add a feed</a></li>
                 <li><a href=#>Titi</a></li>
                 <li><a href=#>Tutu</a></li>
             </ul>

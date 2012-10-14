@@ -37,3 +37,11 @@ class User(Base):
     def __init__(self, login, password):
         self.name = login
         self.password = bcrypt.hashpw(password, bcrypt.gensalt())
+
+class Feed(Base):
+    __tablename__ = 'feeds'
+    id = Column(Integer, primary_key=True)
+    url = Column(Text, unique=True, nullable=False)
+
+    def __init__(self, url):
+        self.url = url

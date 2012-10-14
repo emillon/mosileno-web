@@ -9,6 +9,12 @@ from pyramid.security import (
         forget,
         authenticated_userid
         )
+from pyramid_deform import FormView
+from colander import (
+        Schema,
+        SchemaNode,
+        String,
+        )
 
 from sqlalchemy.exc import DBAPIError
 
@@ -16,6 +22,7 @@ from .models import (
     DBSession,
     MyModel,
     User,
+    Feed,
     )
 
 from .auth import auth_correct
@@ -96,3 +103,22 @@ def view_signup(request):
     return dict(
         url = request.application_url + '/signup',
         )
+
+class FeedSchema(Schema):
+    url = SchemaNode(String())
+
+@view_config(route_name='feedadd',
+        renderer='templates/form.pt',
+        )
+class FeedAddView(FormView):
+    schema=FeedSchema()
+    buttons = ('save',)
+
+    def appstruct(self):
+        context = self.request.context
+        return dict()
+
+    def save_success(self, appstruct):
+        url = appstruct['url']
+        feed = Feed(url)
+        DBSession.add(feed)

@@ -2,6 +2,7 @@ py-bcrypt
 pylint
 pyramid
 pyramid-debugtoolbar
+pyramid-deform
 pyramid-tm
 SQLAlchemy
 waitress
