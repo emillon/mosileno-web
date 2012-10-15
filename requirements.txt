@@ -1,5 +1,4 @@
 coverage
-feedparser
 nose
 py-bcrypt
 pylint
