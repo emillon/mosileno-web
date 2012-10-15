@@ -36,20 +36,22 @@ class TestMyView(unittest.TestCase):
         home = view_home(request)
         self.assertIn('Welcome', home['content'])
 
+    def _login_with(self, user):
+        user['login'] = 'submit'
+        request = testing.DummyRequest(user)
+        lv = LoginView(request)()
+        return lv
+
     def test_login_fail(self):
         user = dict(username="doesnotexist",
                     password="doesnotexist",
-                    login="submit",
                     )
-        request = testing.DummyRequest(user)
-        lv = LoginView(request)()
+        lv = self._login_with(user)
         self.assertNotIsInstance(lv, HTTPFound)
 
     def test_login_ok(self):
         user = dict(username="alfred",
                     password="alfredo",
-                    login="submit",
                     )
-        request = testing.DummyRequest(user)
-        lv = LoginView(request)()
+        lv = self._login_with(user)
         self.assertIsInstance(lv, HTTPFound)
