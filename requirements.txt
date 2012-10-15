@@ -8,3 +8,4 @@ pyramid-deform
 pyramid-tm
 SQLAlchemy
 waitress
+zope.sqlalchemy
