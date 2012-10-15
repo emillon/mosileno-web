@@ -11,7 +11,11 @@ from .models import (
         User,
         )
 
-from .views import LoginView
+from .views import (
+        LoginView,
+        view_home,
+        logout,
+        )
 
 class TestMyView(unittest.TestCase):
     def setUp(self):
@@ -31,7 +35,6 @@ class TestMyView(unittest.TestCase):
         testing.tearDown()
 
     def test_home(self):
-        from .views import view_home
         request = testing.DummyRequest()
         home = view_home(request)
         self.assertIn('Welcome', home['content'])
@@ -55,3 +58,8 @@ class TestMyView(unittest.TestCase):
                     )
         lv = self._login_with(user)
         self.assertIsInstance(lv, HTTPFound)
+
+    def test_logout(self):
+        request = testing.DummyRequest()
+        resp = logout(request)
+        self.assertIsInstance(resp, HTTPFound)
