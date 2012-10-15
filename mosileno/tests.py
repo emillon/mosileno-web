@@ -23,3 +23,9 @@ class TestMyView(unittest.TestCase):
     def tearDown(self):
         DBSession.remove()
         testing.tearDown()
+
+    def test_home(self):
+        from .views import view_home
+        request = testing.DummyRequest()
+        home = view_home(request)
+        self.assertIn('Welcome', home['content'])

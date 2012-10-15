@@ -53,8 +53,8 @@ def tpl(request, **kwargs):
     return dict (kwargs.items() + args.items())
 
 @view_config(route_name='home', renderer='templates/page.pt')
-def view_test(request):
-    return tpl(request, content='This is only a test')
+def view_home(request):
+    return tpl(request, content='Welcome !')
 
 class TemplatedFormView(FormView):
     """
