@@ -16,6 +16,7 @@ from .views import (
         view_home,
         logout,
         SignupView,
+        FeedAddView,
         )
 
 class TestMyView(unittest.TestCase):
@@ -74,3 +75,10 @@ class TestMyView(unittest.TestCase):
         view = SignupView(request)
         resp = view()
         self.assertIsInstance(resp, HTTPFound)
+
+    def test_addfeed(self):
+        params = dict(url='http://example.com/doesnotexist.xml',
+                      save='submit')
+        request = testing.DummyRequest(params)
+        view = FeedAddView(request)
+        view()
