@@ -1,4 +1,4 @@
 language: python
 python:
   - "2.7"
-script: "pylint --generated-members=add,query -E mosileno"
+script: "pylint --generated-members=add,query -E mosileno && nosetests"

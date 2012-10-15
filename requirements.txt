@@ -1,4 +1,5 @@
 feedparser
+nose
 py-bcrypt
 pylint
 pyramid
