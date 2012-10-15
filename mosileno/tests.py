@@ -15,6 +15,7 @@ from .views import (
         LoginView,
         view_home,
         logout,
+        SignupView,
         )
 
 class TestMyView(unittest.TestCase):
@@ -62,4 +63,14 @@ class TestMyView(unittest.TestCase):
     def test_logout(self):
         request = testing.DummyRequest()
         resp = logout(request)
+        self.assertIsInstance(resp, HTTPFound)
+
+    def test_signup(self):
+        params = dict(username="michel",
+                      password="michelo",
+                      signup="submit",
+                    )
+        request = testing.DummyRequest(params)
+        view = SignupView(request)
+        resp = view()
         self.assertIsInstance(resp, HTTPFound)
