@@ -29,7 +29,7 @@ class TestMyView(unittest.TestCase):
         with transaction.manager:
             model = MyModel(name='one', value=55)
             DBSession.add(model)
-            alfred = User("alfred", "alfredo")
+            alfred = User("alfred", "alfredo", workfactor=1)
             DBSession.add(alfred)
 
     def tearDown(self):

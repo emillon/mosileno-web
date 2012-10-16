@@ -34,9 +34,10 @@ class User(Base):
     name = Column(Text, unique=True, nullable=False)
     password = Column(Text, nullable=False)
 
-    def __init__(self, login, password):
+    def __init__(self, login, password, workfactor=12):
         self.name = login
-        self.password = bcrypt.hashpw(password, bcrypt.gensalt())
+        salt = bcrypt.gensalt(workfactor)
+        self.password = bcrypt.hashpw(password, salt)
 
 class Feed(Base):
     __tablename__ = 'feeds'
