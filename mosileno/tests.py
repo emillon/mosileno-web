@@ -36,11 +36,6 @@ class TestMyView(unittest.TestCase):
         DBSession.remove()
         testing.tearDown()
 
-    def test_home(self):
-        request = testing.DummyRequest()
-        home = view_home(request)
-        self.assertIn('Welcome', home['content'])
-
     def _login_with(self, user):
         user['login'] = 'submit'
         request = testing.DummyRequest(user)
@@ -82,3 +77,15 @@ class TestMyView(unittest.TestCase):
         request = testing.DummyRequest(params)
         view = FeedAddView(request)
         view()
+
+class FunctionalTests(unittest.TestCase):
+    def setUp(self):
+        from mosileno import main
+        params = {'sqlalchemy.url': 'sqlite://'}
+        app = main({}, **params)
+        from webtest import TestApp
+        self.testapp = TestApp(app)
+
+    def test_root(self):
+        res = self.testapp.get('/', status=200)
+        self.assertIn('Welcome', res.body)
