@@ -15,8 +15,23 @@ from sqlalchemy.orm import (
 
 from zope.sqlalchemy import ZopeTransactionExtension
 
+from pyramid.security import (
+        Allow,
+        Authenticated,
+        Deny,
+        Everyone,
+        )
+
 DBSession = scoped_session(sessionmaker(extension=ZopeTransactionExtension()))
 Base = declarative_base()
+
+class RootFactory(object):
+    __name__ = ''
+    __acl__ = [
+            (Allow, Authenticated, 'edit'),
+            ]
+    def __init__(self, request):
+        pass
 
 class MyModel(Base):
     __tablename__ = 'models'

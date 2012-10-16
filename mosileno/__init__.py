@@ -31,7 +31,8 @@ def main(global_config, **settings):
     engine = engine_from_config(settings, 'sqlalchemy.')
     DBSession.configure(bind=engine)
     Base.metadata.bind = engine
-    config = Configurator(settings=settings)
+    config = Configurator(settings=settings,
+            root_factory='mosileno.models.RootFactory')
     secret_key = get_secret_key()
     authn = AuthTktAuthenticationPolicy(secret_key)
     authz = ACLAuthorizationPolicy()

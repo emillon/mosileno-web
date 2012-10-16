@@ -112,7 +112,8 @@ class FeedSchema(Schema):
     url = SchemaNode(String())
 
 @view_config(route_name='feedadd',
-        renderer='templates/form.pt'
+        renderer='templates/form.pt',
+        permission='edit',
         )
 class FeedAddView(TemplatedFormView):
     schema=FeedSchema()
