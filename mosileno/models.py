@@ -4,6 +4,7 @@ from sqlalchemy import (
     Column,
     Integer,
     Text,
+    ForeignKey,
     )
 
 from sqlalchemy.ext.declarative import declarative_base
@@ -61,3 +62,13 @@ class Feed(Base):
 
     def __init__(self, url):
         self.url = url
+
+class Subscription(Base):
+    __tablename__ = 'subscriptions'
+    id = Column(Integer, primary_key=True)
+    user = Column(Integer, ForeignKey('users.id'))
+    feed = Column(Integer, ForeignKey('feeds.id'))
+
+    def __init__(self, user, feed):
+        self.user = user.id
+        self.feed = feed.id

@@ -9,6 +9,8 @@ from .models import (
         Base,
         MyModel,
         User,
+        Feed,
+        Subscription
         )
 
 from .views import (
@@ -31,6 +33,7 @@ class TestMyView(unittest.TestCase):
             DBSession.add(model)
             alfred = User("alfred", "alfredo", workfactor=1)
             DBSession.add(alfred)
+        self.config.testing_securitypolicy(userid='alfred', permissive=False)
 
     def tearDown(self):
         DBSession.remove()
@@ -72,11 +75,18 @@ class TestMyView(unittest.TestCase):
         self.assertIsInstance(resp, HTTPFound)
 
     def test_addfeed(self):
-        params = dict(url='http://example.com/doesnotexist.xml',
+        url = 'http://example.com/doesnotexist.xml'
+        params = dict(url=url,
                       save='submit')
         request = testing.DummyRequest(params)
         view = FeedAddView(request)
         view()
+        find_feed = DBSession.query(Feed).filter(Feed.url==url)
+        count_f = find_feed.count()
+        self.assertEqual(count_f, 1)
+        feed_id = find_feed.one().id
+        count_s = DBSession.query(Subscription).filter(Subscription.id==feed_id).count()
+        self.assertEqual(count_s, 1)
 
 class FunctionalTests(unittest.TestCase):
     def setUp(self):

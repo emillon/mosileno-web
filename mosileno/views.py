@@ -25,6 +25,7 @@ from .models import (
     MyModel,
     User,
     Feed,
+    Subscription,
     )
 
 from .auth import auth_correct
@@ -123,3 +124,7 @@ class FeedAddView(TemplatedFormView):
         url = appstruct['url']
         feed = Feed(url)
         DBSession.add(feed)
+        me = authenticated_userid(self.request)
+        user = DBSession.query(User).filter(User.name==me).one()
+        sub = Subscription(user, feed)
+        DBSession.add(sub)
