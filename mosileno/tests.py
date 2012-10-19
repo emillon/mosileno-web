@@ -85,8 +85,8 @@ class TestMyView(unittest.TestCase):
         count_f = find_feed.count()
         self.assertEqual(count_f, 1)
         feed_id = find_feed.one().id
-        count_s = DBSession.query(Subscription).filter(Subscription.id==feed_id).count()
-        self.assertEqual(count_s, 1)
+        sub = DBSession.query(Subscription).get(feed_id)
+        self.assertIsNotNone(sub)
 
 class FunctionalTests(unittest.TestCase):
     def setUp(self):
