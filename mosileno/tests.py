@@ -1,5 +1,8 @@
 import unittest
 import transaction
+import pyramid_celery
+
+from mock import Mock
 
 from pyramid import testing
 from pyramid.httpexceptions import HTTPFound
@@ -34,6 +37,11 @@ class TestMyView(unittest.TestCase):
             alfred = User("alfred", "alfredo", workfactor=1)
             DBSession.add(alfred)
         self.config.testing_securitypolicy(userid='alfred', permissive=False)
+        celery_settings = {'CELERY_ALWAYS_EAGER': True}
+        config = Mock()
+        config.registry = Mock()
+        config.registry.settings = celery_settings
+        pyramid_celery.includeme(config)
 
     def tearDown(self):
         DBSession.remove()
