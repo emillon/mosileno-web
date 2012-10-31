@@ -143,13 +143,3 @@ def fetch_title(feed_id):
     feed = feedparser.parse(feedObj.url)
     feedObj.title = feed.feed.title
     transaction.commit()
-
-@view_config(route_name='celerytest', renderer='templates/page.pt')
-def view_celery(request):
-    add.delay(2, 3)
-    msg = "Task launched !"
-    return tpl(request, content=msg)
-
-@task
-def add(x, y):
-    return x+y
