@@ -18,6 +18,8 @@ from colander import (
         )
 from deform.widget import PasswordWidget
 
+from celery.task import task
+
 from sqlalchemy.exc import DBAPIError
 
 from .models import (
@@ -128,3 +130,13 @@ class FeedAddView(TemplatedFormView):
         user = DBSession.query(User).filter(User.name==me).one()
         sub = Subscription(user, feed)
         DBSession.add(sub)
+
+@view_config(route_name='celerytest', renderer='templates/page.pt')
+def view_celery(request):
+    add.delay(2, 3)
+    msg = "Task launched !"
+    return tpl(request, content=msg)
+
+@task
+def add(x, y):
+    return x+y

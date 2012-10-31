@@ -3,6 +3,7 @@ nose
 py-bcrypt
 pylint
 pyramid
+pyramid-celery
 pyramid-debugtoolbar
 pyramid-deform
 pyramid-tm
