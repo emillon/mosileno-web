@@ -20,6 +20,9 @@ from deform.widget import PasswordWidget
 
 from celery.task import task
 
+import feedparser
+import transaction
+
 from sqlalchemy.exc import DBAPIError
 
 from .models import (
@@ -130,6 +133,16 @@ class FeedAddView(TemplatedFormView):
         user = DBSession.query(User).filter(User.name==me).one()
         sub = Subscription(user, feed)
         DBSession.add(sub)
+        fetch_title.delay(feed.id)
+
+@task
+def fetch_title(feed_id):
+    feedObj = DBSession.query(Feed).get(feed_id)
+    if feedObj is None:
+        raise fetch_title.retry(countdown=3)
+    feed = feedparser.parse(feedObj.url)
+    feedObj.title = feed.feed.title
+    transaction.commit()
 
 @view_config(route_name='celerytest', renderer='templates/page.pt')
 def view_celery(request):
