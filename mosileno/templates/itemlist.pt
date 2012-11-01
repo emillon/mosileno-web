@@ -1,0 +1,14 @@
+<metal:main
+    xmlns:tal="http://xml.zope.org/namespaces/tal"
+    xmlns:metal="http://xml.zope.org/namespaces/metal"
+    use-macro="load: base.pt">
+    <tal:block metal:fill-slot="content">
+    <ul>
+        <tal:block tal:repeat="item items">
+            <li>
+                <a href="${item.link}">${item.title}</a>
+            </li>
+        </tal:block>
+    </ul>
+    </tal:block>
+</metal:main>

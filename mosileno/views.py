@@ -28,6 +28,8 @@ from sqlalchemy.exc import DBAPIError
 from .models import (
     DBSession,
     User,
+    Subscription,
+    Item,
     )
 
 from .auth import auth_correct
@@ -156,3 +158,15 @@ class OPMLImportView(TemplatedFormView):
                 worklist += element
         msg = '%d feeds imported' % n
         return Response(msg)
+
+@view_config(route_name='myfeeds', renderer='templates/itemlist.pt')
+def view_myfeeds(request):
+    me = authenticated_userid(request)
+    user = DBSession.query(User).filter(User.name == me).one()
+    subs = DBSession.query(Subscription).filter_by(user=user.id)
+    feeds = [sub.feed for sub in subs]
+    items = []
+    for f in feeds:
+        new_items = DBSession.query(Item).filter_by(feed=f)
+        items += new_items
+    return tpl(request, items=items)

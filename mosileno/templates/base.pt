@@ -23,7 +23,7 @@
             <ul class=headerLeft>
                 <li><a href="/feed/add">Add a feed</a></li>
                 <li><a href="/feed/add/opml">Import OPML file</a></li>
-                <li><a href=#>Tutu</a></li>
+                <li><a href="/feeds/my">My feeds</a></li>
             </ul>
             <ul class=headerRight>
                 <span tal:condition="not logged_in">
