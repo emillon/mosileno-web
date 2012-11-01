@@ -12,7 +12,6 @@ from pyramid.httpexceptions import HTTPFound
 from .models import (
         DBSession,
         Base,
-        MyModel,
         User,
         Feed,
         Subscription
@@ -35,8 +34,6 @@ class TestMyView(unittest.TestCase):
         DBSession.configure(bind=engine)
         Base.metadata.create_all(engine)
         with transaction.manager:
-            model = MyModel(name='one', value=55)
-            DBSession.add(model)
             alfred = User("alfred", "alfredo", workfactor=1)
             DBSession.add(alfred)
         self.config.testing_securitypolicy(userid='alfred', permissive=False)
