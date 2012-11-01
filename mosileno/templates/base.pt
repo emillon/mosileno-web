@@ -22,7 +22,7 @@
         <div class=headerCont>
             <ul class=headerLeft>
                 <li><a href="/feed/add">Add a feed</a></li>
-                <li><a href=#>Titi</a></li>
+                <li><a href="/feed/add/opml">Import OPML file</a></li>
                 <li><a href=#>Tutu</a></li>
             </ul>
             <ul class=headerRight>
