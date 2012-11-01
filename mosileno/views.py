@@ -82,8 +82,8 @@ class LoginSchema(Schema):
              renderer='templates/form.pt')
 @forbidden_view_config(renderer='templates/form.pt')
 class LoginView(TemplatedFormView):
-    schema=LoginSchema()
-    buttons=('login',)
+    schema = LoginSchema()
+    buttons = ('login',)
 
     def login_success(self, appstruct):
         login = appstruct['username']
@@ -99,15 +99,14 @@ def logout(request):
     return HTTPFound(location = request.resource_url(request.context),
                      headers = headers)
 
-class SignupSchema(LoginSchema):
-    pass
-
 @view_config(route_name ='signup',
         renderer='templates/form.pt'
         )
 class SignupView(TemplatedFormView):
-    schema=SignupSchema()
-    buttons=('signup',)
+    class SignupSchema(LoginSchema):
+        pass
+    schema = SignupSchema()
+    buttons = ('signup',)
 
     def signup_success(self, appstruct):
         login = appstruct['username']
@@ -116,15 +115,14 @@ class SignupView(TemplatedFormView):
         DBSession.add(user)
         return HTTPFound(location = '/')
 
-class FeedSchema(Schema):
-    url = SchemaNode(String())
-
 @view_config(route_name='feedadd',
         renderer='templates/form.pt',
         permission='edit',
         )
 class FeedAddView(TemplatedFormView):
-    schema=FeedSchema()
+    class FeedSchema(Schema):
+        url = SchemaNode(String())
+    schema = FeedSchema()
     buttons = ('save',)
 
     def save_success(self, appstruct):
@@ -155,14 +153,13 @@ class MemoryTmpStore(dict):
     def preview_url(self, name):
         return None
 
-class OPMLImportSchema(Schema):
-    opml = SchemaNode(FileData(), widget=FileUploadWidget(MemoryTmpStore()))
-
 @view_config(route_name='opmlimport',
         renderer='templates/form.pt',
         permission='edit',
         )
 class OPMLImportView(TemplatedFormView):
+    class OPMLImportSchema(Schema):
+        opml = SchemaNode(FileData(), widget=FileUploadWidget(MemoryTmpStore()))
     schema = OPMLImportSchema()
     buttons = ('import',)
 
