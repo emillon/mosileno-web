@@ -4,7 +4,6 @@ mock
 nose
 opml
 py-bcrypt
-pylint
 pyramid
 pyramid-celery
 pyramid-debugtoolbar

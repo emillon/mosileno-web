@@ -66,7 +66,6 @@ class TemplatedFormView(FormView):
     A subclass of Formview that fills the template parameters with tpl().
     """
 
-    # pylint: disable=E0202
     def show(self, form):
         d = FormView.show(self, form)
         return tpl(self.request, **d)
