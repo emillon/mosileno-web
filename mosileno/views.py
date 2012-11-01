@@ -19,7 +19,7 @@ from colander import (
 from deform.widget import PasswordWidget, FileUploadWidget
 from deform.schema import FileData
 
-from .tasks import fetch_title
+from .tasks import fetch_title, import_feed
 
 import opml
 
@@ -29,8 +29,6 @@ from .models import (
     DBSession,
     MyModel,
     User,
-    Feed,
-    Subscription,
     )
 
 from .auth import auth_correct
@@ -126,15 +124,6 @@ class FeedAddView(TemplatedFormView):
     def save_success(self, appstruct):
         url = appstruct['url']
         import_feed(self.request, url)
-
-def import_feed(request, url):
-    feed = Feed(url)
-    DBSession.add(feed)
-    me = authenticated_userid(request)
-    user = DBSession.query(User).filter(User.name==me).one()
-    sub = Subscription(user, feed)
-    DBSession.add(sub)
-    fetch_title.delay(feed.id)
 
 # TODO this leaks memory :
 # http://docs.pylonsproject.org/projects/deform/en/latest/interfaces.html#deform.interfaces.FileUploadTempStore
