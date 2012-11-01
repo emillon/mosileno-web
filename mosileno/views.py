@@ -19,10 +19,8 @@ from colander import (
 from deform.widget import PasswordWidget, FileUploadWidget
 from deform.schema import FileData
 
-from celery.task import task
+from .tasks import fetch_title
 
-import feedparser
-import transaction
 import opml
 
 from sqlalchemy.exc import DBAPIError
@@ -137,15 +135,6 @@ def import_feed(request, url):
     sub = Subscription(user, feed)
     DBSession.add(sub)
     fetch_title.delay(feed.id)
-
-@task
-def fetch_title(feed_id):
-    feedObj = DBSession.query(Feed).get(feed_id)
-    if feedObj is None:
-        raise fetch_title.retry(countdown=3)
-    feed = feedparser.parse(feedObj.url)
-    feedObj.title = feed.feed.title
-    transaction.commit()
 
 # TODO this leaks memory :
 # http://docs.pylonsproject.org/projects/deform/en/latest/interfaces.html#deform.interfaces.FileUploadTempStore
