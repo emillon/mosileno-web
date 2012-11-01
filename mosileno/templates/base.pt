@@ -31,6 +31,7 @@
                     <li><a href="/login">Login</a></li>
                 </span>
                 <span tal:condition="logged_in">
+                    <li><a href=#>You're ${logged_in}</a>
                     <li><a href="/logout">Logout</a></li>
                 </span>
                 <li>
