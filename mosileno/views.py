@@ -167,8 +167,15 @@ class OPMLImportView(TemplatedFormView):
         opml_file = appstruct['opml']
         opml_data = opml_file['fp']
         outline = opml.parse(opml_data)
-        for feed in outline:
-            url = feed.xmlUrl
-            import_feed(self.request, url)
-        msg = '%d feeds imported' % len(outline)
+        worklist = [e for e in outline]
+        n = 0
+        while worklist:
+            element = worklist.pop(0)
+            if hasattr(element, 'xmlUrl'):
+                url = element.xmlUrl
+                import_feed(self.request, url)
+                n += 1
+            else:
+                worklist += element
+        msg = '%d feeds imported' % n
         return Response(msg)
