@@ -58,8 +58,8 @@ class User(Base):
 class Feed(Base):
     __tablename__ = 'feeds'
     id = Column(Integer, primary_key=True)
-    url = Column(Text, unique=True, nullable=False)
-    title = Column(Text, unique=True, nullable=True)
+    url = Column(Text, nullable=False)
+    title = Column(Text, nullable=True)
 
     def __init__(self, url):
         self.url = url
