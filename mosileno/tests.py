@@ -175,7 +175,9 @@ class TestMyView(unittest.TestCase):
 class FunctionalTests(unittest.TestCase):
     def setUp(self):
         from mosileno import main
-        params = {'sqlalchemy.url': 'sqlite://'}
+        params = { 'sqlalchemy.url': 'sqlite://',
+                   'mako.directories': 'mosileno:templates',
+                 }
         app = main({}, **params)
         from webtest import TestApp
         self.testapp = TestApp(app)

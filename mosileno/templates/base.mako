@@ -7,16 +7,16 @@
               media="screen"
               charset="utf-8"
           />
-          <tal:block repeat="reqt css_links|[]">
+          % for reqt in (css_links or []):
             <link rel="stylesheet"
                   href="${request.static_url('deform:static/%s' % reqt)}"
                   type="text/css" />
-          </tal:block>
-          <tal:block repeat="reqt js_links|[]">
+          % endfor
+          % for reqt in (js_links or []):
             <script type="text/javascript"
                     src="${request.static_url('deform:static/%s' % reqt)}"
              ></script>
-          </tal:block>
+          % endfor
     </head>
     <body>
         <div class=headerCont>
@@ -26,20 +26,18 @@
                 <li><a href="/feeds/my">My feeds</a></li>
             </ul>
             <ul class=headerRight>
-                <span tal:condition="not logged_in">
+                % if logged_in is None:
                     <li><a href="/signup">Sign up</a></li>
                     <li><a href="/login">Login</a></li>
-                </span>
-                <span tal:condition="logged_in">
+                % else:
                     <li><a href=#>You're ${logged_in}</a>
                     <li><a href="/logout">Logout</a></li>
-                </span>
+                % endif
                 <li>
             </ul>
         </div>
         <div id=main>
-            <tal:block metal:define-slot="content">
-            </tal:block>
+            ${self.body()}
         </div>
         <div class=footer>
             <ul>

@@ -57,7 +57,7 @@ def tpl(request, **kwargs):
     args = dict(logged_in=authenticated_userid(request))
     return dict (kwargs.items() + args.items())
 
-@view_config(route_name='home', renderer='templates/page.pt')
+@view_config(route_name='home', renderer='page.mako')
 def view_home(request):
     return tpl(request, content='Welcome !')
 
@@ -76,8 +76,8 @@ class LoginSchema(Schema):
     password = SchemaNode(String(), widget=PasswordWidget())
 
 @view_config(route_name='login',
-             renderer='templates/form.pt')
-@forbidden_view_config(renderer='templates/form.pt')
+             renderer='form.mako')
+@forbidden_view_config(renderer='form.mako')
 class LoginView(TemplatedFormView):
     schema = LoginSchema()
     buttons = ('login',)
@@ -97,7 +97,7 @@ def logout(request):
                      headers = headers)
 
 @view_config(route_name ='signup',
-        renderer='templates/form.pt'
+        renderer='form.mako'
         )
 class SignupView(TemplatedFormView):
     class SignupSchema(LoginSchema):
@@ -113,7 +113,7 @@ class SignupView(TemplatedFormView):
         return HTTPFound(location = '/')
 
 @view_config(route_name='feedadd',
-        renderer='templates/form.pt',
+        renderer='form.mako',
         permission='edit',
         )
 class FeedAddView(TemplatedFormView):
@@ -133,7 +133,7 @@ class MemoryTmpStore(dict):
         return None
 
 @view_config(route_name='opmlimport',
-        renderer='templates/form.pt',
+        renderer='form.mako',
         permission='edit',
         )
 class OPMLImportView(TemplatedFormView):
@@ -159,7 +159,7 @@ class OPMLImportView(TemplatedFormView):
         msg = '%d feeds imported' % n
         return Response(msg)
 
-@view_config(route_name='myfeeds', renderer='templates/itemlist.pt')
+@view_config(route_name='myfeeds', renderer='itemlist.mako')
 def view_myfeeds(request):
     me = authenticated_userid(request)
     user = DBSession.query(User).filter(User.name == me).one()

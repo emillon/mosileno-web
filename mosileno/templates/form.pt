@@ -1,8 +1,0 @@
-<metal:main
-    xmlns:tal="http://xml.zope.org/namespaces/tal"
-    xmlns:metal="http://xml.zope.org/namespaces/metal"
-    use-macro="load: base.pt">
-    <tal:block metal:fill-slot="content">
-        <form tal:replace="structure form" />
-    </tal:block>
-</metal:main>
