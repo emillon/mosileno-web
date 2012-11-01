@@ -18,7 +18,7 @@ def import_feed(request, url):
     user = DBSession.query(User).filter(User.name==me).one()
     sub = Subscription(user, feed)
     DBSession.add(sub)
-    handlers = request.registry.settings['urllib2_handlers']
+    handlers = request.registry.settings.get('urllib2_handlers', [])
     fetch_title.delay(feed.id, handlers=handlers)
 
 @task
