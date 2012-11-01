@@ -63,3 +63,11 @@ class Subscription(Base):
     def __init__(self, user, feed):
         self.user = user.id
         self.feed = feed.id
+
+class Item(Base):
+    __tablename__ = 'items'
+    id = Column(Integer, primary_key=True)
+    feed = Column(Integer, ForeignKey('feeds.id'))
+    title = Column(Text)
+    link = Column(Text)
+    description = Column(Text)
