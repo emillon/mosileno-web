@@ -1,4 +1,7 @@
 <%inherit file="base.mako"/>
+<%!
+from mosileno.filter import lx
+%>
 <div class="accordion" id="accordion2">
 % for (item, genid) in items:
     <div class="accordion-group">
@@ -11,6 +14,7 @@
       <div id="${genid}" class="accordion-body collapse">
         <div class="accordion-inner">
           <a href="${item.link}">Go</a>
+          ${item.description | n, lx}
         </div>
       </div>
     </div>
