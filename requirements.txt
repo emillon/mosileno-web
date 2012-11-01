@@ -2,6 +2,7 @@ coverage
 feedparser
 mock
 nose
+opml
 py-bcrypt
 pylint
 pyramid

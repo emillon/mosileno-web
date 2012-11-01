@@ -16,12 +16,14 @@ from colander import (
         SchemaNode,
         String,
         )
-from deform.widget import PasswordWidget
+from deform.widget import PasswordWidget, FileUploadWidget
+from deform.schema import FileData
 
 from celery.task import task
 
 import feedparser
 import transaction
+import opml
 
 from sqlalchemy.exc import DBAPIError
 
@@ -127,13 +129,16 @@ class FeedAddView(TemplatedFormView):
 
     def save_success(self, appstruct):
         url = appstruct['url']
-        feed = Feed(url)
-        DBSession.add(feed)
-        me = authenticated_userid(self.request)
-        user = DBSession.query(User).filter(User.name==me).one()
-        sub = Subscription(user, feed)
-        DBSession.add(sub)
-        fetch_title.delay(feed.id)
+        import_feed(self.request, url)
+
+def import_feed(request, url):
+    feed = Feed(url)
+    DBSession.add(feed)
+    me = authenticated_userid(request)
+    user = DBSession.query(User).filter(User.name==me).one()
+    sub = Subscription(user, feed)
+    DBSession.add(sub)
+    fetch_title.delay(feed.id)
 
 @task
 def fetch_title(feed_id):
@@ -143,3 +148,30 @@ def fetch_title(feed_id):
     feed = feedparser.parse(feedObj.url)
     feedObj.title = feed.feed.title
     transaction.commit()
+
+# TODO this leaks memory :
+# http://docs.pylonsproject.org/projects/deform/en/latest/interfaces.html#deform.interfaces.FileUploadTempStore
+class MemoryTmpStore(dict):
+    def preview_url(self, name):
+        return None
+
+class OPMLImportSchema(Schema):
+    opml = SchemaNode(FileData(), widget=FileUploadWidget(MemoryTmpStore()))
+
+@view_config(route_name='opmlimport',
+        renderer='templates/form.pt',
+        permission='edit',
+        )
+class OPMLImportView(TemplatedFormView):
+    schema = OPMLImportSchema()
+    buttons = ('import',)
+
+    def import_success(self, appstruct):
+        opml_file = appstruct['opml']
+        opml_data = opml_file['fp']
+        outline = opml.parse(opml_data)
+        for feed in outline:
+            url = feed.xmlUrl
+            import_feed(self.request, url)
+        msg = '%d feeds imported' % len(outline)
+        return Response(msg)

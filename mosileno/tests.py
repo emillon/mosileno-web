@@ -4,6 +4,8 @@ import pyramid_celery
 
 from mock import Mock
 
+from StringIO import StringIO
+
 from pyramid import testing
 from pyramid.httpexceptions import HTTPFound
 
@@ -22,6 +24,7 @@ from .views import (
         logout,
         SignupView,
         FeedAddView,
+        OPMLImportView,
         )
 
 class TestMyView(unittest.TestCase):
@@ -95,6 +98,31 @@ class TestMyView(unittest.TestCase):
         feed_id = find_feed.one().id
         sub = DBSession.query(Subscription).get(feed_id)
         self.assertIsNotNone(sub)
+
+    def test_importopml(self):
+        opml = """<?xml version="1.0" encoding="UTF-8"?>
+        <opml version="1.0">
+            <head>
+                <title>OPML feed example</title>
+            </head>
+            <body>
+                <outline text="Feed A text" title="Feed A" type="rss"
+                    xmlUrl="http://feeda.example.com/feed.xml"
+                    htmlUrl="http://feeda.example.com/feed.xml"/>
+                <outline text="Feed B text" title="Feed B" type="rss"
+                    xmlUrl="http://feedb.example.com/feed.xml"
+                    htmlUrl="http://feedb.example.com/feed.xml"/>
+                </body>
+            </opml>
+        """
+        upload = Mock()
+        upload.file = StringIO(opml)
+        upload.filename = 'opml.xml'
+        params = {'opml': {'upload': upload}, 'import': 'submit'}
+        request = testing.DummyRequest(post=params)
+        view = OPMLImportView(request)
+        response = view()
+        self.assertIn('2 feeds imported', response.text)
 
 class FunctionalTests(unittest.TestCase):
     def setUp(self):
