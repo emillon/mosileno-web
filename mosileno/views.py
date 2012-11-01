@@ -168,4 +168,5 @@ def view_myfeeds(request):
     for f in feeds:
         new_items = DBSession.query(Item).filter_by(feed=f)
         items += new_items
+    items = [(i, "collapse%d" % n) for (n, i) in enumerate(items)]
     return tpl(request, items=items)

@@ -58,5 +58,11 @@
         ${self.body()}
       </div>
 
+      <script type="text/javascript"
+              src="${request.static_url('mosileno:static/jquery-1.8.2.min.js')}"
+       ></script>
+      <script type="text/javascript"
+              src="${request.static_url('mosileno:static/bootstrap.min.js')}"
+       ></script>
     </body>
 </html>
