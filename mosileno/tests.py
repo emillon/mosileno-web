@@ -122,6 +122,7 @@ class TestMyView(unittest.TestCase):
         request = testing.DummyRequest(post=params)
         view = OPMLImportView(request)
         response = view()
+        # pylint: disable=E1101
         self.assertIn('2 feeds imported', response.text)
 
 class FunctionalTests(unittest.TestCase):
