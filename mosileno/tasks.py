@@ -18,13 +18,14 @@ def import_feed(request, url):
     user = DBSession.query(User).filter(User.name==me).one()
     sub = Subscription(user, feed)
     DBSession.add(sub)
-    fetch_title.delay(feed.id)
+    handlers = request.registry.settings['urllib2_handlers']
+    fetch_title.delay(feed.id, handlers=handlers)
 
 @task
-def fetch_title(feed_id):
+def fetch_title(feed_id, handlers=[]):
     feedObj = DBSession.query(Feed).get(feed_id)
     if feedObj is None:
         raise fetch_title.retry(countdown=3)
-    feed = feedparser.parse(feedObj.url)
+    feed = feedparser.parse(feedObj.url, handlers=handlers)
     feedObj.title = feed.feed.title
     transaction.commit()

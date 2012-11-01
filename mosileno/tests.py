@@ -1,10 +1,13 @@
 import unittest
 import transaction
 import pyramid_celery
+import urllib2
 
 from mock import Mock
 
 from StringIO import StringIO
+
+from testproxy import TestProxy
 
 from pyramid import testing
 from pyramid.httpexceptions import HTTPFound
@@ -26,6 +29,9 @@ from .views import (
         OPMLImportView,
         )
 
+PROXY_URL = 'localhost'
+PROXY_PORT = 1478
+
 class TestMyView(unittest.TestCase):
     def setUp(self):
         self.config = testing.setUp()
@@ -37,11 +43,21 @@ class TestMyView(unittest.TestCase):
             alfred = User("alfred", "alfredo", workfactor=1)
             DBSession.add(alfred)
         self.config.testing_securitypolicy(userid='alfred', permissive=False)
-        celery_settings = {'CELERY_ALWAYS_EAGER': True}
-        config = Mock()
-        config.registry = Mock()
-        config.registry.settings = celery_settings
-        pyramid_celery.includeme(config)
+        celery_settings = { 'CELERY_ALWAYS_EAGER': True,
+                'CELERY_EAGER_PROPAGATES_EXCEPTIONS': True,
+                }
+        celery_config = Mock()
+        celery_config.registry = Mock()
+        celery_config.registry.settings = celery_settings
+        pyramid_celery.includeme(celery_config)
+        proxies = {'http': '%s:%d' % (PROXY_URL, PROXY_PORT)}
+        handler = urllib2.ProxyHandler(proxies)
+        self.config.add_settings({'urllib2_handlers': [handler]})
+
+    @classmethod
+    def setUpClass(cls):
+        proxy = TestProxy({}, (PROXY_URL, PROXY_PORT))
+        proxy.start()
 
     def tearDown(self):
         DBSession.remove()
