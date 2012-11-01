@@ -40,5 +40,6 @@ def fetch_items(feed_id, handlers=[]):
         raise fetch_items.retry(countdown=3)
     feed = feedparser.parse(feedObj.url, handlers=handlers)
     for item in feed.entries:
-        i = Item(title=item.title, link=item.link, description=item.description)
+        i = Item(feedObj, title=item.title,
+                link=item.link, description=item.description)
         DBSession.add(i)

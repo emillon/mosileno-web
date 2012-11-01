@@ -57,8 +57,8 @@ class Feed(Base):
 class Subscription(Base):
     __tablename__ = 'subscriptions'
     id = Column(Integer, primary_key=True)
-    user = Column(Integer, ForeignKey('users.id'))
-    feed = Column(Integer, ForeignKey('feeds.id'))
+    user = Column(Integer, ForeignKey('users.id'), nullable=False)
+    feed = Column(Integer, ForeignKey('feeds.id'), nullable=False)
 
     def __init__(self, user, feed):
         self.user = user.id
@@ -67,7 +67,13 @@ class Subscription(Base):
 class Item(Base):
     __tablename__ = 'items'
     id = Column(Integer, primary_key=True)
-    feed = Column(Integer, ForeignKey('feeds.id'))
+    feed = Column(Integer, ForeignKey('feeds.id'), nullable=False)
     title = Column(Text)
     link = Column(Text)
     description = Column(Text)
+
+    def __init__(self, feed, title=None, link=None, description=None):
+        self.feed = feed.id
+        self.title = title
+        self.link = link
+        self.description = description
