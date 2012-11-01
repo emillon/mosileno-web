@@ -16,16 +16,20 @@ from colander import (
         SchemaNode,
         String,
         )
-from deform.widget import PasswordWidget
+from deform.widget import PasswordWidget, FileUploadWidget
+from deform.schema import FileData
+
+from .tasks import fetch_title, import_feed
+
+import opml
 
 from sqlalchemy.exc import DBAPIError
 
 from .models import (
     DBSession,
-    MyModel,
     User,
-    Feed,
     Subscription,
+    Item,
     )
 
 from .auth import auth_correct
@@ -75,8 +79,8 @@ class LoginSchema(Schema):
              renderer='templates/form.pt')
 @forbidden_view_config(renderer='templates/form.pt')
 class LoginView(TemplatedFormView):
-    schema=LoginSchema()
-    buttons=('login',)
+    schema = LoginSchema()
+    buttons = ('login',)
 
     def login_success(self, appstruct):
         login = appstruct['username']
@@ -92,15 +96,14 @@ def logout(request):
     return HTTPFound(location = request.resource_url(request.context),
                      headers = headers)
 
-class SignupSchema(LoginSchema):
-    pass
-
 @view_config(route_name ='signup',
         renderer='templates/form.pt'
         )
 class SignupView(TemplatedFormView):
-    schema=SignupSchema()
-    buttons=('signup',)
+    class SignupSchema(LoginSchema):
+        pass
+    schema = SignupSchema()
+    buttons = ('signup',)
 
     def signup_success(self, appstruct):
         login = appstruct['username']
@@ -109,22 +112,61 @@ class SignupView(TemplatedFormView):
         DBSession.add(user)
         return HTTPFound(location = '/')
 
-class FeedSchema(Schema):
-    url = SchemaNode(String())
-
 @view_config(route_name='feedadd',
         renderer='templates/form.pt',
         permission='edit',
         )
 class FeedAddView(TemplatedFormView):
-    schema=FeedSchema()
+    class FeedSchema(Schema):
+        url = SchemaNode(String())
+    schema = FeedSchema()
     buttons = ('save',)
 
     def save_success(self, appstruct):
         url = appstruct['url']
-        feed = Feed(url)
-        DBSession.add(feed)
-        me = authenticated_userid(self.request)
-        user = DBSession.query(User).filter(User.name==me).one()
-        sub = Subscription(user, feed)
-        DBSession.add(sub)
+        import_feed(self.request, url)
+
+# TODO this leaks memory :
+# http://docs.pylonsproject.org/projects/deform/en/latest/interfaces.html#deform.interfaces.FileUploadTempStore
+class MemoryTmpStore(dict):
+    def preview_url(self, name):
+        return None
+
+@view_config(route_name='opmlimport',
+        renderer='templates/form.pt',
+        permission='edit',
+        )
+class OPMLImportView(TemplatedFormView):
+    class OPMLImportSchema(Schema):
+        opml = SchemaNode(FileData(), widget=FileUploadWidget(MemoryTmpStore()))
+    schema = OPMLImportSchema()
+    buttons = ('import',)
+
+    def import_success(self, appstruct):
+        opml_file = appstruct['opml']
+        opml_data = opml_file['fp']
+        outline = opml.parse(opml_data)
+        worklist = [e for e in outline]
+        n = 0
+        while worklist:
+            element = worklist.pop(0)
+            if hasattr(element, 'xmlUrl'):
+                url = element.xmlUrl
+                import_feed(self.request, url)
+                n += 1
+            else:
+                worklist += element
+        msg = '%d feeds imported' % n
+        return Response(msg)
+
+@view_config(route_name='myfeeds', renderer='templates/itemlist.pt')
+def view_myfeeds(request):
+    me = authenticated_userid(request)
+    user = DBSession.query(User).filter(User.name == me).one()
+    subs = DBSession.query(Subscription).filter_by(user=user.id)
+    feeds = [sub.feed for sub in subs]
+    items = []
+    for f in feeds:
+        new_items = DBSession.query(Item).filter_by(feed=f)
+        items += new_items
+    return tpl(request, items=items)

@@ -34,16 +34,6 @@ class RootFactory(object):
     def __init__(self, request):
         pass
 
-class MyModel(Base):
-    __tablename__ = 'models'
-    id = Column(Integer, primary_key=True)
-    name = Column(Text, unique=True)
-    value = Column(Integer)
-
-    def __init__(self, name, value):
-        self.name = name
-        self.value = value
-
 class User(Base):
     __tablename__ = 'users'
     id = Column(Integer, primary_key=True)
@@ -58,7 +48,8 @@ class User(Base):
 class Feed(Base):
     __tablename__ = 'feeds'
     id = Column(Integer, primary_key=True)
-    url = Column(Text, unique=True, nullable=False)
+    url = Column(Text, nullable=False)
+    title = Column(Text, nullable=True)
 
     def __init__(self, url):
         self.url = url
@@ -66,9 +57,23 @@ class Feed(Base):
 class Subscription(Base):
     __tablename__ = 'subscriptions'
     id = Column(Integer, primary_key=True)
-    user = Column(Integer, ForeignKey('users.id'))
-    feed = Column(Integer, ForeignKey('feeds.id'))
+    user = Column(Integer, ForeignKey('users.id'), nullable=False)
+    feed = Column(Integer, ForeignKey('feeds.id'), nullable=False)
 
     def __init__(self, user, feed):
         self.user = user.id
         self.feed = feed.id
+
+class Item(Base):
+    __tablename__ = 'items'
+    id = Column(Integer, primary_key=True)
+    feed = Column(Integer, ForeignKey('feeds.id'), nullable=False)
+    title = Column(Text)
+    link = Column(Text)
+    description = Column(Text)
+
+    def __init__(self, feed, title=None, link=None, description=None):
+        self.feed = feed.id
+        self.title = title
+        self.link = link
+        self.description = description
