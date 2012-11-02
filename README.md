@@ -27,6 +27,10 @@ Install the dependencies
 
     pip install -r requirements.txt
 
+Install the package
+
+    python setup.py develop
+
 Configure rabbitmq (as root)
 
     rabbitmqctl add_user mosileno mosileno
