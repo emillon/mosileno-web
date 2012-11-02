@@ -161,6 +161,7 @@ class OPMLImportView(TemplatedFormView):
 @view_config(route_name='myfeeds', renderer='itemlist.mako')
 def view_myfeeds(request):
     me = authenticated_userid(request)
+    # TODO do a join + sortby + limit
     user = DBSession.query(User).filter(User.name == me).one()
     subs = DBSession.query(Subscription).filter_by(user=user.id)
     feeds = [sub.feed for sub in subs]
@@ -169,4 +170,6 @@ def view_myfeeds(request):
         new_items = DBSession.query(Item).filter_by(feed=f)
         items += new_items
     items = [(i, "collapse%d" % n) for (n, i) in enumerate(items)]
+    items.sort(key=lambda i: i[0].date, reverse=True)
+    items = items[:20]
     return tpl(request, items=items)

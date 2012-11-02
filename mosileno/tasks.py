@@ -11,6 +11,8 @@ from .models import (
 
 from celery.task import task
 from pyramid.security import authenticated_userid
+from datetime import datetime
+from time import mktime
 
 def import_feed(request, url):
     feed = Feed(url)
@@ -40,6 +42,13 @@ def fetch_items(feed_id, handlers=[]):
         raise fetch_items.retry(countdown=3)
     feed = feedparser.parse(feedObj.url, handlers=handlers)
     for item in feed.entries:
+        item_date = item.get('updated_parsed',
+                item.get('published_parsed', None))
+        if item_date is None:
+            date = None
+        else:
+            date = datetime.fromtimestamp(mktime(item_date))
         i = Item(feedObj, title=item.title,
-                link=item.link, description=item.description)
+                link=item.link, description=item.description,
+                date=date)
         DBSession.add(i)

@@ -5,6 +5,7 @@ from sqlalchemy import (
     Integer,
     Text,
     ForeignKey,
+    DateTime,
     )
 
 from sqlalchemy.ext.declarative import declarative_base
@@ -71,9 +72,13 @@ class Item(Base):
     title = Column(Text)
     link = Column(Text)
     description = Column(Text)
+    date = Column(DateTime)
 
-    def __init__(self, feed, title=None, link=None, description=None):
+    def __init__(self, feed, title=None, link=None, description=None,
+            date=None
+            ):
         self.feed = feed.id
         self.title = title
         self.link = link
         self.description = description
+        self.date = date
