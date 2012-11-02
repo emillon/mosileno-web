@@ -30,6 +30,7 @@ from .models import (
     User,
     Subscription,
     Item,
+    Feed,
     )
 
 from .auth import auth_correct
@@ -162,11 +163,11 @@ class OPMLImportView(TemplatedFormView):
 def view_myfeeds(request):
     me = authenticated_userid(request)
     user = DBSession.query(User).filter(User.name == me).one()
-    subs = DBSession.query(Subscription).filter_by(user=user.id)
-    feeds = [sub.feed for sub in subs]
-    items = []
-    for f in feeds:
-        new_items = DBSession.query(Item).filter_by(feed=f)
-        items += new_items
+    items = DBSession.query(Item)\
+                .join(Feed)\
+                .join(Subscription)\
+                .filter(Subscription.user == user.id)\
+                .order_by(Item.date.desc())\
+                .limit(20)
     items = [(i, "collapse%d" % n) for (n, i) in enumerate(items)]
     return tpl(request, items=items)
