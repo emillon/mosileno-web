@@ -46,3 +46,18 @@ Run the dev server
     pserve --reload development.ini
 
 That's it ! The app should be live at <http://localhost:6543/>.
+
+## Monitoring
+
+You can monitor the state of queues with [Celery flower]. To do that, just
+install it in your virtualenv :
+
+    pip install flower
+
+And run it with :
+
+    celery flower
+
+It will be accessible at <http://localhost:5555/>.
+
+[Celery Flower]: https://github.com/mher/flower
