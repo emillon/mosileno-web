@@ -17,7 +17,8 @@ from .models import (
         Base,
         User,
         Feed,
-        Subscription
+        Subscription,
+        Item,
         )
 
 from .views import (
@@ -28,6 +29,8 @@ from .views import (
         FeedAddView,
         OPMLImportView,
         )
+
+from .tasks import import_feed
 
 PROXY_URL = 'localhost'
 PROXY_PORT = 1478
@@ -56,8 +59,49 @@ class TestMyView(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        proxy = TestProxy({}, (PROXY_URL, PROXY_PORT))
-        proxy.start()
+        html = """
+        <html>
+            <head>
+                <link rel="alternate"
+                      type="application/rss+xml"
+                      title="RSS Title"
+                      href="./rss.xml">
+                </link>
+            </head>
+            <body>
+            </body>
+        <html>
+        """
+        feed ="""
+        <?xml version="1.0" encoding="utf-8"?>
+        <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+            <channel>
+                <title>Feed title</title>
+                <link>Feed link</link>
+                <description>Feed description</description>
+                <item>
+                    <title>Title 1</title>
+                    <link>Link 1</link>
+                    <description>Description 1</description>
+                </item>
+                <item>
+                    <title>Title 2</title>
+                    <link>Link 2</link>
+                    <description>Description 2</description>
+                </item>
+                <item>
+                    <title>Title 3</title>
+                    <link>Link 3</link>
+                    <description>Description 3</description>
+                </item>
+            </channel>
+        </rss>
+        """
+        routes = { '/page.html': html,
+                   '/rss.xml': feed
+                 }
+        cls.proxy = TestProxy(routes, (PROXY_URL, PROXY_PORT))
+        cls.proxy.start()
 
     def tearDown(self):
         DBSession.remove()
@@ -171,6 +215,13 @@ class TestMyView(unittest.TestCase):
         view = OPMLImportView(request)
         response = view()
         self.assertIn('4 feeds imported', response.text)
+
+    def test_discover(self):
+        url = 'http://example.com/page.html'
+        request = testing.DummyRequest()
+        fid = import_feed(request, 'http://example.com/page.html')
+        items = DBSession.query(Item).filter(Item.feed == fid).all()
+        self.assertEqual(len(items), 3)
 
 class FunctionalTests(unittest.TestCase):
     def setUp(self):

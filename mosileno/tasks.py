@@ -25,6 +25,7 @@ def import_feed(request, url):
     DBSession.expunge(feed)
     fetch_title.delay(feed.id, handlers=handlers)
     fetch_items.delay(feed.id, handlers=handlers)
+    return feed.id
 
 @task
 def fetch_title(feed_id, handlers=[]):
@@ -32,8 +33,18 @@ def fetch_title(feed_id, handlers=[]):
     if feedObj is None:
         raise fetch_title.retry(countdown=3)
     feed = feedparser.parse(feedObj.url, handlers=handlers)
-    feedObj.title = feed.feed.title
-    transaction.commit()
+    if hasattr(feed.feed, 'title'):
+        feedObj.title = feed.feed.title
+        transaction.commit()
+    else:
+        # Probably a web page ; find feeds from metadata
+        feeds = [ l['href']
+                    for l in feed.feed['links']
+                    if l['type'] == 'application/rss+xml'
+                ]
+        feedObj.url = feeds[0]
+        transaction.commit()
+        raise fetch_title.retry(countdown=3)
 
 @task
 def fetch_items(feed_id, handlers=[]):
