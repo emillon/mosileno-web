@@ -8,9 +8,11 @@ from mock import Mock
 from StringIO import StringIO
 
 from testproxy import TestProxy
+from urlparse import urlparse
 
 from pyramid import testing
 from pyramid.httpexceptions import HTTPFound
+from sqlalchemy import engine_from_config
 
 from .models import (
         DBSession,
@@ -177,11 +179,52 @@ class FunctionalTests(unittest.TestCase):
         from mosileno import main
         params = { 'sqlalchemy.url': 'sqlite://',
                    'mako.directories': 'mosileno:templates',
+                   'pyramid.includes': 'pyramid_deform',
                  }
         app = main({}, **params)
+        engine = DBSession.get_bind(mapper=None)
+        Base.metadata.create_all(engine)
         from webtest import TestApp
         self.testapp = TestApp(app)
+
+    def tearDown(self):
+        DBSession.remove()
 
     def test_root(self):
         res = self.testapp.get('/', status=200)
         self.assertIn('Welcome', res.body)
+
+    def _register_user(self, user, password):
+        res = self.testapp.get('/signup')
+        form = res.form
+        form['username'] = user
+        form['password'] = password
+        return form.submit('signup')
+
+    def test_redirect(self, url=None, redir_url=None):
+        """
+        When going to a URL where auth is required, the login form should
+        redirect to this page and not /.
+        """
+        username = 'alfred'
+        password = 'alfred'
+        self._register_user(username, password)
+        if url is None:
+            url = '/feed/add'
+        if redir_url is None:
+            redir_url = url
+        res = self.testapp.get(url)
+        self.assertIn('Password', res.body)
+        form = res.form
+        form['username'] = username
+        form['password'] = password
+        res = form.submit('login')
+        self.assertEqual(res.status_code, 302)
+        dest = urlparse(res.location)
+        self.assertEqual(dest.path, redir_url)
+
+    def test_redirect_login(self):
+        """
+        When logging in through /login, redirect to /
+        """
+        self.test_redirect(url='/login', redir_url='/')
