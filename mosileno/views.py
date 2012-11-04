@@ -16,8 +16,13 @@ from colander import (
         SchemaNode,
         String,
         )
-from deform.widget import PasswordWidget, FileUploadWidget
+from deform.widget import (
+        PasswordWidget,
+        FileUploadWidget,
+        HiddenWidget,
+        )
 from deform.schema import FileData
+from urlparse import urlparse
 
 from .tasks import fetch_title, import_feed
 
@@ -74,6 +79,7 @@ class TemplatedFormView(FormView):
 class LoginSchema(Schema):
     username = SchemaNode(String())
     password = SchemaNode(String(), widget=PasswordWidget())
+    redir = SchemaNode(String(), widget=HiddenWidget(), missing='/')
 
 @view_config(route_name='login',
              renderer='form.mako')
@@ -82,12 +88,20 @@ class LoginView(TemplatedFormView):
     schema = LoginSchema()
     buttons = ('login',)
 
+    def appstruct(self):
+        dest = urlparse(self.request.url)
+        redir = dest.path
+        if redir == '/login':
+            redir = '/'
+        return {'redir': redir}
+
     def login_success(self, appstruct):
         login = appstruct['username']
         password = appstruct['password']
+        redir = appstruct['redir']
         if auth_correct(login, password):
             headers = remember(self.request, login)
-            return HTTPFound(location = '/',
+            return HTTPFound(location = redir,
                              headers = headers)
 
 @view_config(route_name='logout')
