@@ -71,7 +71,7 @@ def fetch_items(feed_id, handlers=[]):
                     date=date)
             DBSession.add(i)
 
-@periodic_task(run_every=timedelta(seconds=30))
+@periodic_task(run_every=timedelta(minutes=15))
 def fetch_all_items():
     with transaction.manager:
         feeds = DBSession.query(Feed.id).all()
