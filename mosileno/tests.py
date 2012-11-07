@@ -252,6 +252,12 @@ class FunctionalTests(unittest.TestCase):
         form['password'] = password
         return form.submit('signup')
 
+    def _login_helper(self, username, password, res):
+        form = res.form
+        form['username'] = username
+        form['password'] = password
+        return form.submit('login')
+
     def test_redirect(self, url=None, redir_url=None):
         """
         When going to a URL where auth is required, the login form should
@@ -266,10 +272,7 @@ class FunctionalTests(unittest.TestCase):
             redir_url = url
         res = self.testapp.get(url)
         self.assertIn('Password', res.body)
-        form = res.form
-        form['username'] = username
-        form['password'] = password
-        res = form.submit('login')
+        res = self._login_helper(username, password, res)
         self.assertEqual(res.status_code, 302)
         dest = urlparse(res.location)
         self.assertEqual(dest.path, redir_url)
@@ -279,3 +282,22 @@ class FunctionalTests(unittest.TestCase):
         When logging in through /login, redirect to /
         """
         self.test_redirect(url='/login', redir_url='/')
+
+    def test_myfeeds(self):
+        """
+        When accessing 'my feeds':
+          - redirect to login if not authed, login and in all cases
+          - gives the links defined in setUpClass
+        """
+        res = self.testapp.get('/feeds/my')
+        if 'Login' in res.body:
+            self.assertIn('Password', res.body)
+            username = 'alfred'
+            password = 'alfred'
+            self._register_user(username, password)
+            res = self._login_helper(username, password, res)
+            self.assertEqual(res.status_code, 302)
+        if 'Logout' in res.body:
+            self.assertIn('Title 1', res.body)
+
+

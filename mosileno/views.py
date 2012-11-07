@@ -173,7 +173,10 @@ class OPMLImportView(TemplatedFormView):
         msg = '%d feeds imported' % n
         return Response(msg)
 
-@view_config(route_name='myfeeds', renderer='itemlist.mako')
+@view_config(route_name='myfeeds', 
+        renderer='itemlist.mako',
+        permission='edit',
+        )
 def view_myfeeds(request):
     me = authenticated_userid(request)
     user = DBSession.query(User).filter(User.name == me).one()
