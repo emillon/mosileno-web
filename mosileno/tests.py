@@ -279,3 +279,10 @@ class FunctionalTests(unittest.TestCase):
         When logging in through /login, redirect to /
         """
         self.test_redirect(url='/login', redir_url='/')
+
+    def test_redirect_to_login(self)
+        """
+        When accessing 'my feeds', redirect to login is not authed
+        """
+        # TODO
+        self.test_redirect(
