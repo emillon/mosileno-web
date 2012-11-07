@@ -9,9 +9,10 @@ from .models import (
         Item,
         )
 
+from celery.decorators import periodic_task
 from celery.task import task
 from pyramid.security import authenticated_userid
-from datetime import datetime
+from datetime import datetime, timedelta
 from time import mktime
 
 def import_feed(request, url):
@@ -48,18 +49,26 @@ def fetch_title(feed_id, handlers=[]):
 
 @task
 def fetch_items(feed_id, handlers=[]):
-    feedObj = DBSession.query(Feed).get(feed_id)
-    if feedObj is None:
-        raise fetch_items.retry(countdown=3)
-    feed = feedparser.parse(feedObj.url, handlers=handlers)
-    for item in feed.entries:
-        item_date = item.get('updated_parsed',
-                item.get('published_parsed', None))
-        if item_date is None:
-            date = None
-        else:
-            date = datetime.fromtimestamp(mktime(item_date))
-        i = Item(feedObj, title=item.title,
-                link=item.link, description=item.description,
-                date=date)
-        DBSession.add(i)
+    with transaction.manager:
+        feedObj = DBSession.query(Feed).get(feed_id)
+        if feedObj is None:
+            raise fetch_items.retry(countdown=3)
+        feed = feedparser.parse(feedObj.url, handlers=handlers)
+        for item in feed.entries:
+            item_date = item.get('updated_parsed',
+                    item.get('published_parsed', None))
+            if item_date is None:
+                date = None
+            else:
+                date = datetime.fromtimestamp(mktime(item_date))
+            i = Item(feedObj, title=item.title,
+                    link=item.link, description=item.description,
+                    date=date)
+            DBSession.add(i)
+
+@periodic_task(run_every=timedelta(seconds=30))
+def fetch_all_items():
+    with transaction.manager:
+        feeds = DBSession.query(Feed.id).all()
+        for feed in feeds:
+            fetch_items.delay(feed)
