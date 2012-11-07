@@ -38,13 +38,18 @@ def fetch_title(feed_id, handlers=[]):
         transaction.commit()
     else:
         # Probably a web page ; find feeds from metadata
-        feeds = [ l['href']
-                    for l in feed.feed['links']
-                    if l['type'] == 'application/rss+xml'
-                ]
-        feedObj.url = feeds[0]
-        transaction.commit()
-        raise fetch_title.retry(countdown=3)
+        if 'links' in feed.feed:
+            feeds = [ l['href']
+                        for l in feed.feed['links']
+                        if l['type'] == 'application/rss+xml'
+                    ]
+            feedObj.url = feeds[0]
+            transaction.commit()
+            raise fetch_title.retry(countdown=3)
+        else:
+            # Maybe signal to the user?
+            DBSession.delete(feedObj)
+            transaction.commit()
 
 @task
 def fetch_items(feed_id, handlers=[]):
