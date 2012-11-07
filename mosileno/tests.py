@@ -74,6 +74,14 @@ class TestMyView(unittest.TestCase):
             </body>
         <html>
         """
+        html_noalt = """
+        <html>
+            <head>
+            </head>
+            <body>
+            </body>
+        <html>
+        """
         feed ="""
         <?xml version="1.0" encoding="utf-8"?>
         <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
@@ -100,7 +108,8 @@ class TestMyView(unittest.TestCase):
         </rss>
         """
         routes = { '/page.html': html,
-                   '/rss.xml': feed
+                   '/rss.xml': feed,
+                   '/noalt.html': html_noalt,
                  }
         cls.proxy = TestProxy(routes, (PROXY_URL, PROXY_PORT))
         cls.proxy.start()
@@ -224,6 +233,14 @@ class TestMyView(unittest.TestCase):
         fid = import_feed(request, 'http://example.com/page.html')
         items = DBSession.query(Item).filter(Item.feed == fid).all()
         self.assertEqual(len(items), 3)
+
+    def test_discover_noalt(self):
+        url = 'http://example.com/page.html'
+        request = testing.DummyRequest()
+        fid = import_feed(request, url)
+        # Should be deleted
+        feeds = DBSession.query(Feed).filter(Feed.url == url).all()
+        self.assertEqual(len(feeds), 0)
 
 class FunctionalTests(unittest.TestCase):
     def setUp(self):
