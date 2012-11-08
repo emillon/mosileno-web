@@ -6,34 +6,37 @@ from sqlalchemy import (
     Text,
     ForeignKey,
     DateTime,
-    )
+)
 
 from sqlalchemy.ext.declarative import declarative_base
 
 from sqlalchemy.orm import (
     scoped_session,
     sessionmaker,
-    )
+)
 
 from zope.sqlalchemy import ZopeTransactionExtension
 
 from pyramid.security import (
-        Allow,
-        Authenticated,
-        Deny,
-        Everyone,
-        )
+    Allow,
+    Authenticated,
+    Deny,
+    Everyone,
+)
 
 DBSession = scoped_session(sessionmaker(extension=ZopeTransactionExtension()))
 Base = declarative_base()
 
+
 class RootFactory(object):
     __name__ = ''
     __acl__ = [
-            (Allow, Authenticated, 'edit'),
-            ]
+        (Allow, Authenticated, 'edit'),
+    ]
+
     def __init__(self, request):
         pass
+
 
 class User(Base):
     __tablename__ = 'users'
@@ -46,6 +49,7 @@ class User(Base):
         salt = bcrypt.gensalt(workfactor)
         self.password = bcrypt.hashpw(password, salt)
 
+
 class Feed(Base):
     __tablename__ = 'feeds'
     id = Column(Integer, primary_key=True)
@@ -54,6 +58,7 @@ class Feed(Base):
 
     def __init__(self, url):
         self.url = url
+
 
 class Subscription(Base):
     __tablename__ = 'subscriptions'
@@ -65,6 +70,7 @@ class Subscription(Base):
         self.user = user.id
         self.feed = feed.id
 
+
 class Item(Base):
     __tablename__ = 'items'
     id = Column(Integer, primary_key=True)
@@ -74,9 +80,10 @@ class Item(Base):
     description = Column(Text)
     date = Column(DateTime)
 
-    def __init__(self, feed, title=None, link=None, description=None,
-            date=None
-            ):
+    def __init__(self, feed,
+                 title=None, link=None,
+                 description=None, date=None
+                 ):
         self.feed = feed.id
         self.title = title
         self.link = link
