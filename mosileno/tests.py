@@ -15,27 +15,28 @@ from pyramid.httpexceptions import HTTPFound
 from sqlalchemy import engine_from_config
 
 from .models import (
-        DBSession,
-        Base,
-        User,
-        Feed,
-        Subscription,
-        Item,
-        )
+    DBSession,
+    Base,
+    User,
+    Feed,
+    Subscription,
+    Item,
+)
 
 from .views import (
-        LoginView,
-        view_home,
-        logout,
-        SignupView,
-        FeedAddView,
-        OPMLImportView,
-        )
+    LoginView,
+    view_home,
+    logout,
+    SignupView,
+    FeedAddView,
+    OPMLImportView,
+)
 
 from .tasks import import_feed
 
 PROXY_URL = 'localhost'
 PROXY_PORT = 1478
+
 
 class TestMyView(unittest.TestCase):
     def setUp(self):
@@ -48,9 +49,9 @@ class TestMyView(unittest.TestCase):
             alfred = User("alfred", "alfredo", workfactor=1)
             DBSession.add(alfred)
         self.config.testing_securitypolicy(userid='alfred', permissive=False)
-        celery_settings = { 'CELERY_ALWAYS_EAGER': True,
-                'CELERY_EAGER_PROPAGATES_EXCEPTIONS': True,
-                }
+        celery_settings = {'CELERY_ALWAYS_EAGER': True,
+                           'CELERY_EAGER_PROPAGATES_EXCEPTIONS': True,
+                           }
         celery_config = Mock()
         celery_config.registry = Mock()
         celery_config.registry.settings = celery_settings
@@ -82,7 +83,7 @@ class TestMyView(unittest.TestCase):
             </body>
         <html>
         """
-        feed ="""
+        feed = """
         <?xml version="1.0" encoding="utf-8"?>
         <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
             <channel>
@@ -107,10 +108,10 @@ class TestMyView(unittest.TestCase):
             </channel>
         </rss>
         """
-        routes = { '/page.html': html,
-                   '/rss.xml': feed,
-                   '/noalt.html': html_noalt,
-                 }
+        routes = {'/page.html': html,
+                  '/rss.xml': feed,
+                  '/noalt.html': html_noalt,
+                  }
         cls.proxy = TestProxy(routes, (PROXY_URL, PROXY_PORT))
         cls.proxy.start()
 
@@ -147,7 +148,7 @@ class TestMyView(unittest.TestCase):
         params = dict(username="michel",
                       password="michelo",
                       signup="submit",
-                    )
+                      )
         request = testing.DummyRequest(params)
         view = SignupView(request)
         resp = view()
@@ -160,7 +161,7 @@ class TestMyView(unittest.TestCase):
         request = testing.DummyRequest(params)
         view = FeedAddView(request)
         view()
-        find_feed = DBSession.query(Feed).filter(Feed.url==url)
+        find_feed = DBSession.query(Feed).filter(Feed.url == url)
         count_f = find_feed.count()
         self.assertEqual(count_f, 1)
         feed_id = find_feed.one().id
@@ -242,13 +243,14 @@ class TestMyView(unittest.TestCase):
         feeds = DBSession.query(Feed).filter(Feed.url == url).all()
         self.assertEqual(len(feeds), 0)
 
+
 class FunctionalTests(unittest.TestCase):
     def setUp(self):
         from mosileno import main
-        params = { 'sqlalchemy.url': 'sqlite://',
-                   'mako.directories': 'mosileno:templates',
-                   'pyramid.includes': 'pyramid_deform',
-                 }
+        params = {'sqlalchemy.url': 'sqlite://',
+                  'mako.directories': 'mosileno:templates',
+                  'pyramid.includes': 'pyramid_deform',
+                  }
         app = main({}, **params)
         engine = DBSession.get_bind(mapper=None)
         Base.metadata.create_all(engine)
@@ -316,5 +318,3 @@ class FunctionalTests(unittest.TestCase):
             self.assertEqual(res.status_code, 302)
         if 'Logout' in res.body:
             self.assertIn('Title 1', res.body)
-
-
