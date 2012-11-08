@@ -3,10 +3,12 @@ from threading import Thread
 from urlparse import urlparse
 import socket
 
+
 class RoutingServer(HTTPServer):
     def __init__(self, routes, address, handler):
         self.routes = routes
         HTTPServer.__init__(self, address, handler)
+
 
 class ProxyHandler(BaseHTTPRequestHandler):
 
@@ -21,7 +23,7 @@ class ProxyHandler(BaseHTTPRequestHandler):
         req = urlparse(self.path)
         try:
             resp = routes[req.path]
-        except KeyError: # TODO send a 404
+        except KeyError:  # TODO send a 404
             resp = """<?xml version="1.0" encoding="utf-8"?>
                 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
                     <channel>
@@ -40,6 +42,7 @@ class ProxyHandler(BaseHTTPRequestHandler):
 
     def log_message(self, *args):
         pass
+
 
 class TestProxy(Thread):
 
