@@ -277,6 +277,9 @@ class FunctionalTests(unittest.TestCase):
         form['password'] = password
         return form.submit('login')
 
+    def _logout(self):
+        return self.testapp.get('/logout')
+
     def test_redirect(self, url=None, redir_url=None):
         """
         When going to a URL where auth is required, the login form should
@@ -285,6 +288,7 @@ class FunctionalTests(unittest.TestCase):
         username = 'alfred'
         password = 'alfred'
         self._register_user(username, password)
+        self._logout()
         if url is None:
             url = '/feed/add'
         if redir_url is None:
@@ -313,8 +317,13 @@ class FunctionalTests(unittest.TestCase):
             self.assertIn('Password', res.body)
             username = 'alfred'
             password = 'alfred'
-            self._register_user(username, password)
-            res = self._login_helper(username, password, res)
+            res = self._register_user(username, password)
             self.assertEqual(res.status_code, 302)
         if 'Logout' in res.body:
             self.assertIn('Title 1', res.body)
+
+    def test_login_on_signup(self):
+        res = self._register_user('robert', 'robert')
+        res = res.follow()
+        self.assertIn('Logout', res.body)
+        self.assertIn('robert', res.body)

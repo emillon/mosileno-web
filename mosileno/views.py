@@ -131,7 +131,9 @@ class SignupView(TemplatedFormView):
         password = appstruct['password']
         user = User(login, password)
         DBSession.add(user)
-        return HTTPFound(location='/')
+        headers = remember(self.request, login)
+        return HTTPFound(location='/',
+                         headers=headers)
 
 
 @view_config(route_name='feedadd',
