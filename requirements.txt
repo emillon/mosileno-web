@@ -1,5 +1,6 @@
 coverage
 feedparser
+HTTPretty
 mock
 nose
 opml

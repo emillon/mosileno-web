@@ -23,22 +23,21 @@ def import_feed(request, url):
     user = DBSession.query(User).filter(User.name == me).one()
     sub = Subscription(user, feed)
     DBSession.add(sub)
-    handlers = request.registry.settings.get('urllib2_handlers', [])
     DBSession.expunge(feed)
-    fetch_title.delay(feed.id, handlers=handlers)
-    fetch_items.delay(feed.id, handlers=handlers)
+    fetch_title.delay(feed.id)
     return feed.id
 
 
 @task
-def fetch_title(feed_id, handlers=[]):
+def fetch_title(feed_id):
     feedObj = DBSession.query(Feed).get(feed_id)
     if feedObj is None:
         raise fetch_title.retry(countdown=3)
-    feed = feedparser.parse(feedObj.url, handlers=handlers)
+    feed = feedparser.parse(feedObj.url)
     if hasattr(feed.feed, 'title'):
         feedObj.title = feed.feed.title
         transaction.commit()
+        fetch_items.delay(feed_id)
     else:
         # Probably a web page ; find feeds from metadata
         if 'links' in feed.feed:
@@ -56,12 +55,12 @@ def fetch_title(feed_id, handlers=[]):
 
 
 @task
-def fetch_items(feed_id, handlers=[]):
+def fetch_items(feed_id):
     with transaction.manager:
         feedObj = DBSession.query(Feed).get(feed_id)
         if feedObj is None:
             raise fetch_items.retry(countdown=3)
-        feed = feedparser.parse(feedObj.url, handlers=handlers)
+        feed = feedparser.parse(feedObj.url)
         for item in feed.entries:
             item_date = item.get('updated_parsed',
                                  item.get('published_parsed', None))

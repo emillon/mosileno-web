@@ -7,12 +7,12 @@ from mock import Mock
 
 from StringIO import StringIO
 
-from testproxy import TestProxy
 from urlparse import urlparse
 
 from pyramid import testing
 from pyramid.httpexceptions import HTTPFound
 from sqlalchemy import engine_from_config
+from httpretty import HTTPretty, httprettified
 
 from .models import (
     DBSession,
@@ -34,8 +34,86 @@ from .views import (
 
 from .tasks import import_feed
 
-PROXY_URL = 'localhost'
-PROXY_PORT = 1478
+
+DOCS = {'feed': """
+             <?xml version="1.0" encoding="utf-8"?>
+             <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+                 <channel>
+                     <title>Feed title</title>
+                     <link>Feed link</link>
+                     <description>Feed description</description>
+                     <item>
+                         <title>Title 1</title>
+                         <link>Link 1</link>
+                         <description>Description 1</description>
+                     </item>
+                     <item>
+                         <title>Title 2</title>
+                         <link>Link 2</link>
+                         <description>Description 2</description>
+                     </item>
+                     <item>
+                         <title>Title 3</title>
+                         <link>Link 3</link>
+                         <description>Description 3</description>
+                     </item>
+                 </channel>
+             </rss>
+             """,
+        'page': """
+            <html>
+                <head>
+                    <link rel="alternate"
+                          type="application/rss+xml"
+                          title="RSS Title"
+                          href="./rss.xml">
+                    </link>
+                </head>
+                <body>
+                </body>
+            <html>
+            """,
+        'opml': """<?xml version="1.0" encoding="UTF-8"?>
+            <opml version="1.0">
+                <head>
+                    <title>OPML feed example</title>
+                </head>
+                <body>
+                    <outline text="Feed A text" title="Feed A" type="rss"
+                        xmlUrl="http://feeda.example.com/feed.xml"
+                        htmlUrl="http://feeda.example.com/feed.xml"/>
+                    <outline text="Feed B text" title="Feed B" type="rss"
+                        xmlUrl="http://feedb.example.com/feed.xml"
+                        htmlUrl="http://feedb.example.com/feed.xml"/>
+                    </body>
+                </opml>
+            """,
+        'opml_deep': """<?xml version="1.0" encoding="UTF-8"?>
+            <opml version="1.0">
+                <head>
+                    <title>OPML feed example</title>
+                </head>
+                <body>
+                    <outline title="Category A" text="Category A text">
+                        <outline text="Feed A1 text" title="Feed A1" type="rss"
+                            xmlUrl="http://feeda1.example.com/feed.xml"
+                            htmlUrl="http://feeda1.example.com/feed.xml"/>
+                        <outline text="Feed A2 text" title="Feed A2" type="rss"
+                            xmlUrl="http://feeda2.example.com/feed.xml"
+                            htmlUrl="http://feeda2.example.com/feed.xml"/>
+                    </outline>
+                    <outline title="Category B" text="Category B text">
+                        <outline text="Feed B1 text" title="Feed B1" type="rss"
+                            xmlUrl="http://feedb1.example.com/feed.xml"
+                            htmlUrl="http://feedb1.example.com/feed.xml"/>
+                        <outline text="Feed B2 text" title="Feed B2" type="rss"
+                            xmlUrl="http://feedb2.example.com/feed.xml"
+                            htmlUrl="http://feedb2.example.com/feed.xml"/>
+                    </outline>
+                    </body>
+                </opml>
+            """,
+        }
 
 
 class TestMyView(unittest.TestCase):
@@ -56,64 +134,6 @@ class TestMyView(unittest.TestCase):
         celery_config.registry = Mock()
         celery_config.registry.settings = celery_settings
         pyramid_celery.includeme(celery_config)
-        proxies = {'http': '%s:%d' % (PROXY_URL, PROXY_PORT)}
-        handler = urllib2.ProxyHandler(proxies)
-        self.config.add_settings({'urllib2_handlers': [handler]})
-
-    @classmethod
-    def setUpClass(cls):
-        html = """
-        <html>
-            <head>
-                <link rel="alternate"
-                      type="application/rss+xml"
-                      title="RSS Title"
-                      href="./rss.xml">
-                </link>
-            </head>
-            <body>
-            </body>
-        <html>
-        """
-        html_noalt = """
-        <html>
-            <head>
-            </head>
-            <body>
-            </body>
-        <html>
-        """
-        feed = """
-        <?xml version="1.0" encoding="utf-8"?>
-        <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
-            <channel>
-                <title>Feed title</title>
-                <link>Feed link</link>
-                <description>Feed description</description>
-                <item>
-                    <title>Title 1</title>
-                    <link>Link 1</link>
-                    <description>Description 1</description>
-                </item>
-                <item>
-                    <title>Title 2</title>
-                    <link>Link 2</link>
-                    <description>Description 2</description>
-                </item>
-                <item>
-                    <title>Title 3</title>
-                    <link>Link 3</link>
-                    <description>Description 3</description>
-                </item>
-            </channel>
-        </rss>
-        """
-        routes = {'/page.html': html,
-                  '/rss.xml': feed,
-                  '/noalt.html': html_noalt,
-                  }
-        cls.proxy = TestProxy(routes, (PROXY_URL, PROXY_PORT))
-        cls.proxy.start()
 
     def tearDown(self):
         DBSession.remove()
@@ -154,8 +174,12 @@ class TestMyView(unittest.TestCase):
         resp = view()
         self.assertIsInstance(resp, HTTPFound)
 
+    @httprettified
     def test_addfeed(self):
         url = 'http://example.com/doesnotexist.xml'
+        HTTPretty.register_uri(HTTPretty.GET, url,
+                               body=DOCS['feed'],
+                               content_type="text/html")
         params = dict(url=url,
                       save='submit')
         request = testing.DummyRequest(params)
@@ -168,22 +192,11 @@ class TestMyView(unittest.TestCase):
         sub = DBSession.query(Subscription).get(feed_id)
         self.assertIsNotNone(sub)
 
-    def test_importopml(self):
-        opml = """<?xml version="1.0" encoding="UTF-8"?>
-        <opml version="1.0">
-            <head>
-                <title>OPML feed example</title>
-            </head>
-            <body>
-                <outline text="Feed A text" title="Feed A" type="rss"
-                    xmlUrl="http://feeda.example.com/feed.xml"
-                    htmlUrl="http://feeda.example.com/feed.xml"/>
-                <outline text="Feed B text" title="Feed B" type="rss"
-                    xmlUrl="http://feedb.example.com/feed.xml"
-                    htmlUrl="http://feedb.example.com/feed.xml"/>
-                </body>
-            </opml>
-        """
+    def _opml(self, opml, urls, feed):
+        for u in urls:
+            HTTPretty.register_uri(HTTPretty.GET, u,
+                                   body=feed,
+                                   content_type='application/rss+xml')
         upload = Mock()
         upload.file = StringIO(opml)
         upload.filename = 'opml.xml'
@@ -191,52 +204,53 @@ class TestMyView(unittest.TestCase):
         request = testing.DummyRequest(post=params)
         view = OPMLImportView(request)
         response = view()
+        return response
+
+    @httprettified
+    def test_importopml(self):
+        urls = ['http://feeda.example.com/feed.xml',
+                'http://feedb.example.com/feed.xml']
+        response = self._opml(DOCS['opml'], urls, DOCS['feed'])
         self.assertIn('2 feeds imported', response.text)
 
+    @httprettified
     def test_import_deep(self):
-        opml = """<?xml version="1.0" encoding="UTF-8"?>
-        <opml version="1.0">
-            <head>
-                <title>OPML feed example</title>
-            </head>
-            <body>
-                <outline title="Category A" text="Category A text">
-                    <outline text="Feed A1 text" title="Feed A1" type="rss"
-                        xmlUrl="http://feeda1.example.com/feed.xml"
-                        htmlUrl="http://feeda1.example.com/feed.xml"/>
-                    <outline text="Feed A2 text" title="Feed A2" type="rss"
-                        xmlUrl="http://feeda2.example.com/feed.xml"
-                        htmlUrl="http://feeda2.example.com/feed.xml"/>
-                </outline>
-                <outline title="Category B" text="Category B text">
-                    <outline text="Feed B1 text" title="Feed B1" type="rss"
-                        xmlUrl="http://feedb1.example.com/feed.xml"
-                        htmlUrl="http://feedb1.example.com/feed.xml"/>
-                    <outline text="Feed B2 text" title="Feed B2" type="rss"
-                        xmlUrl="http://feedb2.example.com/feed.xml"
-                        htmlUrl="http://feedb2.example.com/feed.xml"/>
-                </outline>
-                </body>
-            </opml>
-        """
-        upload = Mock()
-        upload.file = StringIO(opml)
-        upload.filename = 'opml.xml'
-        params = {'opml': {'upload': upload}, 'import': 'submit'}
-        request = testing.DummyRequest(post=params)
-        view = OPMLImportView(request)
-        response = view()
+        urls = ["http://feeda1.example.com/feed.xml",
+                "http://feeda2.example.com/feed.xml",
+                "http://feedb1.example.com/feed.xml",
+                "http://feedb2.example.com/feed.xml",
+                ]
+        response = self._opml(DOCS['opml_deep'], urls, DOCS['feed'])
         self.assertIn('4 feeds imported', response.text)
 
+    @httprettified
     def test_discover(self):
         url = 'http://example.com/page.html'
+        HTTPretty.register_uri(HTTPretty.GET, url,
+                               body=DOCS['page'],
+                               content_type="text/html")
+        HTTPretty.register_uri(HTTPretty.GET, url,
+                               body=DOCS['feed'],
+                               content_type='application/rss+xml')
         request = testing.DummyRequest()
-        fid = import_feed(request, 'http://example.com/page.html')
+        fid = import_feed(request, url)
         items = DBSession.query(Item).filter(Item.feed == fid).all()
         self.assertEqual(len(items), 3)
 
+    @httprettified
     def test_discover_noalt(self):
-        url = 'http://example.com/page.html'
+        url = 'http://example.com/noalt.html'
+        html = """
+        <html>
+            <head>
+            </head>
+            <body>
+            </body>
+        <html>
+        """
+        HTTPretty.register_uri(HTTPretty.GET, url,
+                               body=html,
+                               content_type="text/html")
         request = testing.DummyRequest()
         fid = import_feed(request, url)
         # Should be deleted
