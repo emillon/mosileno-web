@@ -10,7 +10,7 @@ from mosileno.filter import lx
         <li><a href="#"><i class="icon-list"></i> Relevant</a></li>
         <li class="nav-header">Feeds</li>
 % for feed in feeds:
-        <li>${feed.title}</li>
+        <li><a href="#">${feed.title}</a></li>
 % endfor
     </ul>
 </nav>

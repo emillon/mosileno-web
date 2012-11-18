@@ -2,13 +2,13 @@
     <head>
         <title>Mosileno</title>
         <link rel="stylesheet"
-              href="${request.static_url('mosileno:static/bootstrap.css')}"
+              href="${request.static_url('mosileno:static/css/bootstrap.css')}"
               type="text/css"
               media="screen"
               charset="utf-8"
           />
         <link rel="stylesheet"
-              href="${request.static_url('mosileno:static/mosileno.css')}"
+              href="${request.static_url('mosileno:static/css/mosileno.css')}"
               type="text/css"
               media="screen"
               charset="utf-8"
