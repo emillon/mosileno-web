@@ -6,11 +6,11 @@ from mosileno.filter import lx
 <nav>
     <ul class="nav nav-list">
         <li class="nav-header">View</li>
-        <li class="${activelink('all')}"><a href="/feeds/my"><i class="icon-list"></i> All</a></li>
-        <li class="${activelink('relevant')}"><a href="#"><i class="icon-filter"></i> Filtered</a></li>
+        <li data-activeview="all"><a href="/feeds/my"><i class="icon-list"></i> All</a></li>
+        <li data-activeview="relevant"><a href="#"><i class="icon-filter"></i> Filtered</a></li>
         <li class="nav-header">Feeds</li>
 % for feed in feeds:
-        <li class="${activelink('feed%d' % feed.id)}" ><a href="/feed/${feed.id}">${feed.title}</a></li>
+        <li data-activeview="${'feed%d' % feed.id}"><a href="/feed/${feed.id}">${feed.title}</a></li>
 % endfor
     </ul>
 </nav>
@@ -37,3 +37,8 @@ from mosileno.filter import lx
     </div>
 % endfor
 </div>
+%if activeview:
+      <script type="text/javascript">
+          $('[data-activeview="${activeview}"]').addClass('active');
+      </script>
+%endif

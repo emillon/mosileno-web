@@ -231,7 +231,7 @@ def view_feedadd(request):
     return tpl(request, **d)
 
 
-def _view_items(request, user, items, activelink=None):
+def _view_items(request, user, items, activeview=None):
     """
     Retrieve and display a list of feed items.
 
@@ -242,8 +242,7 @@ def _view_items(request, user, items, activelink=None):
                   (item, feed title)
 
     Keyword arguments
-        activelink : a function to set class=active
-                     (returns a boolean)
+        activeview : the data-activeview value that will be set class=active
                      (default: highlight none)
 
     Returns
@@ -253,18 +252,11 @@ def _view_items(request, user, items, activelink=None):
     feeds = DBSession.query(Feed)\
                      .join(Subscription)\
                      .filter(Subscription.user == user.id)
-    if activelink is None:
-        activelink = lambda s: False
 
-    def activestring(s):
-        if activelink(s):
-            return 'active'
-        else:
-            return ''
     return tpl(request,
                items=items,
                feeds=feeds,
-               activelink=activestring,
+               activeview=activeview,
                activetab='myfeeds',
                )
 
@@ -283,10 +275,7 @@ def view_myfeeds(request):
                      .filter(Subscription.user == user.id)\
                      .order_by(Item.date.desc())\
                      .limit(20)
-
-    def activelink(s):
-        return s == 'all'
-    return _view_items(request, user, items, activelink=activelink)
+    return _view_items(request, user, items, activeview='all')
 
 
 @view_config(route_name='feedview',
@@ -309,7 +298,6 @@ def view_feed(request):
 
     items = DBSession.query(Item).filter(Item.feed == subs[0].feed)
 
-    def activelink(s):
-        return s == 'feed%s' % feedid
+    activeview = 'feed%s' % feedid
 
-    return _view_items(request, user, items, activelink=activelink)
+    return _view_items(request, user, items, activeview=activeview)

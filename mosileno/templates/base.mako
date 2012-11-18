@@ -74,5 +74,10 @@
           $('[data-tabname="${activetab}"]').addClass('active');
       </script>
 % endif
+% if activeview:
+      <script type="text/javascript">
+          $('[data-activeview="${activeview}"]').addClass('active');
+      </script>
+% endif
     </body>
 </html>
