@@ -22,11 +22,16 @@ from deform.widget import (
     HiddenWidget,
 )
 from deform.schema import FileData
+from deform import (
+    Form,
+    ValidationFailure,
+)
 from urlparse import urlparse
 
 from .tasks import fetch_title, import_feed
 
 import opml
+import itertools
 
 from sqlalchemy.exc import DBAPIError
 
@@ -135,21 +140,19 @@ class SignupView(TemplatedFormView):
         return HTTPFound(location='/',
                          headers=headers)
 
+class FeedAddSchema(Schema):
+    url = SchemaNode(String())
 
-@view_config(route_name='feedadd',
-             renderer='form.mako',
-             permission='edit',
-             )
+def feed_add_success(request, appstruct):
+    url = appstruct['url']
+    import_feed(request, url)
+
 class FeedAddView(TemplatedFormView):
-    class FeedSchema(Schema):
-        url = SchemaNode(String())
-    schema = FeedSchema()
-    buttons = ('save',)
+    schema = FeedAddSchema()
+    buttons = ('add',)
 
-    def save_success(self, appstruct):
-        url = appstruct['url']
-        import_feed(self.request, url)
-
+    def add_success(self, appstruct):
+        return feed_add_success(self.request, appstruct)
 
 # TODO this leaks memory,
 # See FileUploadTempStore on
@@ -158,35 +161,82 @@ class MemoryTmpStore(dict):
     def preview_url(self, name):
         return None
 
+class OPMLImportSchema(Schema):
+    opml = SchemaNode(FileData(),
+                      widget=FileUploadWidget(MemoryTmpStore()))
 
-@view_config(route_name='opmlimport',
-             renderer='form.mako',
-             permission='edit',
-             )
+def opml_import_success(request, appstruct):
+    opml_file = appstruct['opml']
+    opml_data = opml_file['fp']
+    outline = opml.parse(opml_data)
+    worklist = [e for e in outline]
+    n = 0
+    while worklist:
+        element = worklist.pop(0)
+        if hasattr(element, 'xmlUrl'):
+            url = element.xmlUrl
+            import_feed(request, url)
+            n += 1
+        else:
+            worklist += element
+    msg = '%d feeds imported' % n
+    return Response(msg)
+
 class OPMLImportView(TemplatedFormView):
-    class OPMLImportSchema(Schema):
-        opml = SchemaNode(FileData(),
-                          widget=FileUploadWidget(MemoryTmpStore()))
     schema = OPMLImportSchema()
     buttons = ('import',)
 
     def import_success(self, appstruct):
-        opml_file = appstruct['opml']
-        opml_data = opml_file['fp']
-        outline = opml.parse(opml_data)
-        worklist = [e for e in outline]
-        n = 0
-        while worklist:
-            element = worklist.pop(0)
-            if hasattr(element, 'xmlUrl'):
-                url = element.xmlUrl
-                import_feed(self.request, url)
-                n += 1
-            else:
-                worklist += element
-        msg = '%d feeds imported' % n
-        return Response(msg)
+        return opml_import_success(self.request, appstruct)
 
+@view_config(route_name='feedadd',
+             renderer='form.mako',
+             permission='edit',
+             )
+def view_feedadd(request):
+
+    counter= itertools.count()
+
+    form1 = Form(FeedAddSchema(), buttons=('add',), formid='form1', counter=counter)
+    form1_success = feed_add_success
+    form2 = Form(OPMLImportSchema(), buttons=('import',), formid='form2', counter=counter)
+    form2_success = opml_import_success
+
+    forms = [('form1', form1, form1_success),
+             ('form2', form2, form2_success)
+             ]
+
+    html = []
+    captured = None
+
+    if 'import' in request.POST or 'add' in request.POST:
+        posted_formid = request.POST['__formid__']
+        for (formid, form, on_success) in forms:
+            if formid == posted_formid:
+                try:
+                    controls = request.POST.items()
+                    appstruct = form.validate(controls)
+                    html.append(form.render(appstruct))
+                    on_success(request, appstruct)
+                except ValidationFailure as e:
+                    # the submitted values could not be validated
+                    html.append(e.render())
+            else:
+                html.append(form.render())
+    else:
+        for (_, form, _) in forms:
+            html.append(form.render())
+
+    html = ''.join(html)
+
+    # values passed to template for rendering
+    d = {
+        'form':html,
+        'captured':repr(captured),
+        'showmenu':True,
+        'title':'Multiple Forms on the Same Page',
+        }
+    return tpl(request, **d)
 
 def _view_items(request, user, items, activelink=None):
     """

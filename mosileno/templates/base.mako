@@ -42,8 +42,7 @@
             <div class="nav-collapse">
               <ul class="nav">
                 <li class="active"><a href="#">Home</a></li>
-                <li><a href="/feed/add">Add a feed</a></li>
-                <li><a href="/feed/add/opml">Import OPML file</a></li>
+                <li><a href="/feed/add">Add a source</a></li>
                 <li><a href="/feeds/my">My feeds</a></li>
               </ul>
               <ul class="nav pull-right">

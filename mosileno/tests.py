@@ -29,6 +29,7 @@ from .views import (
     logout,
     SignupView,
     FeedAddView,
+    view_feedadd,
     OPMLImportView,
 )
 
@@ -180,11 +181,12 @@ class TestMyView(unittest.TestCase):
         HTTPretty.register_uri(HTTPretty.GET, url,
                                body=DOCS['feed'],
                                content_type="text/html")
-        params = dict(url=url,
-                      save='submit')
+        params = { 'url':url,
+                   'add':'submit',
+                   '__formid__': 'form1',
+                 }
         request = testing.DummyRequest(params)
-        view = FeedAddView(request)
-        view()
+        view_feedadd(request)
         find_feed = DBSession.query(Feed).filter(Feed.url == url)
         count_f = find_feed.count()
         self.assertEqual(count_f, 1)
