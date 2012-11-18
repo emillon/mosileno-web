@@ -202,4 +202,7 @@ def view_myfeeds(request):
                      .order_by(Item.date.desc())\
                      .limit(20)
     items = [(i, "collapse%d" % n) for (n, i) in enumerate(items)]
-    return tpl(request, items=items)
+    feeds = DBSession.query(Feed)\
+                     .join(Subscription)\
+                     .filter(Subscription.user == user.id)
+    return tpl(request, items=items, feeds=feeds)

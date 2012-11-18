@@ -7,6 +7,12 @@
               media="screen"
               charset="utf-8"
           />
+        <link rel="stylesheet"
+              href="${request.static_url('mosileno:static/mosileno.css')}"
+              type="text/css"
+              media="screen"
+              charset="utf-8"
+          />
           % for reqt in (css_links or []):
             <link rel="stylesheet"
                   href="${request.static_url('deform:static/%s' % reqt)}"

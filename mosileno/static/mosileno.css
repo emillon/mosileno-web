@@ -1,0 +1,13 @@
+nav {
+    position: absolute;
+    top: 50px;
+    left: 10px;
+    width: 150px;
+
+}
+
+nav .nav-list {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow:ellipsis;
+}
