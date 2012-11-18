@@ -28,9 +28,7 @@ from .views import (
     view_home,
     logout,
     SignupView,
-    FeedAddView,
     view_feedadd,
-    OPMLImportView,
 )
 
 from .tasks import import_feed
@@ -202,10 +200,12 @@ class TestMyView(unittest.TestCase):
         upload = Mock()
         upload.file = StringIO(opml)
         upload.filename = 'opml.xml'
-        params = {'opml': {'upload': upload}, 'import': 'submit'}
+        params = {'opml': {'upload': upload},
+                  'import': 'submit',
+                  '__formid__': 'form2',
+                  }
         request = testing.DummyRequest(post=params)
-        view = OPMLImportView(request)
-        response = view()
+        response = view_feedadd (request)
         return response
 
     @httprettified
@@ -213,7 +213,7 @@ class TestMyView(unittest.TestCase):
         urls = ['http://feeda.example.com/feed.xml',
                 'http://feedb.example.com/feed.xml']
         response = self._opml(DOCS['opml'], urls, DOCS['feed'])
-        self.assertIn('2 feeds imported', response.text)
+        self.assertIn('2 feeds imported', response['info'])
 
     @httprettified
     def test_import_deep(self):
@@ -223,7 +223,7 @@ class TestMyView(unittest.TestCase):
                 "http://feedb2.example.com/feed.xml",
                 ]
         response = self._opml(DOCS['opml_deep'], urls, DOCS['feed'])
-        self.assertIn('4 feeds imported', response.text)
+        self.assertIn('4 feeds imported', response['info'])
 
     @httprettified
     def test_discover(self):

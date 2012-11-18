@@ -140,54 +140,12 @@ class SignupView(TemplatedFormView):
         return HTTPFound(location='/',
                          headers=headers)
 
-class FeedAddSchema(Schema):
-    url = SchemaNode(String())
-
-def feed_add_success(request, appstruct):
-    url = appstruct['url']
-    import_feed(request, url)
-
-class FeedAddView(TemplatedFormView):
-    schema = FeedAddSchema()
-    buttons = ('add',)
-
-    def add_success(self, appstruct):
-        return feed_add_success(self.request, appstruct)
-
 # TODO this leaks memory,
 # See FileUploadTempStore on
 # http://docs.pylonsproject.org/projects/deform/en/latest/interfaces.html
 class MemoryTmpStore(dict):
     def preview_url(self, name):
         return None
-
-class OPMLImportSchema(Schema):
-    opml = SchemaNode(FileData(),
-                      widget=FileUploadWidget(MemoryTmpStore()))
-
-def opml_import_success(request, appstruct):
-    opml_file = appstruct['opml']
-    opml_data = opml_file['fp']
-    outline = opml.parse(opml_data)
-    worklist = [e for e in outline]
-    n = 0
-    while worklist:
-        element = worklist.pop(0)
-        if hasattr(element, 'xmlUrl'):
-            url = element.xmlUrl
-            import_feed(request, url)
-            n += 1
-        else:
-            worklist += element
-    msg = '%d feeds imported' % n
-    return Response(msg)
-
-class OPMLImportView(TemplatedFormView):
-    schema = OPMLImportSchema()
-    buttons = ('import',)
-
-    def import_success(self, appstruct):
-        return opml_import_success(self.request, appstruct)
 
 @view_config(route_name='feedadd',
              renderer='form.mako',
@@ -197,17 +155,41 @@ def view_feedadd(request):
 
     counter= itertools.count()
 
+    class FeedAddSchema(Schema):
+        url = SchemaNode(String())
     form1 = Form(FeedAddSchema(), buttons=('add',), formid='form1', counter=counter)
-    form1_success = feed_add_success
+    def form1_success(request, appstruct):
+        url = appstruct['url']
+        import_feed(request, url)
+        return 'Feed imported'
+
+    class OPMLImportSchema(Schema):
+        opml = SchemaNode(FileData(),
+                          widget=FileUploadWidget(MemoryTmpStore()))
     form2 = Form(OPMLImportSchema(), buttons=('import',), formid='form2', counter=counter)
-    form2_success = opml_import_success
+    def form2_success(request, appstruct):
+        opml_file = appstruct['opml']
+        opml_data = opml_file['fp']
+        outline = opml.parse(opml_data)
+        worklist = [e for e in outline]
+        n = 0
+        while worklist:
+            element = worklist.pop(0)
+            if hasattr(element, 'xmlUrl'):
+                url = element.xmlUrl
+                import_feed(request, url)
+                n += 1
+            else:
+                worklist += element
+        return '%d feeds imported' % n
+
 
     forms = [('form1', form1, form1_success),
              ('form2', form2, form2_success)
              ]
 
     html = []
-    captured = None
+    info = []
 
     if 'import' in request.POST or 'add' in request.POST:
         posted_formid = request.POST['__formid__']
@@ -216,8 +198,9 @@ def view_feedadd(request):
                 try:
                     controls = request.POST.items()
                     appstruct = form.validate(controls)
+                    msg = on_success(request, appstruct)
+                    info.append(msg)
                     html.append(form.render(appstruct))
-                    on_success(request, appstruct)
                 except ValidationFailure as e:
                     # the submitted values could not be validated
                     html.append(e.render())
@@ -232,7 +215,7 @@ def view_feedadd(request):
     # values passed to template for rendering
     d = {
         'form':html,
-        'captured':repr(captured),
+        'info':info,
         'showmenu':True,
         'title':'Multiple Forms on the Same Page',
         }
