@@ -11,3 +11,17 @@ nav .nav-list {
     overflow: hidden;
     text-overflow:ellipsis;
 }
+
+.itemheader {
+    border-bottom: solid 1px #ddd;
+}
+
+.itemtitle {
+    display: inline;
+}
+
+.itemfeed {
+    display: inline;
+    color: #777;
+    padding-right: 10px;
+}

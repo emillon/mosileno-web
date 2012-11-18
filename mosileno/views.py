@@ -195,7 +195,8 @@ def _view_items(request, user, items, activelink=None):
     Arguments
         request : the current request
         user    : the user currently logged in
-        items   : the items to display
+        items   : the items to display, as a list of
+                  (item, feed title)
 
     Keyword arguments
         activelink : a function to set class=active
@@ -205,7 +206,7 @@ def _view_items(request, user, items, activelink=None):
     Returns
         a dictionary meant to be rendered by itemlist.mako.
     """
-    items = [(i, "collapse%d" % n) for (n, i) in enumerate(items)]
+    items = [(i, "collapse%d" % n, t) for (n, (i, t)) in enumerate(items)]
     feeds = DBSession.query(Feed)\
                      .join(Subscription)\
                      .filter(Subscription.user == user.id)
@@ -228,6 +229,7 @@ def view_myfeeds(request):
     me = authenticated_userid(request)
     user = DBSession.query(User).filter(User.name == me).one()
     items = DBSession.query(Item)\
+                     .add_columns(Feed.title)\
                      .join(Feed)\
                      .join(Subscription)\
                      .filter(Subscription.user == user.id)\
