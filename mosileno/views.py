@@ -140,6 +140,7 @@ class SignupView(TemplatedFormView):
         return HTTPFound(location='/',
                          headers=headers)
 
+
 # TODO this leaks memory,
 # See FileUploadTempStore on
 # http://docs.pylonsproject.org/projects/deform/en/latest/interfaces.html
@@ -147,17 +148,22 @@ class MemoryTmpStore(dict):
     def preview_url(self, name):
         return None
 
+
 @view_config(route_name='feedadd',
              renderer='form.mako',
              permission='edit',
              )
 def view_feedadd(request):
 
-    counter= itertools.count()
+    counter = itertools.count()
 
     class FeedAddSchema(Schema):
         url = SchemaNode(String())
-    form1 = Form(FeedAddSchema(), buttons=('add',), formid='form1', counter=counter)
+    form1 = Form(FeedAddSchema(),
+                 buttons=('add',),
+                 formid='form1',
+                 counter=counter)
+
     def form1_success(request, appstruct):
         url = appstruct['url']
         import_feed(request, url)
@@ -166,7 +172,11 @@ def view_feedadd(request):
     class OPMLImportSchema(Schema):
         opml = SchemaNode(FileData(),
                           widget=FileUploadWidget(MemoryTmpStore()))
-    form2 = Form(OPMLImportSchema(), buttons=('import',), formid='form2', counter=counter)
+    form2 = Form(OPMLImportSchema(),
+                 buttons=('import',),
+                 formid='form2',
+                 counter=counter)
+
     def form2_success(request, appstruct):
         opml_file = appstruct['opml']
         opml_data = opml_file['fp']
@@ -182,7 +192,6 @@ def view_feedadd(request):
             else:
                 worklist += element
         return '%d feeds imported' % n
-
 
     forms = [('form1', form1, form1_success),
              ('form2', form2, form2_success)
@@ -213,13 +222,13 @@ def view_feedadd(request):
     html = ''.join(html)
 
     # values passed to template for rendering
-    d = {
-        'form':html,
-        'info':info,
-        'showmenu':True,
-        'title':'Multiple Forms on the Same Page',
-        }
+    d = {'form': html,
+         'info': info,
+         'showmenu': True,
+         'title': 'Import a source',
+         }
     return tpl(request, **d)
+
 
 def _view_items(request, user, items, activelink=None):
     """

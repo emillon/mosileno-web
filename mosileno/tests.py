@@ -179,10 +179,10 @@ class TestMyView(unittest.TestCase):
         HTTPretty.register_uri(HTTPretty.GET, url,
                                body=DOCS['feed'],
                                content_type="text/html")
-        params = { 'url':url,
-                   'add':'submit',
-                   '__formid__': 'form1',
-                 }
+        params = {'url': url,
+                  'add': 'submit',
+                  '__formid__': 'form1',
+                  }
         request = testing.DummyRequest(params)
         view_feedadd(request)
         find_feed = DBSession.query(Feed).filter(Feed.url == url)
@@ -205,7 +205,7 @@ class TestMyView(unittest.TestCase):
                   '__formid__': 'form2',
                   }
         request = testing.DummyRequest(post=params)
-        response = view_feedadd (request)
+        response = view_feedadd(request)
         return response
 
     @httprettified
