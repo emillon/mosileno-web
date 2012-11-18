@@ -1,8 +1,8 @@
 nav {
     position: absolute;
     top: 50px;
-    left: 10px;
-    width: 150px;
+    right: 60px;
+    width: 170px;
 
 }
 
@@ -10,4 +10,22 @@ nav .nav-list {
     white-space: nowrap;
     overflow: hidden;
     text-overflow:ellipsis;
+}
+
+.itemheader {
+    border-bottom: solid 1px #ddd;
+}
+
+.itemtitle {
+    display: inline;
+}
+
+.itemfeed {
+    display: inline;
+    color: #777;
+    padding-right: 10px;
+}
+
+#maincontainer {
+    margin-left: 90px;
 }

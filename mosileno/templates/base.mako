@@ -59,7 +59,7 @@
         </div><!-- /navbar-inner -->
       </div><!-- /navbar -->
 
-      <div class="container">
+      <div id='maincontainer' class="container">
         ${self.body()}
       </div>
 
