@@ -273,7 +273,7 @@ def _view_items(request, user, items, activeview=None):
                items=items,
                feeds=feeds,
                activeview=activeview,
-               activetab='myfeeds',
+               activetab='home',
                )
 
 

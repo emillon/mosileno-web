@@ -43,7 +43,6 @@
               <ul class="nav">
                 <li data-tabname="home"><a href="/">Home</a></li>
                 <li data-tabname="addsrc"><a href="/feed/add">Add a source</a></li>
-                <li data-tabname="myfeeds"><a href="/feeds/my">My feeds</a></li>
               </ul>
               <ul class="nav pull-right">
                 % if logged_in is None:
