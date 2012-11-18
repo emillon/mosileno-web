@@ -187,7 +187,7 @@ class OPMLImportView(TemplatedFormView):
         msg = '%d feeds imported' % n
         return Response(msg)
 
-def _view_items(request, user, items):
+def _view_items(request, user, items, activelink=None):
     """
     Retrieve and display a list of feed items.
 
@@ -196,6 +196,11 @@ def _view_items(request, user, items):
         user    : the user currently logged in
         items   : the items to display
 
+    Keyword arguments
+        activelink : a function to set class=active
+                     (returns a boolean)
+                     (default: highlight none)
+
     Returns
         a dictionary meant to be rendered by itemlist.mako.
     """
@@ -203,7 +208,14 @@ def _view_items(request, user, items):
     feeds = DBSession.query(Feed)\
                      .join(Subscription)\
                      .filter(Subscription.user == user.id)
-    return tpl(request, items=items, feeds=feeds)
+    if activelink is None:
+        activelink = lambda s: False
+    def activestring(s):
+        if activelink(s):
+            return 'active'
+        else:
+            return ''
+    return tpl(request, items=items, feeds=feeds, activelink=activestring)
 
 @view_config(route_name='myfeeds',
              renderer='itemlist.mako',
@@ -218,7 +230,9 @@ def view_myfeeds(request):
                      .filter(Subscription.user == user.id)\
                      .order_by(Item.date.desc())\
                      .limit(20)
-    return _view_items(request, user, items)
+    def activelink(s):
+        return s == 'all'
+    return _view_items(request, user, items, activelink=activelink)
 
 @view_config(route_name='feedview',
              renderer='itemlist.mako',
@@ -240,4 +254,7 @@ def view_feed(request):
 
     items = DBSession.query(Item).filter(Item.feed == subs[0].feed)
 
-    return _view_items(request, user, items)
+    def activelink(s):
+        return s == 'feed%s' % feedid
+
+    return _view_items(request, user, items, activelink=activelink)
