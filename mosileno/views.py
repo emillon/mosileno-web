@@ -187,6 +187,23 @@ class OPMLImportView(TemplatedFormView):
         msg = '%d feeds imported' % n
         return Response(msg)
 
+def _view_items(request, user, items):
+    """
+    Retrieve and display a list of feed items.
+
+    Arguments
+        request : the current request
+        user    : the user currently logged in
+        items   : the items to display
+
+    Returns
+        a dictionary meant to be rendered by itemlist.mako.
+    """
+    items = [(i, "collapse%d" % n) for (n, i) in enumerate(items)]
+    feeds = DBSession.query(Feed)\
+                     .join(Subscription)\
+                     .filter(Subscription.user == user.id)
+    return tpl(request, items=items, feeds=feeds)
 
 @view_config(route_name='myfeeds',
              renderer='itemlist.mako',
@@ -201,8 +218,26 @@ def view_myfeeds(request):
                      .filter(Subscription.user == user.id)\
                      .order_by(Item.date.desc())\
                      .limit(20)
-    items = [(i, "collapse%d" % n) for (n, i) in enumerate(items)]
-    feeds = DBSession.query(Feed)\
-                     .join(Subscription)\
-                     .filter(Subscription.user == user.id)
-    return tpl(request, items=items, feeds=feeds)
+    return _view_items(request, user, items)
+
+@view_config(route_name='feedview',
+             renderer='itemlist.mako',
+             permission='edit',
+             )
+def view_feed(request):
+    feedid = request.matchdict['feedid']
+    me = authenticated_userid(request)
+    user = DBSession.query(User).filter(User.name == me).one()
+
+    # check that we're allowed
+    subs = DBSession.query(Subscription)\
+                    .filter(Subscription.user == user.id)\
+                    .filter(Subscription.feed == feedid)\
+                    .all()
+
+    if len(subs) != 1:
+        return tpl(request) # Better than nothing. TODO add an error message
+
+    items = DBSession.query(Item).filter(Item.feed == subs[0].feed)
+
+    return _view_items(request, user, items)
