@@ -10,7 +10,10 @@ from pyramid.security import (
     authenticated_userid
 )
 from pyramid_deform import FormView
-from pyramid.renderers import get_renderer
+from pyramid.renderers import (
+    get_renderer,
+    render,
+)
 from colander import (
     Schema,
     SchemaNode,
@@ -70,9 +73,22 @@ def tpl(request, **kwargs):
     return dict(kwargs.items() + args.items())
 
 
-@view_config(route_name='home', renderer='page.mako')
+@view_config(route_name='home')
 def view_home(request):
-    return tpl(request, content='Welcome !', activetab='home')
+    rsp = None
+    logged_in = authenticated_userid(request)
+    if not logged_in:
+        rsp = render('page.mako',
+                     {'activetab': 'home',
+                      'logged_in': authenticated_userid(request),
+                      'content': 'Welcome !',
+                      },
+                     request)
+    else:
+        data = view_myfeeds(request)
+        data['logged_in'] = authenticated_userid(request)
+        rsp = render('itemlist.mako', data, request)
+    return Response(rsp)
 
 
 class TemplatedFormView(FormView):
@@ -261,10 +277,6 @@ def _view_items(request, user, items, activeview=None):
                )
 
 
-@view_config(route_name='myfeeds',
-             renderer='itemlist.mako',
-             permission='edit',
-             )
 def view_myfeeds(request):
     me = authenticated_userid(request)
     user = DBSession.query(User).filter(User.name == me).one()

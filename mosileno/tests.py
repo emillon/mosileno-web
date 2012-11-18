@@ -322,21 +322,17 @@ class FunctionalTests(unittest.TestCase):
         """
         self.test_redirect(url='/login', redir_url='/')
 
-    def test_myfeeds(self):
+    def test_root(self):
         """
-        When accessing 'my feeds':
-          - redirect to login if not authed, login and in all cases
-          - gives the links defined in setUpClass
+        Test root route (/)
+
+        On homepage :
+          - Display a landing page (welcome !)
+          - Display a login link
         """
-        res = self.testapp.get('/feeds/my')
-        if 'Login' in res.body:
-            self.assertIn('Password', res.body)
-            username = 'alfred'
-            password = 'alfred'
-            res = self._register_user(username, password)
-            self.assertEqual(res.status_code, 302)
-        if 'Logout' in res.body:
-            self.assertIn('Title 1', res.body)
+        res = self.testapp.get('/')
+        self.assertIn('Welcome !', res.body)
+        self.assertIn('Login', res.body)
 
     def test_login_on_signup(self):
         res = self._register_user('robert', 'robert')
