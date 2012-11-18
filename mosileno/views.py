@@ -72,7 +72,7 @@ def tpl(request, **kwargs):
 
 @view_config(route_name='home', renderer='page.mako')
 def view_home(request):
-    return tpl(request, content='Welcome !')
+    return tpl(request, content='Welcome !', activetab='home')
 
 
 class TemplatedFormView(FormView):
@@ -226,6 +226,7 @@ def view_feedadd(request):
          'info': info,
          'showmenu': True,
          'title': 'Import a source',
+         'activetab': 'addsrc'
          }
     return tpl(request, **d)
 
@@ -260,7 +261,12 @@ def _view_items(request, user, items, activelink=None):
             return 'active'
         else:
             return ''
-    return tpl(request, items=items, feeds=feeds, activelink=activestring)
+    return tpl(request,
+               items=items,
+               feeds=feeds,
+               activelink=activestring,
+               activetab='myfeeds',
+               )
 
 
 @view_config(route_name='myfeeds',

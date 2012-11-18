@@ -41,9 +41,9 @@
             </a>
             <div class="nav-collapse">
               <ul class="nav">
-                <li class="active"><a href="#">Home</a></li>
-                <li><a href="/feed/add">Add a source</a></li>
-                <li><a href="/feeds/my">My feeds</a></li>
+                <li data-tabname="home"><a href="/">Home</a></li>
+                <li data-tabname="addsrc"><a href="/feed/add">Add a source</a></li>
+                <li data-tabname="myfeeds"><a href="/feeds/my">My feeds</a></li>
               </ul>
               <ul class="nav pull-right">
                 % if logged_in is None:
@@ -69,5 +69,10 @@
       <script type="text/javascript"
               src="${request.static_url('mosileno:static/bootstrap.min.js')}"
        ></script>
+% if activetab:
+      <script type="text/javascript">
+          $('[data-tabname="${activetab}"]').addClass('active');
+      </script>
+% endif
     </body>
 </html>
