@@ -37,8 +37,3 @@ from mosileno.filter import lx
     </div>
 % endfor
 </div>
-%if activeview:
-      <script type="text/javascript">
-          $('[data-activeview="${activeview}"]').addClass('active');
-      </script>
-%endif
