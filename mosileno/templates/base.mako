@@ -1,6 +1,9 @@
 <html>
     <head>
         <title>Mosileno</title>
+        <link rel="shortcut icon"
+              href="${request.static_url('mosileno:static/favicon.ico')}"
+          />
         <link rel="stylesheet"
               href="${request.static_url('mosileno:static/css/bootstrap.css')}"
               type="text/css"
