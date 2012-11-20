@@ -97,6 +97,11 @@ class TemplatedFormView(FormView):
     It also displays self.errors in an alert box.
     """
 
+    def __init__(self, request):
+        super(FormView, self).__init__()
+        self.request = request
+        self.errors = []
+
     def show(self, form):
         d = FormView.show(self, form)
         d['errors'] = self.errors
