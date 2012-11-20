@@ -339,3 +339,19 @@ class FunctionalTests(unittest.TestCase):
         res = res.follow()
         self.assertIn('Logout', res.body)
         self.assertIn('robert', res.body)
+
+    def test_change_password(self):
+        oldpass = 'alphonse'
+        newpass = 'karr'
+        res = self._register_user('alphonse', oldpass)
+        res = res.follow()
+        res = self.testapp.get('/profile')
+        form = res.form
+        form['oldpass'] = oldpass
+        form['newpass'] = newpass
+        res = form.submit('submit')
+        res = self._logout().follow()
+        self.assertIn('Login', res.text)
+        res = self.testapp.get('/login')
+        res = self._login_helper('alphonse', newpass, res)
+        self.assertIn('Logout', res.text)
