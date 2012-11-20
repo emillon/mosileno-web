@@ -94,10 +94,12 @@ def view_home(request):
 class TemplatedFormView(FormView):
     """
     A subclass of Formview that fills the template parameters with tpl().
+    It also displays self.errors in an alert box.
     """
 
     def show(self, form):
         d = FormView.show(self, form)
+        d['errors'] = self.errors
         return tpl(self.request, **d)
 
 
@@ -129,6 +131,8 @@ class LoginView(TemplatedFormView):
             headers = remember(self.request, login)
             return HTTPFound(location=redir,
                              headers=headers)
+        else:
+            self.errors = ['Wrong username or password.']
 
 
 @view_config(route_name='logout')
