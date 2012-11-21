@@ -1,5 +1,7 @@
 import feedparser
 import transaction
+import unidecode
+import re
 
 from .models import (
     DBSession,
@@ -28,6 +30,11 @@ def import_feed(request, url):
     return feed.id
 
 
+def slugify(s):
+    s = unidecode.unidecode(s).lower()
+    return re.sub(r'\W+', '-', s)
+
+
 @task
 def fetch_title(feed_id):
     feedObj = DBSession.query(Feed).get(feed_id)
@@ -35,7 +42,13 @@ def fetch_title(feed_id):
         raise fetch_title.retry(countdown=3)
     feed = feedparser.parse(feedObj.url)
     if hasattr(feed.feed, 'title'):
-        feedObj.title = feed.feed.title
+        title = feed.feed.title
+        feedObj.title = title
+        slug = slugify(title)
+        already_in = DBSession.query(Feed).filter_by(slug=slug).first()
+        if already_in:
+            slug = "%s%d" % (slug, feedObj.id)
+        feedObj.slug = slug
         transaction.commit()
         fetch_items.delay(feed_id)
     else:

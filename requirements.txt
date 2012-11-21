@@ -11,6 +11,7 @@ pyramid-debugtoolbar
 pyramid-deform
 pyramid-tm
 SQLAlchemy
+unidecode
 waitress
 webtest
 zope.sqlalchemy

@@ -310,8 +310,9 @@ def view_myfeeds(request):
              permission='edit',
              )
 def view_feed(request):
-    feedid = request.matchdict['feedid']
-    feedObj = DBSession.query(Feed).get(feedid)
+    slug = request.matchdict['slug']
+    feedObj = DBSession.query(Feed).filter_by(slug=slug).one()
+    feedid = feedObj.id
     me = authenticated_userid(request)
     user = DBSession.query(User).filter(User.name == me).one()
 

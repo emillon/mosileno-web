@@ -39,7 +39,7 @@ style="height:10px; vertical-align:middle"/>
                 <li data-activeview="relevant"><a href="#"><i class="icon-filter"></i> Filtered</a></li>
                 <li class="nav-header">Feeds</li>
         % for feed in feeds:
-                <li data-activeview="${'feed%d' % feed.id}"><a href="/feed/${feed.id}">${feed.title}</a></li>
+                <li data-activeview="${'feed-%s' % feed.slug}"><a href="/feed/${feed.slug}">${feed.title}</a></li>
         % endfor
             </ul>
     </div>
