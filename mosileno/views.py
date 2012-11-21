@@ -73,10 +73,12 @@ def tpl(request, **kwargs):
     return dict(kwargs.items() + args.items())
 
 @view_config(route_name='expandedview')
+#             renderer='expandview.mako') TODO?
 def view_expanded(request):
     return _templated_feeds_view('expandedview', request)
 
 @view_config(route_name='home')
+#             renderer='home.mako') TODO?
 def view_home(request):
     return _templated_feeds_view('home', request)
 
