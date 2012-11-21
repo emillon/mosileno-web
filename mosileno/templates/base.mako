@@ -65,14 +65,14 @@
         </div><!-- /navbar-inner -->
       </div><!-- /navbar -->
 
-      <div id='maincontainer' class="container">
-% if errors:
-% for error in errors:
-      <div class="alert alert-error">
-      ${error}
-      </div>
-% endfor
-% endif
+      <div id='maincontainer' class="container-fluid">
+        % if errors:
+        % for error in errors:
+            <div class="alert alert-error">
+            ${error}
+            </div>
+        % endfor
+        % endif
         ${self.body()}
       </div>
 
