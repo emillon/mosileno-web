@@ -97,7 +97,8 @@ def view_home(request):
 class TemplatedFormView(FormView):
     """
     A subclass of Formview that fills the template parameters with tpl().
-    It also displays self.errors in an alert box.
+    It also displays self.errors in an alert box and sets the active tab if an
+    'activetab' class parameter exists.
     """
 
     def __init__(self, request):
@@ -108,6 +109,8 @@ class TemplatedFormView(FormView):
     def show(self, form):
         d = FormView.show(self, form)
         d['errors'] = self.errors
+        if hasattr(self, 'activetab'):
+            d['activetab'] = self.activetab
         return tpl(self.request, **d)
 
 
@@ -345,6 +348,8 @@ class ProfileView(TemplatedFormView):
 
     schema = ProfileSchema()
     buttons = ('save',)
+
+    activetab = 'profile'
 
     def save_success(self, appstruct):
         login = authenticated_userid(self.request)

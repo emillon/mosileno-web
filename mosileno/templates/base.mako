@@ -56,7 +56,7 @@
                     <li><a href="/signup">Sign up</a></li>
                     <li><a href="/login">Login</a></li>
                 % else:
-                    <li><a href="/profile">You're ${logged_in}</a>
+                    <li data-tabname="profile"><a href="/profile">You're ${logged_in}</a>
                     <li><a href="/logout">Logout</a></li>
                 % endif
               </ul>
