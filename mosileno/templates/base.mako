@@ -18,6 +18,7 @@
               media="screen"
               charset="utf-8"
           />
+
           % for reqt in (css_links or []):
             <link rel="stylesheet"
                   href="${request.static_url('deform:static/%s' % reqt)}"
@@ -47,6 +48,7 @@
             <div class="nav-collapse">
               <ul class="nav">
                 <li data-tabname="home"><a href="/">Home</a></li>
+                <li data-tabname="expandedview"><a href="/">Expanded view</a></li>
                 <li data-tabname="addsrc"><a href="/feed/add">Add a source</a></li>
               </ul>
               <ul class="nav pull-right">
@@ -54,7 +56,7 @@
                     <li><a href="/signup">Sign up</a></li>
                     <li><a href="/login">Login</a></li>
                 % else:
-                    <li><a href=#>You're ${logged_in}</a>
+                    <li><a href="/profile">You're ${logged_in}</a>
                     <li><a href="/logout">Logout</a></li>
                 % endif
               </ul>
