@@ -1,5 +1,7 @@
 <html>
     <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
         <title>Mosileno</title>
         <link rel="shortcut icon"
               href="${request.static_url('mosileno:static/favicon.ico')}"
