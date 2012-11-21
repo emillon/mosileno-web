@@ -311,6 +311,7 @@ def view_myfeeds(request):
              )
 def view_feed(request):
     feedid = request.matchdict['feedid']
+    feedObj = DBSession.query(Feed).get(feedid)
     me = authenticated_userid(request)
     user = DBSession.query(User).filter(User.name == me).one()
 
@@ -324,6 +325,7 @@ def view_feed(request):
         return tpl(request)  # Better than nothing. TODO add an error message
 
     items = DBSession.query(Item).filter(Item.feed == subs[0].feed)
+    items = [(i, feedObj.title) for i in items]
 
     activeview = 'feed%s' % feedid
 
