@@ -35,7 +35,7 @@ style="height:10px; vertical-align:middle"/>
     <div class="span2">
             <ul class="nav nav-list">
                 <li class="nav-header">View</li>
-                <li data-activeview="all"><a href="/feeds/my"><i class="icon-list"></i> All</a></li>
+                <li data-activeview="all"><a href="/"><i class="icon-list"></i> All</a></li>
                 <li data-activeview="relevant"><a href="#"><i class="icon-filter"></i> Filtered</a></li>
                 <li class="nav-header">Feeds</li>
         % for feed in feeds:
