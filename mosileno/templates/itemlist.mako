@@ -10,8 +10,10 @@ from mosileno.filter import lx
         <div>
             <div class="itemheader">
                 <div class="pull-left">
-                    <i class="icon-thumbs-up"></i>
-                    <i class="icon-thumbs-down"></i>
+                    <img src="${request.static_url('mosileno:static/up_gray_tiny.png')}"
+style="height:10px; vertical-align:middle"/>
+                    <img src="${request.static_url('mosileno:static/down_gray_tiny.png')}"
+style="height:10px; vertical-align:middle"/>
                 </div>
                 <a onclick="$('#${genid}').toggle()" href=#>
                     <div class="itemtitle">${item.title}</div>
