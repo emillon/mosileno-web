@@ -1,4 +1,5 @@
 import bcrypt
+import transaction
 
 from sqlalchemy.orm.exc import NoResultFound
 from .models import (
@@ -15,3 +16,12 @@ def auth_correct(login, password):
     db_hash = user.password
     hashed = bcrypt.hashpw(password, db_hash)
     return db_hash == hashed
+
+
+def update_password(login, oldpass, newpass):
+    if auth_correct(login, oldpass):
+        user = DBSession.query(User).filter(User.name == login).one()
+        old_hash = user.password
+        new_hash = bcrypt.hashpw(newpass, old_hash)
+        user.password = new_hash
+        transaction.commit()

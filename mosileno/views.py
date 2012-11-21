@@ -46,7 +46,10 @@ from .models import (
     Feed,
 )
 
-from .auth import auth_correct
+from .auth import (
+    auth_correct,
+    update_password,
+)
 
 conn_err_msg = """\
 Pyramid is having a problem using your SQL database.  The problem
@@ -322,3 +325,29 @@ def view_feed(request):
     activeview = 'feed%s' % feedid
 
     return _view_items(request, user, items, activeview=activeview)
+
+
+@view_config(route_name='profile',
+             renderer='form.mako',
+             permission='edit',
+             )
+class ProfileView(TemplatedFormView):
+
+    class ProfileSchema(Schema):
+        oldpass = SchemaNode(String(),
+                             title='Old password',
+                             widget=PasswordWidget()
+                             )
+        newpass = SchemaNode(String(),
+                             title='New password',
+                             widget=PasswordWidget()
+                             )
+
+    schema = ProfileSchema()
+    buttons = ('save',)
+
+    def save_success(self, appstruct):
+        login = authenticated_userid(self.request)
+        oldpass = appstruct['oldpass']
+        newpass = appstruct['newpass']
+        update_password(login, oldpass, newpass)
