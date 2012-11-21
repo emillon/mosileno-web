@@ -9,12 +9,14 @@ from mosileno.filter import lx
     % for (item, genid, feedtitle) in items:
         <div>
             <div class="itemheader">
+                <div class="pull-left">
+                    <i class="icon-thumbs-up"></i>
+                    <i class="icon-thumbs-down"></i>
+                </div>
                 <a onclick="$('#${genid}').toggle()" href=#>
                     <div class="itemtitle">${item.title}</div>
                     <div class="pull-right">
                         <div class="itemfeed">${feedtitle}</div>
-                        <i class="icon-thumbs-up"></i>
-                        <i class="icon-thumbs-down"></i>
                     </div>
                 </a>
             </div>
