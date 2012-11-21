@@ -29,6 +29,10 @@
                     src="${request.static_url('deform:static/%s' % reqt)}"
              ></script>
           % endfor
+
+            <script type="text/javascript"
+                    src="${request.static_url('mosileno:static/post.js')}"
+            ></script>
     </head>
     <body>
 
@@ -48,7 +52,7 @@
             <div class="nav-collapse">
               <ul class="nav">
                 <li data-tabname="home"><a href="/">Home</a></li>
-                <li data-tabname="expandedview"><a href="/">Expanded view</a></li>
+                <li data-tabname="expandedview"><a href="/expandedview">Expanded view</a></li>
                 <li data-tabname="addsrc"><a href="/feed/add">Add a source</a></li>
               </ul>
               <ul class="nav pull-right">
