@@ -40,7 +40,7 @@
               <span class="icon-bar"></span>
               <span class="icon-bar"></span>
             </a>
-            <a class="brand" href="#">
+            <a class="brand" href="/about">
               <img src="${request.static_url('mosileno:static/cloverfeed_white_tiny.png')}"
                    width="20"/>
               Cloverfeed
