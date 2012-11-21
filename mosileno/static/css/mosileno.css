@@ -16,8 +16,18 @@ nav .nav-list {
     border-bottom: solid 1px #ddd;
 }
 
+.itemfooter {
+    border-top: solid 1px #ddd;
+}
+
 .itemtitle {
     padding: 5px;
+    display: inline;
+    font-weight: bold;
+}
+
+.itemdomain {
+    font-style: italic;
     display: inline;
 }
 
@@ -25,6 +35,27 @@ nav .nav-list {
     display: inline;
     color: #777;
     padding-right: 10px;
+}
+
+.itemfull {
+    border: solid 3px #ddd;
+    margin: 10px;
+}
+
+.itemtopics {
+    margin-left: 10px;
+    color: #555;
+    display: inline;
+    font-style: italic;
+}
+
+.itembody {
+    padding: 5px;
+}
+
+.itemadditionallinks {
+    margin-left: 10px;
+    display: inline;
 }
 
 #maincontainer {

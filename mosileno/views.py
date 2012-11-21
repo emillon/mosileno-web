@@ -72,22 +72,28 @@ def tpl(request, **kwargs):
     args = dict(logged_in=authenticated_userid(request))
     return dict(kwargs.items() + args.items())
 
+@view_config(route_name='expandedview')
+def view_expanded(request):
+    return _templated_feeds_view('expandedview', request)
 
 @view_config(route_name='home')
 def view_home(request):
+    return _templated_feeds_view('home', request)
+
+def _templated_feeds_view(page_name, request):
     rsp = None
     logged_in = authenticated_userid(request)
     if not logged_in:
         rsp = render('page.mako',
-                     {'activetab': 'home',
+                     {'activetab': page_name,
                       'logged_in': authenticated_userid(request),
                       'content': 'Welcome !',
                       },
                      request)
     else:
-        data = view_myfeeds(request)
+        data = view_myfeeds(request, page_name)
         data['logged_in'] = authenticated_userid(request)
-        rsp = render('itemlist.mako', data, request)
+        rsp = render(page_name + '.mako', data, request)
     return Response(rsp)
 
 
@@ -256,7 +262,7 @@ def view_feedadd(request):
     return tpl(request, **d)
 
 
-def _view_items(request, user, items, activeview=None):
+def _view_items(request, user, items, activetab='home', activeview=None):
     """
     Retrieve and display a list of feed items.
 
@@ -282,11 +288,11 @@ def _view_items(request, user, items, activeview=None):
                items=items,
                feeds=feeds,
                activeview=activeview,
-               activetab='home',
+               activetab=activetab,
                )
 
 
-def view_myfeeds(request):
+def view_myfeeds(request, activetab):
     me = authenticated_userid(request)
     user = DBSession.query(User).filter(User.name == me).one()
     items = DBSession.query(Item)\
@@ -296,7 +302,7 @@ def view_myfeeds(request):
                      .filter(Subscription.user == user.id)\
                      .order_by(Item.date.desc())\
                      .limit(20)
-    return _view_items(request, user, items, activeview='all')
+    return _view_items(request, user, items, activetab=activetab, activeview='all')
 
 
 @view_config(route_name='feedview',
