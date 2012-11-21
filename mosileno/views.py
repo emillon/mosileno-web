@@ -31,7 +31,7 @@ from deform import (
 )
 from urlparse import urlparse
 
-from .tasks import fetch_title, import_feed
+import tasks
 
 import opml
 import itertools
@@ -194,7 +194,7 @@ def view_feedadd(request):
 
     def form1_success(request, appstruct):
         url = appstruct['url']
-        import_feed(request, url)
+        tasks.import_feed(request, url)
         return 'Feed imported'
 
     class OPMLImportSchema(Schema):
@@ -215,7 +215,7 @@ def view_feedadd(request):
             element = worklist.pop(0)
             if hasattr(element, 'xmlUrl'):
                 url = element.xmlUrl
-                import_feed(request, url)
+                tasks.import_feed(request, url)
                 n += 1
             else:
                 worklist += element

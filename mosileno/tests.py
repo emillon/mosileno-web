@@ -44,16 +44,19 @@ DOCS = {'feed': """
                      <item>
                          <title>Title 1</title>
                          <link>Link 1</link>
+                         <guid>GUID 1</guid>
                          <description>Description 1</description>
                      </item>
                      <item>
                          <title>Title 2</title>
                          <link>Link 2</link>
+                         <guid>GUID 2</guid>
                          <description>Description 2</description>
                      </item>
                      <item>
                          <title>Title 3</title>
                          <link>Link 3</link>
+                         <guid>GUID 3</guid>
                          <description>Description 3</description>
                      </item>
                  </channel>

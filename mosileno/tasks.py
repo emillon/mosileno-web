@@ -62,6 +62,10 @@ def fetch_items(feed_id):
             raise fetch_items.retry(countdown=3)
         feed = feedparser.parse(feedObj.url)
         for item in feed.entries:
+            guid = item.get('id', None)
+            already_in = DBSession.query(Item).filter_by(guid=guid).first()
+            if already_in:
+                continue
             item_date = item.get('updated_parsed',
                                  item.get('published_parsed', None))
             if item_date is None:
@@ -72,7 +76,8 @@ def fetch_items(feed_id):
                      title=item.title,
                      link=item.link,
                      description=item.description,
-                     date=date
+                     date=date,
+                     guid=guid,
                      )
             DBSession.add(i)
 

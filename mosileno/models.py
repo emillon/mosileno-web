@@ -79,13 +79,19 @@ class Item(Base):
     link = Column(Text)
     description = Column(Text)
     date = Column(DateTime)
+    guid = Column(Text, unique=True)
 
-    def __init__(self, feed,
-                 title=None, link=None,
-                 description=None, date=None
+    def __init__(self,
+                 feed,
+                 title=None,
+                 link=None,
+                 description=None,
+                 date=None,
+                 guid=None,
                  ):
         self.feed = feed.id
         self.title = title
         self.link = link
         self.description = description
         self.date = date
+        self.guid = guid
