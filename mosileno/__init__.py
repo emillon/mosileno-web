@@ -49,5 +49,8 @@ def main(global_config, **settings):
     config.add_route('signup', '/signup')
     config.add_route('feedadd', '/feed/add')
     config.add_route('feedview', '/feed/{feedid}')
+    config.add_route('linkclick', '/linkclick')
+    config.add_route('linkup', '/linkup')
+    config.add_route('linkdown', '/linkdown')
     config.scan()
     return config.make_wsgi_app()

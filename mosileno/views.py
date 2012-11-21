@@ -330,3 +330,11 @@ def view_feed(request):
     activeview = 'feed%s' % feedid
 
     return _view_items(request, user, items, activeview=activeview)
+
+
+@view_config(route_name='linkclick')
+@view_config(route_name='linkup')
+@view_config(route_name='linkdown')
+def dummy(request):
+    return Response('%s' % str(request))
+
