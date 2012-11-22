@@ -75,15 +75,18 @@ def tpl(request, **kwargs):
     args = dict(logged_in=authenticated_userid(request))
     return dict(kwargs.items() + args.items())
 
+
 @view_config(route_name='expandedview')
 #             renderer='expandview.mako') TODO?
 def view_expanded(request):
     return _templated_feeds_view('expandedview', request)
 
+
 @view_config(route_name='home')
 #             renderer='home.mako') TODO?
 def view_home(request):
     return _templated_feeds_view('home', request)
+
 
 def _templated_feeds_view(page_name, request):
     rsp = None
@@ -313,7 +316,8 @@ def view_myfeeds(request, activetab):
                      .filter(Subscription.user == user.id)\
                      .order_by(Item.date.desc())\
                      .limit(20)
-    return _view_items(request, user, items, activetab=activetab, activeview='all')
+    return _view_items(request, user, items,
+                       activetab=activetab, activeview='all')
 
 
 @view_config(route_name='feedview',
@@ -373,7 +377,7 @@ class ProfileView(TemplatedFormView):
 
 
 @view_config(route_name='about',
-        renderer='about.mako')
+             renderer='about.mako')
 def about(request):
     d = {'showmenu': True,
          'title': 'About',
@@ -387,4 +391,3 @@ def about(request):
 @view_config(route_name='linkdown')
 def dummy(request):
     return Response('%s' % str(request))
-
