@@ -65,3 +65,39 @@ And run it with :
 It will be accessible at <http://localhost:5555/>.
 
 [Celery Flower]: https://github.com/mher/flower
+
+## Dev guide
+
+The dev process is heavily inspired from [Github flow], ie :
+
+  - `master` is always deployable
+  - do feature branches
+
+So, when developing a new feature :
+
+  - branch off `master`
+  - hack
+  - commit often (in logical commits)
+  - it's ok if you push a feature branch where tests break
+  - when you're ready to merge, merge `master` INTO the branch and push
+  - when Travis is OK, you're ready to merge :
+      - ensure that you're up to date (git fetch)
+      - `git checkout master`
+      - `git merge --ff $FEATURE`
+      - `git push origin master :$FEATURE` (`:branch` deletes the remote branch)
+      - `git branch -d $FEATURE`
+  - if the push is rejected because someone pushed in the meantime, don't merge
+    directly on master. Reset the feature branch, merge master into it and push
+    to travis
+
+Ideally, the merge is done after a pull request for code review.
+
+## Rules of thumb
+
+  - Travis is always right.
+  - `pep8` is often right.
+  - tests are your friends.
+  - If you don't write tests, you're making Travis lie to you.
+  - If you love Travis (you should), you should feel bad not writing tests.
+
+[Github flow]: http://scottchacon.com/2011/08/31/github-flow.html
