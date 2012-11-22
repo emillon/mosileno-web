@@ -171,6 +171,9 @@ class SignupView(TemplatedFormView):
     buttons = ('signup',)
 
     def signup_success(self, appstruct):
+        if self.request.registry.settings.get('invite_only', False):
+            self.errors = ['Signup is disabled']
+            return None
         login = appstruct['username']
         password = appstruct['password']
         user = User(login, password)
