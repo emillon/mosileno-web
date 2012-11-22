@@ -44,6 +44,7 @@ from .models import (
     Subscription,
     Item,
     Feed,
+    Invitation,
 )
 
 from .auth import (
@@ -127,6 +128,9 @@ class TemplatedFormView(FormView):
             d['activetab'] = self.activetab
         return tpl(self.request, **d)
 
+    def failure(self, e):
+        pass
+
 
 class LoginSchema(Schema):
     username = SchemaNode(String())
@@ -172,14 +176,27 @@ def logout(request):
              )
 class SignupView(TemplatedFormView):
     class SignupSchema(LoginSchema):
-        pass
+        invite_code = SchemaNode(String(),
+                                 title='Invitation code',
+                                 missing='no code',
+                                 )
     schema = SignupSchema()
     buttons = ('signup',)
 
+    def before(self, form):
+        if not self.request.registry.settings.get('invite_only', False):
+            form.schema['invite_code'].widget = HiddenWidget()
+
     def signup_success(self, appstruct):
-        if self.request.registry.settings.get('invite_only', False):
+        needs_invite = self.request.registry.settings.get('invite_only', False)
+        invite = DBSession.query(Invitation)\
+                          .filter_by(code=appstruct['invite_code'])\
+                          .first()
+        if needs_invite and not invite:
             self.errors = ['Signup is disabled']
             return None
+        if invite is not None:
+            DBSession.delete(invite)
         login = appstruct['username']
         password = appstruct['password']
         user = User(login, password)

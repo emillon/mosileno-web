@@ -96,3 +96,8 @@ class Item(Base):
         self.description = description
         self.date = date
         self.guid = guid
+
+class Invitation(Base):
+    __tablename__ = 'invitations'
+    id = Column(Integer, primary_key=True)
+    code = Column(Text)
