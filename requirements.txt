@@ -4,6 +4,7 @@ HTTPretty
 mock
 nose
 opml
+psycopg2
 py-bcrypt
 pyramid
 pyramid-celery
