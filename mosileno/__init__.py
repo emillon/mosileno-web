@@ -42,6 +42,7 @@ def main(global_config, **settings):
     config.set_authentication_policy(authn)
     config.set_authorization_policy(authz)
     config.add_static_view('static', 'static', cache_max_age=3600)
+    config.add_route('about', '/about')
     config.add_route('home', '/')
     config.add_route('expandedview', '/expandedview')
     config.add_route('login', '/login')

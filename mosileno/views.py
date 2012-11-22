@@ -372,6 +372,16 @@ class ProfileView(TemplatedFormView):
         update_password(login, oldpass, newpass)
 
 
+@view_config(route_name='about',
+        renderer='about.mako')
+def about(request):
+    d = {'showmenu': True,
+         'title': 'About',
+         'activetab': ''
+         }
+    return tpl(request, **d)
+
+
 @view_config(route_name='linkclick')
 @view_config(route_name='linkup')
 @view_config(route_name='linkdown')
