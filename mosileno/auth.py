@@ -19,9 +19,11 @@ def auth_correct(login, password):
 
 
 def update_password(login, oldpass, newpass):
-    if auth_correct(login, oldpass):
+    ok = auth_correct(login, oldpass)
+    if ok:
         user = DBSession.query(User).filter(User.name == login).one()
         old_hash = user.password
         new_hash = bcrypt.hashpw(newpass, old_hash)
         user.password = new_hash
         transaction.commit()
+    return ok

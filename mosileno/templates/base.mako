@@ -77,6 +77,13 @@
             </div>
         % endfor
         % endif
+        % if successes:
+        % for success in successes:
+            <div class="alert alert-success">
+            ${success}
+            </div>
+        % endfor
+        % endif
         ${self.body()}
       </div>
 

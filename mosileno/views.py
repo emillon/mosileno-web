@@ -108,18 +108,21 @@ def _templated_feeds_view(page_name, request):
 class TemplatedFormView(FormView):
     """
     A subclass of Formview that fills the template parameters with tpl().
-    It also displays self.errors in an alert box and sets the active tab if an
-    'activetab' class parameter exists.
+
+    It also displays self.errors and self.successes in alert boxes and sets the
+    active tab if an 'activetab' class parameter exists.
     """
 
     def __init__(self, request):
         super(FormView, self).__init__()
         self.request = request
         self.errors = []
+        self.successes = []
 
     def show(self, form):
         d = FormView.show(self, form)
         d['errors'] = self.errors
+        d['successes'] = self.successes
         if hasattr(self, 'activetab'):
             d['activetab'] = self.activetab
         return tpl(self.request, **d)
@@ -373,7 +376,10 @@ class ProfileView(TemplatedFormView):
         login = authenticated_userid(self.request)
         oldpass = appstruct['oldpass']
         newpass = appstruct['newpass']
-        update_password(login, oldpass, newpass)
+        if update_password(login, oldpass, newpass):
+            self.successes = ['Profile updated.']
+        else:
+            self.errors = ['The password you entered is incorrect.']
 
 
 @view_config(route_name='about',
