@@ -260,6 +260,19 @@ class TestMyView(unittest.TestCase):
         feeds = DBSession.query(Feed).filter(Feed.url == url).all()
         self.assertEqual(len(feeds), 0)
 
+    @httprettified
+    def test_add_twice(self):
+        url = "http://feeda1.example.com/feed.xml"
+        HTTPretty.register_uri(HTTPretty.GET, url,
+                               body=DOCS['feed'],
+                               content_type='application/rss+xml')
+        request = testing.DummyRequest()
+        fid1 = import_feed(request, url)
+        fid2 = import_feed(request, url)
+        self.assertEqual(fid1, fid2)
+        feeds = DBSession.query(Feed).filter(Feed.url == url).all()
+        self.assertEqual(len(feeds), 1)
+
 
 class FunctionalTests(unittest.TestCase):
     def setUp(self):
