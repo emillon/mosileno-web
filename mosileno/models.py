@@ -97,6 +97,7 @@ class Item(Base):
         self.date = date
         self.guid = guid
 
+
 class Invitation(Base):
     __tablename__ = 'invitations'
     id = Column(Integer, primary_key=True)
