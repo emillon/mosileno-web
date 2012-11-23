@@ -92,6 +92,8 @@ So, when developing a new feature :
 
 Ideally, the merge is done after a pull request for code review.
 
+[Github flow]: http://scottchacon.com/2011/08/31/github-flow.html
+
 ## Rules of thumb
 
   - Travis is always right.
@@ -100,4 +102,47 @@ Ideally, the merge is done after a pull request for code review.
   - If you don't write tests, you're making Travis lie to you.
   - If you love Travis (you should), you should feel bad not writing tests.
 
-[Github flow]: http://scottchacon.com/2011/08/31/github-flow.html
+## Howto setup a DB migration
+
+You'll need `alembic` (in requirements.txt). Its
+[tutorial](http://alembic.readthedocs.org/en/latest/tutorial.html) is great.
+
+### Yes, there are two paths you can go by
+
+Two migration types are possible : non-automatic and automatic ones. In
+non-automatic ones, you have to manually define the `upgrade` and `downgrade`
+functions.
+
+But for simple cases (mostly {table, column} {addition, removal} - see
+tutorial), `alembic` can automatically detect changes to the model and generate
+a script.
+
+### Non-automatic migrations
+
+    alembic revision -m $description
+
+And edit `scripts/versions/$id_$description`.
+
+You also have to edit `models.py`, but it's an independent step.
+
+### Automatic migrations
+
+Begin by editing `models.py`.
+
+    alembic revision --autogenerate -m $description
+
+What `alembic` will do is compare the models to the live DB, and generate a
+script. Verify it and you're done.
+
+### Running migrations
+
+    alembic upgrade head
+
+## Documentation
+
+  - [pyramid](http://pyramid.rtfd.org)
+  - [celery](http://celery.rtfd.org)
+  - [colander](http://colander.rtfd.org)
+  - [deform](http://deform.rtfd.org)
+  - [pyramid_deform](http://pyramid_deform.rtfd.org)
+  - [alembic](http://alembic.rtfd.org)
