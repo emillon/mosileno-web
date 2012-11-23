@@ -102,7 +102,7 @@ def fetch_items(feed_id):
                 date = datetime.fromtimestamp(mktime(item_date))
             i = Item(feedObj,
                      title=item.title,
-                     link=item.link,
+                     link=item.get('link', None),
                      description=item.description,
                      date=date,
                      guid=guid,
