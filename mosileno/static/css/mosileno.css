@@ -59,7 +59,7 @@ nav .nav-list {
 }
 
 .vote-arrow {
-    display: inline
+    float: left;
 }
 
 #maincontainer {
