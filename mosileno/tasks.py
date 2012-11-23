@@ -67,6 +67,18 @@ def fetch_title(feed_id):
             transaction.commit()
 
 
+def make_guid(feedObj, item):
+    """
+    Generate a GUID for a feed item.
+    """
+    if hasattr(item, 'id'):
+        return item.id
+    # TODO feedid+published date
+    if hasattr(item, 'title'):
+        # Not really compliant but we have nothing better
+        return "link:%d:%s" % (feedObj.id, item.title)
+
+
 @task
 def fetch_items(feed_id):
     with transaction.manager:
@@ -75,7 +87,7 @@ def fetch_items(feed_id):
             raise fetch_items.retry(countdown=3)
         feed = feedparser.parse(feedObj.url)
         for item in feed.entries:
-            guid = item.get('id', None)
+            guid = make_guid(feedObj, item)
             already_in = DBSession.query(Item).filter_by(guid=guid).first()
             if already_in:
                 continue

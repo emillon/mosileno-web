@@ -80,7 +80,7 @@ class Item(Base):
     link = Column(Text)
     description = Column(Text)
     date = Column(DateTime)
-    guid = Column(Text, unique=True)
+    guid = Column(Text, nullable=False, unique=True)
 
     def __init__(self,
                  feed,
