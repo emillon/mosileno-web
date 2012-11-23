@@ -29,10 +29,6 @@
                     src="${request.static_url('deform:static/%s' % reqt)}"
              ></script>
           % endfor
-
-            <script type="text/javascript"
-                    src="${request.static_url('mosileno:static/post.js')}"
-            ></script>
     </head>
     <body>
 
