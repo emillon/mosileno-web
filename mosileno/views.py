@@ -360,7 +360,9 @@ def view_feed(request):
     if len(subs) != 1:
         return tpl(request)  # Better than nothing. TODO add an error message
 
-    items = DBSession.query(Item).filter(Item.feed == subs[0].feed)
+    items = DBSession.query(Item)\
+                     .filter(Item.feed == subs[0].feed)\
+                     .order_by(Item.date.desc())
     items = [(i, feedObj.title) for i in items]
 
     activeview = 'feed%s' % feedid
