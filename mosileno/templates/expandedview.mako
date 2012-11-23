@@ -16,14 +16,16 @@ from mosileno.filter import lx
                 </div>
             <div class="itemfooter">
                 <div class="pull-left">
-                    <img id="up_${genid}" 
-onclick="document.getElementById('up_${genid}').style.visibility = 'hidden'; $.post('/linkup', '${item.link}')" 
-src="${request.static_url('mosileno:static/up_gray_tiny.png')}"
-style="height:10px; vertical-align:middle"/>
-                    <img id="down_${genid}" 
-onclick="document.getElementById('down_${genid}').style.visibility = 'hidden'; $.post('/linkdown', '${item.link}')" 
-src="${request.static_url('mosileno:static/down_gray_tiny.png')}"
-style="height:10px; vertical-align:middle"/>
+                    <div class="vote-arrow">
+                        <img id="up_${genid}" 
+    onclick="document.getElementById('up_${genid}').style.visibility = 'hidden'; $.post('/linkup', '${item.link}')" 
+    src="${request.static_url('mosileno:static/up_gray_tiny.png')}" width="16"/>
+                    </div>
+                    <div class="vote-arrow">
+                        <img id="down_${genid}" 
+    onclick="document.getElementById('down_${genid}').style.visibility = 'hidden'; $.post('/linkdown', '${item.link}')" 
+    src="${request.static_url('mosileno:static/down_gray_tiny.png')}" width="16"/>
+                    </div>
                 </div>
                 <div class="itemtopics">
                     topic1, topic2

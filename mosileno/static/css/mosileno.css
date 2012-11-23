@@ -58,6 +58,10 @@ nav .nav-list {
     display: inline;
 }
 
+.vote-arrow {
+    display: inline
+}
+
 #maincontainer {
     margin-left: 90px;
 }
