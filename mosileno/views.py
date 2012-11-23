@@ -78,13 +78,11 @@ def tpl(request, **kwargs):
 
 
 @view_config(route_name='expandedview')
-#             renderer='expandview.mako') TODO?
 def view_expanded(request):
     return _templated_feeds_view('expandedview', request)
 
 
 @view_config(route_name='home')
-#             renderer='home.mako') TODO?
 def view_home(request):
     return _templated_feeds_view('home', request)
 
@@ -94,14 +92,13 @@ def _templated_feeds_view(page_name, request):
     logged_in = authenticated_userid(request)
     if not logged_in:
         rsp = render('page.mako',
-                     {'activetab': page_name,
-                      'logged_in': authenticated_userid(request),
-                      'content': 'Welcome !',
-                      },
+                     tpl(request,
+                         activetab=page_name,
+                         content='Welcome !',
+                         ),
                      request)
     else:
         data = view_myfeeds(request, page_name)
-        data['logged_in'] = authenticated_userid(request)
         rsp = render(page_name + '.mako', data, request)
     return Response(rsp)
 
