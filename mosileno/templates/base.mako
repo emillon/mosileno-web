@@ -40,7 +40,7 @@
               <span class="icon-bar"></span>
               <span class="icon-bar"></span>
             </a>
-            <a class="brand" href="/about">
+            <a class="brand" href="/">
               <img src="${request.static_url('mosileno:static/cloverfeed_white_tiny.png')}"
                    style="width:19px; vertical-align:top"/>
               Cloverfeed
@@ -85,7 +85,7 @@
 
       <div id='footer'>
         <ul>
-          <li><a href="#">About us</a></li>
+          <li><a href="/about">About us</a></li>
           <li><a href="#">Legal</a></li>
           <li><a href="#">Source code</a></li>
           <li><a href="#">Report a bug</a></li>
