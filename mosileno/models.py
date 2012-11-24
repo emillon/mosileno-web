@@ -112,6 +112,7 @@ class Vote(Base):
     user = Column(Integer, ForeignKey('users.id', ondelete='SET NULL'))
 
     def __init__(self, value, itemid, userid):
+        assert(value == 1 or value == -1)
         self.value = value
         self.item = itemid
         self.user = userid
@@ -126,6 +127,9 @@ class Signal(Base):
     user = Column(Integer, ForeignKey('users.id', ondelete='SET NULL'))
 
     def __init__(self, source, action, itemid, userid):
+        assert(source == 'home' or source == 'expandedview')
+        assert(action == 'linkup' or action == 'linkdown' 
+                or action == 'linkclick')
         self.source_page = source
         self.action = action
         self.item = itemid

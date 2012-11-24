@@ -54,6 +54,7 @@ from .auth import (
     update_password,
 )
 
+
 conn_err_msg = """\
 Pyramid is having a problem using your SQL database.  The problem
 might be caused by one of the following things:
@@ -421,12 +422,33 @@ def about(request):
 
 @view_config(route_name='signal')
 def signal(request):
+    def vote_map(vote_str):
+        if vote_str == 'linkup':
+            return 1
+        elif vote_str == 'linkdown':
+            return -1
+        return 0
+
     print request # TODO remove
     try:
-        me = authenticated_userid(request)
+        source = request.POST['source']
+        assert(source == 'home' or source == 'expandedview')
+        action = request.POST['action']
+        assert(action == 'linkup' or action == 'linkdown' 
+                or action == 'linkclick')
+        itemid = request.POST['item']
+        try:
+            me = authenticated_userid(request)
+        except:
+            return Response(status_code=401) # Unauthorized
         userid = DBSession.query(User).filter_by(name=me).all()[0].id
-        DBSession.add(Signal(request.POST['source'], request.POST['action'], 
-            request.POST['item'], userid))
+        if len(DBSession.query(Signal).filter_by(action=action,
+            item=itemid, user=userid).all()) == 0:
+            DBSession.add(Signal(source, action, itemid, userid))
+        vote = vote_map(action)
+        if vote and len(DBSession.query(Vote).filter_by(vote=vote,
+            item=itemid, user=userid).all()) == 0:
+            DBSession.add(Vote(vote, itemid, userid))
         return Response(status_code=200) # TODO refine
     except:
         return Response(status_code=500) # TODO refine 
