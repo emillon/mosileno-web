@@ -11,13 +11,11 @@
               href="${request.static_url('mosileno:static/css/bootstrap.css')}"
               type="text/css"
               media="screen"
-              charset="utf-8"
           />
         <link rel="stylesheet"
               href="${request.static_url('mosileno:static/css/mosileno.css')}"
               type="text/css"
               media="screen"
-              charset="utf-8"
           />
 
           % for reqt in (css_links or []):
