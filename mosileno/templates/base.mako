@@ -86,8 +86,8 @@
       <div id='footer'>
         <ul>
           <li><a href="/about">About us</a></li>
-          <li><a href="#">Source code</a></li>
-          <li><a href="#">Report a bug</a></li>
+          <li><a href="https://github.com/emillon/mosileno-web">Source code</a></li>
+          <li><a href="https://github.com/emillon/mosileno-web/issues">Report a bug</a></li>
           <li><a href="#">Contact</a></li>
         </ul>
       </div>
