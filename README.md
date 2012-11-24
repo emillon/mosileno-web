@@ -43,7 +43,7 @@ Populate the database
 
 Boot celery workers
 
-    pceleryd development.ini
+    pceleryd development.ini --autoreload
 
 Run the dev server
 
@@ -64,7 +64,13 @@ And run it with :
 
 It will be accessible at <http://localhost:5555/>.
 
+It's also possible to monitor the queues using the builtin [celeryev] ncurses
+monitor :
+
+    pceleryev development.ini
+
 [Celery Flower]: https://github.com/mher/flower
+[celeryev]:      https://celery.readthedocs.org/en/release21-maint/_images/celeryevshotsm.jpg
 
 ## Dev guide
 
@@ -98,6 +104,8 @@ Ideally, the merge is done after a pull request for code review.
 
   - Travis is always right.
   - `pep8` is often right.
+    - except with SQLAlchemy. Add `--ignore E711` to disable checking
+      comparisons to `None`.
   - tests are your friends.
   - If you don't write tests, you're making Travis lie to you.
   - If you love Travis (you should), you should feel bad not writing tests.

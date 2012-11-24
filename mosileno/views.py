@@ -321,7 +321,8 @@ def _view_items(request, user, items, activetab='home', activeview=None):
     items = [(i, "collapse%d" % n, t) for (n, (i, t)) in enumerate(items)]
     feeds = DBSession.query(Feed)\
                      .join(Subscription)\
-                     .filter(Subscription.user == user.id)
+                     .filter(Subscription.user == user.id)\
+                     .filter(Feed.title != None)
 
     return tpl(request,
                items=items,
