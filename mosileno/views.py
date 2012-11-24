@@ -417,8 +417,7 @@ def about(request):
     return tpl(request, **d)
 
 
-@view_config(route_name='linkclick')
-@view_config(route_name='linkup')
-@view_config(route_name='linkdown')
+@view_config(route_name='signal')
 def dummy(request):
+    print request # TODO remove
     return Response('%s' % str(request))

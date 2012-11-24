@@ -102,3 +102,31 @@ class Invitation(Base):
     __tablename__ = 'invitations'
     id = Column(Integer, primary_key=True)
     code = Column(Text)
+
+
+class Vote(Base):
+    __tablename__ = 'votes'
+    id = Column(Integer, primary_key=True)
+    value = Column(Integer) # +1 / -1
+    item = Column(Integer, ForeignKey('items.id', ondelete='SET NULL'))
+    user = Column(Integer, ForeignKey('users.id', ondelete='SET NULL'))
+
+    def __init__(self, value, item, user):
+        self.value = value
+        self.item = item.id
+        self.user = user.id
+
+
+class Signal(Base):
+    __tablename__ = 'signals'
+    id = Column(Integer, primary_key=True)
+    source_page = Column(Integer) # 1: home or 2: expandview
+    action = Column(Integer) # 1: linkup, 2: linkdown, 3: linkclick 
+    item = Column(Integer, ForeignKey('items.id', ondelete='SET NULL'))
+    user = Column(Integer, ForeignKey('users.id', ondelete='SET NULL'))
+
+    def __init__(self, source, action, item, user):
+        self.source_page = source
+        self.action = action
+        self.item = item.id
+        self.user = user.id
