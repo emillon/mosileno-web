@@ -19,11 +19,10 @@ from time import mktime
 
 
 def import_feed(request, url):
-    already_in = DBSession.query(Feed).filter_by(url=url).first()
-    if already_in:
-        return already_in.id
-    feed = Feed(url)
-    DBSession.add(feed)
+    feed = DBSession.query(Feed).filter_by(url=url).first()
+    if not feed:
+        feed = Feed(url)
+        DBSession.add(feed)
     me = authenticated_userid(request)
     user = DBSession.query(User).filter(User.name == me).one()
     sub = Subscription(user, feed)
