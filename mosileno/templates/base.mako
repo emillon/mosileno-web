@@ -83,6 +83,16 @@
         ${self.body()}
       </div>
 
+      <div id='footer'>
+        <ul>
+          <li><a href="#">About us</a></li>
+          <li><a href="#">Legal</a></li>
+          <li><a href="#">Source code</a></li>
+          <li><a href="#">Report a bug</a></li>
+          <li><a href="#">Contact</a></li>
+        </ul>
+      </div>
+
       <script type="text/javascript"
               src="${request.static_url('mosileno:static/jquery-1.8.2.min.js')}"
        ></script>

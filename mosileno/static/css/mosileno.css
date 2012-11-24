@@ -65,3 +65,26 @@ nav .nav-list {
 #maincontainer {
     margin-left: 90px;
 }
+
+#footer {
+  bottom: 0;
+  width: 60%;
+  margin: 0 auto;
+  text-align: center;
+}
+
+#footer ul {
+  list-style-type: none;
+}
+
+#footer li {
+  display: inline;
+}
+
+#footer li:before {
+  content: " | ";
+}
+
+#footer li:first-child:before {
+  content: "";
+}
