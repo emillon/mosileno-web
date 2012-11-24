@@ -261,6 +261,12 @@ def view_feedadd(request):
 
     html = []
     info = []
+    js = set()
+    css = set()
+    for (_, form, _) in forms:
+        resources = form.get_widget_resources()
+        js |= set(resources['js'])
+        css |= set(resources['css'])
 
     if 'import' in request.POST or 'add' in request.POST:
         posted_formid = request.POST['__formid__']
@@ -288,7 +294,9 @@ def view_feedadd(request):
          'info': info,
          'showmenu': True,
          'title': 'Import a source',
-         'activetab': 'addsrc'
+         'activetab': 'addsrc',
+         'js_links': js,
+         'css_links': css,
          }
     return tpl(request, **d)
 
