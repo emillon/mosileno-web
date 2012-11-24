@@ -64,7 +64,13 @@ And run it with :
 
 It will be accessible at <http://localhost:5555/>.
 
+It's also possible to monitor the queues using the builtin [celeryev] ncurses
+monitor :
+
+    pceleryev development.ini
+
 [Celery Flower]: https://github.com/mher/flower
+[celeryev]:      https://celery.readthedocs.org/en/release21-maint/_images/celeryevshotsm.jpg
 
 ## Dev guide
 
