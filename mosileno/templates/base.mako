@@ -42,7 +42,9 @@
               </a>
               <a class="brand" href="/">
                 <img src="${request.static_url('mosileno:static/cloverfeed_white_tiny.png')}"
-                     style="width:19px; vertical-align:top"/>
+                     style="width:19px; vertical-align:top"
+                     alt="Cloverfeed logo"
+                />
                 Cloverfeed
               </a>
               <div class="nav-collapse">
