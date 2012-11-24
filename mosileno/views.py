@@ -18,6 +18,7 @@ from colander import (
     Schema,
     SchemaNode,
     String,
+    Integer,
 )
 from deform.widget import (
     PasswordWidget,
@@ -304,7 +305,8 @@ def view_feedadd(request):
     return tpl(request, **d)
 
 
-def _view_items(request, user, items, activetab='home', activeview=None):
+def _view_items(request, user, items,
+                activetab='home', activeview=None, manage=None):
     """
     Retrieve and display a list of feed items.
 
@@ -317,6 +319,10 @@ def _view_items(request, user, items, activetab='home', activeview=None):
     Keyword arguments
         activeview : the data-activeview value that will be set class=active
                      (default: highlight none)
+        activetab  : same for active tab (in header)
+                     (default: highlight home)
+        manage     : a feedObj for which the "manage" links (unsubscribe only
+                     so far) will be displayed
 
     Returns
         a dictionary meant to be rendered by home/expandedview.mako.
@@ -332,6 +338,7 @@ def _view_items(request, user, items, activetab='home', activeview=None):
                feeds=feeds,
                activeview=activeview,
                activetab=activetab,
+               manage=manage,
                )
 
 
@@ -374,9 +381,14 @@ def view_feed(request):
                      .order_by(Item.date.desc())
     items = [(i, feedObj.title) for i in items]
 
-    activeview = 'feed%s' % slug
+    activeview = 'feed-%s' % slug
 
-    return _view_items(request, user, items, activeview=activeview)
+    return _view_items(request,
+                       user,
+                       items,
+                       activeview=activeview,
+                       manage=feedObj,
+                       )
 
 
 @view_config(route_name='profile',
@@ -452,3 +464,37 @@ def signal(request):
         return Response(status_code=200) # TODO refine
     except:
         return Response(status_code=500) # TODO refine 
+
+
+@view_config(route_name='feedunsub',
+             renderer='form.mako'
+             )
+class FeedUnsubscribeView(TemplatedFormView):
+    class FeedUnsubscribeSchema(Schema):
+        feed_id = SchemaNode(Integer(), widget=HiddenWidget())
+
+    schema = FeedUnsubscribeSchema()
+    buttons = ('unsubscribe',)
+
+    def appstruct(self):
+        slug = self.request.matchdict['slug']
+        feed = DBSession.query(Feed).filter_by(slug=slug).one()
+        return {'feed_id': feed.id}
+
+    def unsubscribe_success(self, appstruct):
+        feed_id = appstruct['feed_id']
+        feed = DBSession.query(Feed).get(feed_id)
+
+        me = authenticated_userid(self.request)
+        user = DBSession.query(User).filter_by(name=me).one()
+
+        sub = DBSession.query(Subscription)\
+                       .filter_by(user=user.id)\
+                       .filter_by(feed=feed_id)\
+                       .first()
+        if sub:
+            DBSession.delete(sub)
+            msg = 'You unsubscribed from "%s"' % feed.title
+            self.successes = [msg]
+        else:
+            self.errors = ['You are not subscribed to "%s"' % feed.title]

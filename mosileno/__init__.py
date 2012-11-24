@@ -50,6 +50,7 @@ def main(global_config, **settings):
     config.add_route('signup', '/signup')
     config.add_route('feedadd', '/feed/add')
     config.add_route('feedview', '/feed/{slug}')
+    config.add_route('feedunsub', '/feed/{slug}/unsubscribe')
     config.add_route('profile', '/profile')
     config.add_route('signal', '/signal')
     config.scan()

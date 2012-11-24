@@ -82,6 +82,15 @@ def make_guid(feedObj, item):
         return "link:%d:%s" % (feedObj.id, item.title)
 
 
+def get_description(item):
+    """
+    Return the content from a feed item
+    """
+    if 'content' in item and item.content:
+        return item.content[0].value
+    return item.description
+
+
 @task
 def fetch_items(feed_id):
     with transaction.manager:
@@ -100,10 +109,11 @@ def fetch_items(feed_id):
                 date = None
             else:
                 date = datetime.fromtimestamp(mktime(item_date))
+            description = get_description(item)
             i = Item(feedObj,
                      title=item.title,
                      link=item.get('link', None),
-                     description=item.description,
+                     description=description,
                      date=date,
                      guid=guid,
                      )
