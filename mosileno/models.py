@@ -111,10 +111,10 @@ class Vote(Base):
     item = Column(Integer, ForeignKey('items.id', ondelete='SET NULL'))
     user = Column(Integer, ForeignKey('users.id', ondelete='SET NULL'))
 
-    def __init__(self, value, item, user):
+    def __init__(self, value, itemid, userid):
         self.value = value
-        self.item = item.id
-        self.user = user.id
+        self.item = itemid
+        self.user = userid
 
 
 class Signal(Base):
@@ -125,8 +125,8 @@ class Signal(Base):
     item = Column(Integer, ForeignKey('items.id', ondelete='SET NULL'))
     user = Column(Integer, ForeignKey('users.id', ondelete='SET NULL'))
 
-    def __init__(self, source, action, item, user):
+    def __init__(self, source, action, itemid, userid):
         self.source_page = source
         self.action = action
-        self.item = item.id
-        self.user = user.id
+        self.item = itemid
+        self.user = userid

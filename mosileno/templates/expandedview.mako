@@ -8,7 +8,7 @@ from mosileno.filter import lx
     <div class="span9">
     % for (item, genid, feedtitle) in items:
         <div class="itemfull">
-                <a onclick="$.post('/signal', {'source': 'expandedview', 'action': 'linkclick', 'item': '${item}'})" href="${item.link}">
+                <a onclick="$.post('/signal', {'source': 'expandedview', 'action': 'linkclick', 'item': '${item.id}'})" href="${item.link}">
                     <div class="itemtitle">${item.title}</div>
                 </a>
                 <div class=itembody>
@@ -18,12 +18,12 @@ from mosileno.filter import lx
                 <div class="pull-left">
                     <div class="vote-arrow">
                         <img id="up_${genid}" 
-    onclick="document.getElementById('up_${genid}').style.visibility = 'hidden'; $.post('/signal', {'source': 'expandedview', 'action': 'linkup', 'item': '${item}'})" 
+    onclick="document.getElementById('up_${genid}').style.visibility = 'hidden'; $.post('/signal', {'source': 'expandedview', 'action': 'linkup', 'item': '${item.id}'})" 
     src="${request.static_url('mosileno:static/up_gray_tiny.png')}" width="16"/>
                     </div>
                     <div class="vote-arrow">
                         <img id="down_${genid}" 
-    onclick="document.getElementById('down_${genid}').style.visibility = 'hidden'; $.post('/signal', {'source': 'expandedview', 'action': 'linkdown', 'item': '${item}'})" 
+    onclick="document.getElementById('down_${genid}').style.visibility = 'hidden'; $.post('/signal', {'source': 'expandedview', 'action': 'linkdown', 'item': '${item.id}'})" 
     src="${request.static_url('mosileno:static/down_gray_tiny.png')}" width="16"/>
                     </div>
                 </div>

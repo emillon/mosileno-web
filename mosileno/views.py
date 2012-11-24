@@ -45,6 +45,8 @@ from .models import (
     Item,
     Feed,
     Invitation,
+    Vote,
+    Signal
 )
 
 from .auth import (
@@ -418,6 +420,13 @@ def about(request):
 
 
 @view_config(route_name='signal')
-def dummy(request):
+def signal(request):
     print request # TODO remove
-    return Response('%s' % str(request))
+    try:
+        me = authenticated_userid(request)
+        userid = DBSession.query(User).filter_by(name=me).all()[0].id
+        DBSession.add(Signal(request.POST['source'], request.POST['action'], 
+            request.POST['item'], userid))
+        return Response(status_code=200) # TODO refine
+    except:
+        return Response(status_code=500) # TODO refine 
