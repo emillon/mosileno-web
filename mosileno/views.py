@@ -342,8 +342,7 @@ def _view_items(request, user, items,
 def view_myfeeds(request, activetab):
     me = authenticated_userid(request)
     user = DBSession.query(User).filter(User.name == me).one()
-    items = DBSession.query(Item)\
-                     .add_columns(Feed.title)\
+    items = DBSession.query(Item, Feed)\
                      .join(Feed)\
                      .join(Subscription)\
                      .filter(Subscription.user == user.id)\
@@ -376,7 +375,7 @@ def view_feed(request):
     items = DBSession.query(Item)\
                      .filter(Item.feed == subs[0].feed)\
                      .order_by(Item.date.desc())
-    items = [(i, feedObj.title) for i in items]
+    items = [(i, feedObj) for i in items]
 
     activeview = 'feed-%s' % slug
 
