@@ -370,3 +370,9 @@ class FunctionalTests(unittest.TestCase):
         res = self._login_helper('alphonse', newpass, res)
         res = res.follow()
         self.assertIn('Logout', res.text)
+
+    def test_signal_route(self):
+        res = self._register_user('tintin', 'milou')
+        res = res.follow()
+        #res = self.testapp.post('/signal', {'source': 'home',
+            #'action': 'linkup', 'item': '1'}, status=200) TODO
