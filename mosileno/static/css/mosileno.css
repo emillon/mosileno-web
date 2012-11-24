@@ -52,10 +52,24 @@
     margin-left: 90px;
 }
 
+html,
+body {
+    height: 100%;
+}
+
+#wrap {
+  min-height: 100%;
+  height: auto !important;
+  height: 100%;
+  margin: 0 auto -60px;
+}
+
+#push,
 #footer {
-  bottom: 0;
-  width: 60%;
-  margin: 0 auto;
+    height: 60px;
+}
+
+#footer {
   text-align: center;
 }
 

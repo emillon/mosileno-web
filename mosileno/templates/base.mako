@@ -33,55 +33,58 @@
     </head>
     <body>
 
-      <div class="navbar navbar-inverse">
-        <div class="navbar-inner">
-          <div class="container" style="width: auto;">
-            <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
-              <span class="icon-bar"></span>
-              <span class="icon-bar"></span>
-              <span class="icon-bar"></span>
-            </a>
-            <a class="brand" href="/">
-              <img src="${request.static_url('mosileno:static/cloverfeed_white_tiny.png')}"
-                   style="width:19px; vertical-align:top"/>
-              Cloverfeed
-            </a>
-            <div class="nav-collapse">
-              <ul class="nav">
-                <li data-tabname="home"><a href="/">Home</a></li>
-                <li data-tabname="expandedview"><a href="/expandedview">Expanded view</a></li>
-                <li data-tabname="addsrc"><a href="/feed/add">Add a source</a></li>
-              </ul>
-              <ul class="nav pull-right">
-                % if logged_in is None:
-                    <li><a href="/signup">Sign up</a></li>
-                    <li><a href="/login">Login</a></li>
-                % else:
-                    <li data-tabname="profile"><a href="/profile">You're ${logged_in}</a>
-                    <li><a href="/logout">Logout</a></li>
-                % endif
-              </ul>
-            </div><!-- /.nav-collapse -->
-          </div>
-        </div><!-- /navbar-inner -->
-      </div><!-- /navbar -->
+      <div id="wrap">
+        <div class="navbar navbar-inverse">
+          <div class="navbar-inner">
+            <div class="container" style="width: auto;">
+              <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </a>
+              <a class="brand" href="/">
+                <img src="${request.static_url('mosileno:static/cloverfeed_white_tiny.png')}"
+                     style="width:19px; vertical-align:top"/>
+                Cloverfeed
+              </a>
+              <div class="nav-collapse">
+                <ul class="nav">
+                  <li data-tabname="home"><a href="/">Home</a></li>
+                  <li data-tabname="expandedview"><a href="/expandedview">Expanded view</a></li>
+                  <li data-tabname="addsrc"><a href="/feed/add">Add a source</a></li>
+                </ul>
+                <ul class="nav pull-right">
+                  % if logged_in is None:
+                      <li><a href="/signup">Sign up</a></li>
+                      <li><a href="/login">Login</a></li>
+                  % else:
+                      <li data-tabname="profile"><a href="/profile">You're ${logged_in}</a>
+                      <li><a href="/logout">Logout</a></li>
+                  % endif
+                </ul>
+              </div><!-- /.nav-collapse -->
+            </div>
+          </div><!-- /navbar-inner -->
+        </div><!-- /navbar -->
 
-      <div id='maincontainer' class="container-fluid">
-        % if errors:
-        % for error in errors:
-            <div class="alert alert-error">
-            ${error}
-            </div>
-        % endfor
-        % endif
-        % if successes:
-        % for success in successes:
-            <div class="alert alert-success">
-            ${success}
-            </div>
-        % endfor
-        % endif
-        ${self.body()}
+        <div id='maincontainer' class="container-fluid">
+          % if errors:
+          % for error in errors:
+              <div class="alert alert-error">
+              ${error}
+              </div>
+          % endfor
+          % endif
+          % if successes:
+          % for success in successes:
+              <div class="alert alert-success">
+              ${success}
+              </div>
+          % endfor
+          % endif
+          ${self.body()}
+        </div>
+        <div id="push"></div>
       </div>
 
       <div id='footer'>
