@@ -104,6 +104,8 @@ Ideally, the merge is done after a pull request for code review.
 
   - Travis is always right.
   - `pep8` is often right.
+    - except with SQLAlchemy. Add `--ignore E711` to disable checking
+      comparisons to `None`.
   - tests are your friends.
   - If you don't write tests, you're making Travis lie to you.
   - If you love Travis (you should), you should feel bad not writing tests.
