@@ -46,6 +46,10 @@ from mosileno.filter import lx
                 <li class="nav-header">View</li>
                 <li data-activeview="all"><a href="/expandedview"><i class="icon-list"></i> All</a></li>
                 <li data-activeview="relevant"><a href="#"><i class="icon-filter"></i> Filtered</a></li>
+        % if manage:
+                <li class="nav-header">Manage</li>
+                <li><a href="/feed/${manage.slug}/unsubscribe"><i class="icon-remove-circle"></i> Unsubscribe</a></li>
+        %endif
                 <li class="nav-header">Feeds</li>
         % for feed in feeds:
                 <li data-activeview="${'feed-%s' % feed.slug}"><a href="/feed/${feed.slug}">${feed.title}</a></li>
