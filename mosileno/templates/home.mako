@@ -7,23 +7,21 @@ from mosileno.filter import lx
 
     <div class="span11">
     % for (item, genid, feedtitle) in items:
-        <div class="itemheader">
-            <div class="pull-left">
-                <div class="vote-arrow">
-                    <img id="up_${genid}" 
-    onclick="document.getElementById('up_${genid}').style.visibility = 'hidden'; $.post('/signal', {'source': 'home', 'action': 'linkup', 'item': '${item.id}'})" 
-    src="${request.static_url('mosileno:static/up_gray_tiny.png')}" width="16"/>
-                </div>
-                <div class="vote-arrow">
-                    <img id="down_${genid}" 
-    onclick="document.getElementById('down_${genid}').style.visibility = 'hidden'; $.post('/signal', {'source': 'home', 'action': 'linkdown', 'item': '${item.id}'})" 
-    src="${request.static_url('mosileno:static/down_gray_tiny.png')}" width="16"/>
-                </div>
+        <div class="itemshort">
+            <div class="vote-arrow">
+                <img id="up_${genid}"
+onclick="document.getElementById('up_${genid}').style.visibility = 'hidden'; $.post('/signal', {'source': 'home', 'action': 'linkup', 'item': '${item.id}'})" 
+src="${request.static_url('mosileno:static/up_gray_tiny.png')}" width="18"/>
             </div>
-            <a onclick="$.post('/signal', {'source': 'home', 'action': 'linkclick', 'item': '${item.id}'})" href="${item.link}">
+            <div class="vote-arrow">
+                <img id="down_${genid}"
+onclick="document.getElementById('down_${genid}').style.visibility = 'hidden'; $.post('/signal', {'source': 'home', 'action': 'linkdown', 'item': '${item.id}'})" 
+src="${request.static_url('mosileno:static/down_gray_tiny.png')}" width="18"/>
+            </div>
+            <a onclick="$.post('/signal', {'source': 'home', 'action': 'linkclick', 'item': '${item.id}'})" href="${item.link}" class="itemshortbody">
                 <div class="itemtitle">${item.title}</div>
                 <div class="itemdomain">domain.com</div>
-                <div class="pull-right">
+                <div class="itemsource">
                     <div class="itemfeed">${feedtitle}</div>
                 </div>
             </a>

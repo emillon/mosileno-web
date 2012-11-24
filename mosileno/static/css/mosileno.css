@@ -1,5 +1,12 @@
-.itemheader {
+.itemshort {
+    padding-top: 10px;
+    padding-bottom: 10px;
     border-bottom: solid 1px #ddd;
+}
+
+.itemshortbody {
+    margin-left: 5px;
+    display: inline;
 }
 
 .itemfooter {
@@ -7,7 +14,6 @@
 }
 
 .itemtitle {
-    padding: 5px;
     display: inline;
     font-weight: bold;
 }
@@ -23,6 +29,12 @@
     padding-right: 10px;
 }
 
+.itemsource {
+    position: relative;
+    right: 0;
+    float: right;
+}
+
 .itemfull {
     border: solid 3px #ddd;
     margin: 10px;
@@ -36,7 +48,7 @@
 }
 
 .itembody {
-    padding: 5px;
+    padding: 5px 5px 5px 5px;
 }
 
 .itemadditionallinks {
@@ -45,10 +57,15 @@
 }
 
 .vote-arrow {
-    float: left;
+    display: inline;
+}
+
+.vote-arrow:hover {
+    cursor: pointer;
 }
 
 #maincontainer {
+    font-size: 1.2em;;
     margin-left: 90px;
 }
 

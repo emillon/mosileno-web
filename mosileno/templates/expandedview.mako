@@ -15,17 +15,15 @@ from mosileno.filter import lx
                     ${item.description | n, lx}
                 </div>
             <div class="itemfooter">
-                <div class="pull-left">
-                    <div class="vote-arrow">
-                        <img id="up_${genid}" 
-    onclick="document.getElementById('up_${genid}').style.visibility = 'hidden'; $.post('/signal', {'source': 'expandedview', 'action': 'linkup', 'item': '${item.id}'})" 
-    src="${request.static_url('mosileno:static/up_gray_tiny.png')}" width="16"/>
-                    </div>
-                    <div class="vote-arrow">
-                        <img id="down_${genid}" 
-    onclick="document.getElementById('down_${genid}').style.visibility = 'hidden'; $.post('/signal', {'source': 'expandedview', 'action': 'linkdown', 'item': '${item.id}'})" 
-    src="${request.static_url('mosileno:static/down_gray_tiny.png')}" width="16"/>
-                    </div>
+                <div class="vote-arrow">
+                    <img id="up_${genid}" 
+onclick="document.getElementById('up_${genid}').style.visibility = 'hidden'; $.post('/signal', {'source': 'expandedview', 'action': 'linkup', 'item': '${item.id}'})" 
+src="${request.static_url('mosileno:static/up_gray_tiny.png')}" width="18"/>
+                </div>
+                <div class="vote-arrow">
+                    <img id="down_${genid}" 
+onclick="document.getElementById('down_${genid}').style.visibility = 'hidden'; $.post('/signal', {'source': 'expandedview', 'action': 'linkdown', 'item': '${item.id}'})" 
+src="${request.static_url('mosileno:static/down_gray_tiny.png')}" width="18"/>
                 </div>
                 <div class="itemtopics">
                     topic1, topic2
@@ -33,7 +31,7 @@ from mosileno.filter import lx
                 <div class="itemadditionallinks">
                     link to comments or social network conversation
                 </div>
-                <div class="pull-right">
+                <div class="itemsource">
                     <div class="itemfeed">${feedtitle}</div>
                 </div>
             </div>
