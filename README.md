@@ -43,7 +43,7 @@ Populate the database
 
 Boot celery workers
 
-    pceleryd development.ini
+    pceleryd development.ini --autoreload
 
 Run the dev server
 
