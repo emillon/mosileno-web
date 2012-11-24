@@ -378,7 +378,7 @@ def view_feed(request):
                      .order_by(Item.date.desc())
     items = [(i, feedObj.title) for i in items]
 
-    activeview = 'feed%s' % slug
+    activeview = 'feed-%s' % slug
 
     return _view_items(request,
                        user,
