@@ -86,7 +86,6 @@
       <div id='footer'>
         <ul>
           <li><a href="/about">About us</a></li>
-          <li><a href="#">Legal</a></li>
           <li><a href="#">Source code</a></li>
           <li><a href="#">Report a bug</a></li>
           <li><a href="#">Contact</a></li>
