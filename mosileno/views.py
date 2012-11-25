@@ -408,7 +408,7 @@ def about(request):
 @view_config(route_name='contact',
              renderer='page.mako')
 def contact(request):
-    msg = 'For any inquiries, please email contact <at> cloverfeed <dot> com.'
+    msg = 'For any inquiries, please email etienne <at> cloverfeed <dot> com.'
     return tpl(request, content=msg)
 
 
