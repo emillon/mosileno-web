@@ -441,37 +441,37 @@ def signal(request):
             return -1
         return 0
 
-    print request # TODO remove
     try:
         source = request.POST['source']
-        sources_ok = ['home', 'expandedview']
-        assert(source in sources_ok)
+        assert(source in Signal.sources_ok)
 
         action = request.POST['action']
-        actions_ok = ['linkup',
-                      'linkdown',
-                      'linkclick',
-                      'linkupcancel',
-                      'linkdowncancel',
-                      ]
-        assert(action in sources_ok)
+        assert(action in Signal.sources_ok)
 
         itemid = request.POST['item']
-        try:
-            me = authenticated_userid(request)
-        except:
-            return Response(status_code=401) # Unauthorized
+        me = authenticated_userid(request)
+        if me is None:
+            return Response(status_code=401)  # Unauthorized
         userid = DBSession.query(User).filter_by(name=me).all()[0].id
-        if len(DBSession.query(Signal).filter_by(action=action,
-            item=itemid, user=userid).all()) == 0:
+        signal_exists = DBSession.query(Signal)\
+                                 .filter_by(action=action,
+                                            item=itemid,
+                                            user=userid)\
+                                 .first()
+        if not signal_exists:
             DBSession.add(Signal(source, action, itemid, userid))
+
         vote = vote_map(action)
-        if vote and len(DBSession.query(Vote).filter_by(vote=vote,
-            item=itemid, user=userid).all()) == 0:
+        vote_exists = DBSession.query(Vote)\
+                               .filter_by(vote=vote,
+                                          item=itemid,
+                                          user=userid)\
+                               .first()
+        if vote and not vote_exists:
             DBSession.add(Vote(vote, itemid, userid))
-        return Response(status_code=200) # TODO refine
+        return Response(status_code=200)  # TODO refine
     except:
-        return Response(status_code=500) # TODO refine 
+        return Response(status_code=500)  # TODO refine
 
 
 @view_config(route_name='feedunsub',

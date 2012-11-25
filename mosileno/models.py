@@ -107,7 +107,7 @@ class Invitation(Base):
 class Vote(Base):
     __tablename__ = 'votes'
     id = Column(Integer, primary_key=True)
-    value = Column(Integer) # +1 / -1
+    value = Column(Integer)  # +1 / -1
     item = Column(Integer, ForeignKey('items.id', ondelete='SET NULL'))
     user = Column(Integer, ForeignKey('users.id', ondelete='SET NULL'))
 
@@ -121,7 +121,7 @@ class Vote(Base):
 class Signal(Base):
     __tablename__ = 'signals'
     id = Column(Integer, primary_key=True)
-    source_page = Column(Integer) # 1: home or 2: expandview
+    source_page = Column(Integer)  # 1: home or 2: expandview
 
     # Codes for action
     # 1: linkup
@@ -133,10 +133,17 @@ class Signal(Base):
     item = Column(Integer, ForeignKey('items.id', ondelete='SET NULL'))
     user = Column(Integer, ForeignKey('users.id', ondelete='SET NULL'))
 
+    sources_ok = ['home', 'expandedview']
+    actions_ok = ['linkup',
+                  'linkdown',
+                  'linkclick',
+                  'linkupcancel',
+                  'linkdowncancel',
+                  ]
+
     def __init__(self, source, action, itemid, userid):
-        assert(source == 'home' or source == 'expandedview')
-        assert(action == 'linkup' or action == 'linkdown' 
-                or action == 'linkclick')
+        assert(source in Signal.sources_ok)
+        assert(action in Signal.actions_ok)
         self.source_page = source
         self.action = action
         self.item = itemid
