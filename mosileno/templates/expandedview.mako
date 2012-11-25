@@ -44,6 +44,15 @@ from mosileno.filter import lx
                        >
                        Vote on HN
                     </a>
+                    <a href="https://twitter.com/share"
+                       class="twitter-share-button"
+                       data-lang="en"
+                       data-text="${item.title}"
+                       data-url="${item.link}"
+                       data-via="cloverfeed"
+                       >
+                       Tweet
+                    </a>
                 </div>
                 <div class="itemsource">
                     <div class="itemfeed">
@@ -74,3 +83,6 @@ from mosileno.filter import lx
     </div>
 
 </div>
+<script type="text/javascript"
+        src="https://platform.twitter.com/widgets.js"
+ ></script>
