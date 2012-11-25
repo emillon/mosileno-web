@@ -405,6 +405,13 @@ def about(request):
     return tpl(request, **d)
 
 
+@view_config(route_name='contact',
+             renderer='page.mako')
+def contact(request):
+    msg = 'For any inquiries, please email contact <at> cloverfeed <dot> com.'
+    return tpl(request, content=msg)
+
+
 @view_config(route_name='signal')
 def signal(request):
     def vote_map(vote_str):
