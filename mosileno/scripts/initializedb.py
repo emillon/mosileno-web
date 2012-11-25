@@ -37,5 +37,3 @@ def main(argv=sys.argv):
 
     alembic_config = Config(config_uri)
     stamp(alembic_config, 'head')
-    with transaction.manager:
-        pass
