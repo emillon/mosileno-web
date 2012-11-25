@@ -20,7 +20,7 @@ from mosileno.filter import lx
                         class="rollover"
                         src="${request.static_url('mosileno:static/arrows/up_arrow_normal.png')}"
                         data-rollover="${request.static_url('mosileno:static/arrows/up_arrow_hover.png')}"
-                        onclick="upvote('expandedview', '${item.id}', '#up_${genid}')"
+                        onclick="upvote('expandedview', '${item.id}', '${genid}')"
                         width="18"
                         />
                 </div>
@@ -29,7 +29,7 @@ from mosileno.filter import lx
                         class="rollover"
                         src="${request.static_url('mosileno:static/arrows/down_arrow_normal.png')}"
                         data-rollover="${request.static_url('mosileno:static/arrows/down_arrow_hover.png')}"
-                        onclick="downvote('expandedview', '${item.id}', '#down_${genid}')"
+                        onclick="downvote('expandedview', '${item.id}', '${genid}')"
                         width="18"
                         />
                 </div>

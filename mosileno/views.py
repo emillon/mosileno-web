@@ -444,10 +444,18 @@ def signal(request):
     print request # TODO remove
     try:
         source = request.POST['source']
-        assert(source == 'home' or source == 'expandedview')
+        sources_ok = ['home', 'expandedview']
+        assert(source in sources_ok)
+
         action = request.POST['action']
-        assert(action == 'linkup' or action == 'linkdown' 
-                or action == 'linkclick')
+        actions_ok = ['linkup',
+                      'linkdown',
+                      'linkclick',
+                      'linkupcancel',
+                      'linkdowncancel',
+                      ]
+        assert(action in sources_ok)
+
         itemid = request.POST['item']
         try:
             me = authenticated_userid(request)

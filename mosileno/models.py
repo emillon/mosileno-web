@@ -122,7 +122,14 @@ class Signal(Base):
     __tablename__ = 'signals'
     id = Column(Integer, primary_key=True)
     source_page = Column(Integer) # 1: home or 2: expandview
-    action = Column(Integer) # 1: linkup, 2: linkdown, 3: linkclick 
+
+    # Codes for action
+    # 1: linkup
+    # 2: linkdown
+    # 3: linkclick
+    # 4: linkupcancel
+    # 5: linkdowncancel
+    action = Column(Integer)
     item = Column(Integer, ForeignKey('items.id', ondelete='SET NULL'))
     user = Column(Integer, ForeignKey('users.id', ondelete='SET NULL'))
 

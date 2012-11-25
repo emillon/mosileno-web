@@ -11,18 +11,18 @@ from mosileno.filter import lx
             <div class="vote-arrow">
                 <img id="up_${genid}"
                     class="rollover"
-                    src="${request.static_url('mosileno:static/up_gray_tiny.png')}"
-                    data-rollover="${request.static_url('mosileno:static/arrows/up_arrow_hover.png')}"
-                    onclick="upvote('home', '${item.id}', '#up_${genid}')"
+                    src="/static/up_gray_tiny.png"
+                    data-rollover="/static/arrows/up_arrow_hover.png"
+                    onclick="upvote('home', '${item.id}', '${genid}')"
                     width="18"
                     />
             </div>
             <div class="vote-arrow">
                 <img id="down_${genid}"
                     class="rollover"
-                    src="${request.static_url('mosileno:static/down_gray_tiny.png')}"
-                    data-rollover="${request.static_url('mosileno:static/arrows/down_arrow_hover.png')}"
-                    onclick="downvote('home', '${item.id}', '#down_${genid}')"
+                    src="/static/down_gray_tiny.png"
+                    data-rollover="/static/arrows/down_arrow_hover.png"
+                    onclick="downvote('home', '${item.id}', '${genid}')"
                     width="18"
                     />
             </div>
