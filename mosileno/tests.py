@@ -118,7 +118,9 @@ DOCS = {'feed': """
 
 class TestMyView(unittest.TestCase):
     def setUp(self):
-        self.config = testing.setUp()
+        settings = {'mako.directories': 'mosileno:templates'}
+        self.config = testing.setUp(settings=settings)
+        self.config.add_static_view('static', 'mosileno:static')
         from sqlalchemy import create_engine
         engine = create_engine('sqlite://')
         DBSession.configure(bind=engine)
@@ -164,14 +166,18 @@ class TestMyView(unittest.TestCase):
         resp = logout(request)
         self.assertIsInstance(resp, HTTPFound)
 
-    def test_signup(self):
-        params = dict(username="michel",
-                      password="michelo",
+    def _signup(self, username, password):
+        params = dict(username=username,
+                      password=password,
                       signup="submit",
                       )
         request = testing.DummyRequest(params)
         view = SignupView(request)
         resp = view()
+        return resp
+
+    def test_signup(self):
+        resp = self._signup("michel", "michelo")
         self.assertIsInstance(resp, HTTPFound)
 
     @httprettified
@@ -272,6 +278,35 @@ class TestMyView(unittest.TestCase):
         self.assertEqual(fid1, fid2)
         feeds = DBSession.query(Feed).filter(Feed.url == url).all()
         self.assertEqual(len(feeds), 1)
+
+    @httprettified
+    def test_subscribe_existing(self):
+        url = "http://feeda1.example.com/feed.xml"
+        HTTPretty.register_uri(HTTPretty.GET, url,
+                               body=DOCS['feed'],
+                               content_type='application/rss+xml')
+
+        request = testing.DummyRequest()
+        fid = import_feed(request, url)
+
+        self._signup('miguel', 'miguel')
+        self.config.testing_securitypolicy(userid='miguel', permissive=False)
+
+        request = testing.DummyRequest()
+        fid2 = import_feed(request, url)
+
+        self.assertEqual(fid, fid2)
+
+        def sub_between(username, feed_id):
+            user = DBSession.query(User).filter_by(name=username).one()
+            sub = DBSession.query(Subscription)\
+                           .filter_by(user=user.id)\
+                           .filter_by(feed=feed_id)\
+                           .first()
+            return sub
+
+        self.assertIsNotNone(sub_between('alfred', fid))
+        self.assertIsNotNone(sub_between('miguel', fid))
 
 
 class FunctionalTests(unittest.TestCase):

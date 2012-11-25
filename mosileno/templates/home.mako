@@ -6,7 +6,7 @@ from mosileno.filter import lx
 <div class="row-fluid">
 
     <div class="span11">
-    % for (item, genid, feedtitle) in items:
+    % for (item, genid, feed) in items:
         <div class="itemshort">
             <div class="vote-arrow">
                 <img id="up_${genid}"
@@ -32,7 +32,7 @@ from mosileno.filter import lx
                 <div class="itemtitle">${item.title}</div>
                 <div class="itemdomain">domain.com</div>
                 <div class="itemsource">
-                    <div class="itemfeed">${feedtitle}</div>
+                    <div class="itemfeed">${feed.title}</div>
                 </div>
             </a>
         </div>

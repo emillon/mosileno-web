@@ -6,7 +6,7 @@ from mosileno.filter import lx
 <div class="row-fluid">
 
     <div class="span9">
-    % for (item, genid, feedtitle) in items:
+    % for (item, genid, feed) in items:
         <div class="itemfull">
                 <a onclick="signal('expandedview', '${item.id}', 'linkclick')" href="${item.link}">
                     <div class="itemtitle">${item.title}</div>
@@ -40,7 +40,11 @@ from mosileno.filter import lx
                     link to comments or social network conversation
                 </div>
                 <div class="itemsource">
-                    <div class="itemfeed">${feedtitle}</div>
+                    <div class="itemfeed">
+                      <a href="/feed/${feed.slug}">
+                        ${feed.title}
+                      </a>
+                    </div>
                 </div>
             </div>
         </div>
