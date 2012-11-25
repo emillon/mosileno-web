@@ -37,7 +37,25 @@ from mosileno.filter import lx
                     topic1, topic2
                 </div>
                 <div class="itemadditionallinks">
-                    link to comments or social network conversation
+                    <a href="http://news.ycombinator.com/submit"
+                       class="hn-share-button"
+                       data-title="${item.title}"
+                       data-url="${item.link}"
+                       >
+                       Vote on HN
+                    </a>
+                    <a href="https://twitter.com/share"
+                       class="twitter-share-button"
+                       data-lang="en"
+                       data-text="${item.title}"
+                       data-url="${item.link}"
+                       data-via="cloverfeed"
+                       >
+                       Tweet
+                    </a>
+                    <script type="text/javascript"
+                            src="http://www.reddit.com/buttonlite.js?i=4&url=${item.link}"
+                    ></script>
                 </div>
                 <div class="itemsource">
                     <div class="itemfeed">
@@ -68,3 +86,6 @@ from mosileno.filter import lx
     </div>
 
 </div>
+<script type="text/javascript"
+        src="https://platform.twitter.com/widgets.js"
+ ></script>
