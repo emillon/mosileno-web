@@ -8,7 +8,7 @@ from mosileno.filter import lx
     <div class="span9">
     % for (item, genid, feedtitle) in items:
         <div class="itemfull">
-                <a onclick="$.post('/signal', {'source': 'expandedview', 'action': 'linkclick', 'item': '${item.id}'})" href="${item.link}">
+                <a onclick="signal('expandedview', '${item.id}', 'linkclick')" href="${item.link}">
                     <div class="itemtitle">${item.title}</div>
                 </a>
                 <div class=itembody>
@@ -18,7 +18,7 @@ from mosileno.filter import lx
                 <div class="vote-arrow">
                     <img id="up_${genid}"
                         onmouseover="$('#up_${genid}').attr('src', '${request.static_url('mosileno:static/arrows/up_arrow_hover.png')}')"
-                        onclick="$('#up_${genid}').attr('src', '${request.static_url('mosileno:static/arrows/up_arrow_clicked.png')}'); $.post('/signal', {'source': 'expandedview', 'action': 'linkup', 'item': '${item.id}'})"
+                        onclick="$('#up_${genid}').attr('src', '${request.static_url('mosileno:static/arrows/up_arrow_clicked.png')}'); signal('expandedview', '${item.id}', 'linkup')"
                         src="${request.static_url('mosileno:static/arrows/up_arrow_normal.png')}"
                         width="18"
                         />
@@ -26,7 +26,7 @@ from mosileno.filter import lx
                 <div class="vote-arrow">
                     <img id="down_${genid}"
                         onmouseover="$('#down_${genid}').attr('src', '${request.static_url('mosileno:static/arrows/down_arrow_hover.png')}')"
-                        onclick="$('#down_${genid}').attr('src', '${request.static_url('mosileno:static/arrows/down_arrow_clicked.png')}'); $.post('/signal', {'source': 'expandedview', 'action': 'linkdown', 'item': '${item.id}'})"
+                        onclick="$('#down_${genid}').attr('src', '${request.static_url('mosileno:static/arrows/down_arrow_clicked.png')}'); signal('expandedview', '${item.id}', 'linkdown')"
                         src="${request.static_url('mosileno:static/arrows/down_arrow_normal.png')}"
                         width="18"
                         />

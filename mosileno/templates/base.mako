@@ -103,6 +103,9 @@
       <script type="text/javascript"
               src="${request.static_url('mosileno:static/bootstrap.min.js')}"
        ></script>
+      <script type="text/javascript"
+              src="${request.static_url('mosileno:static/mosileno.js')}"
+       ></script>
 % if activetab:
       <script type="text/javascript">
           $('[data-tabname="${activetab}"]').addClass('active');
