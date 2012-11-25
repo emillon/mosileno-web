@@ -17,16 +17,16 @@ from mosileno.filter import lx
             <div class="itemfooter">
                 <div class="vote-arrow">
                     <img id="up_${genid}"
-                        onmouseover="document.getElementById('up_${genid}').src = '${request.static_url('mosileno:static/arrows/up_arrow_hover.png')}'"
-                        onclick="document.getElementById('up_${genid}').src = '${request.static_url('mosileno:static/arrows/up_arrow_clicked.png')}'; $.post('/signal', {'source': 'expandedview', 'action': 'linkup', 'item': '${item.id}'})"
+                        onmouseover="$('#up_${genid}').attr('src', '${request.static_url('mosileno:static/arrows/up_arrow_hover.png')}')"
+                        onclick="$('#up_${genid}').attr('src', '${request.static_url('mosileno:static/arrows/up_arrow_clicked.png')}'); $.post('/signal', {'source': 'expandedview', 'action': 'linkup', 'item': '${item.id}'})"
                         src="${request.static_url('mosileno:static/arrows/up_arrow_normal.png')}"
                         width="18"
                         />
                 </div>
                 <div class="vote-arrow">
                     <img id="down_${genid}"
-                        onmouseover="document.getElementById('down_${genid}').src = '${request.static_url('mosileno:static/arrows/down_arrow_hover.png')}'"
-                        onclick="document.getElementById('down_${genid}').src = '${request.static_url('mosileno:static/arrows/down_arrow_clicked.png')}'; $.post('/signal', {'source': 'expandedview', 'action': 'linkdown', 'item': '${item.id}'})"
+                        onmouseover="$('#down_${genid}').attr('src', '${request.static_url('mosileno:static/arrows/down_arrow_hover.png')}')"
+                        onclick="$('#down_${genid}').attr('src', '${request.static_url('mosileno:static/arrows/down_arrow_clicked.png')}'); $.post('/signal', {'source': 'expandedview', 'action': 'linkdown', 'item': '${item.id}'})"
                         src="${request.static_url('mosileno:static/arrows/down_arrow_normal.png')}"
                         width="18"
                         />
