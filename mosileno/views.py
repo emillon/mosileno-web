@@ -14,25 +14,14 @@ from pyramid.renderers import (
     get_renderer,
     render,
 )
-from deform.widget import (
-    PasswordWidget,
-    FileUploadWidget,
-    HiddenWidget,
-)
-from deform.schema import FileData
-from deform import (
-    Form,
-    ValidationFailure,
-)
-from urlparse import urlparse
+
+import colander
+import deform
+import itertools
+import opml
+import urlparse
 
 import tasks
-
-import opml
-import itertools
-import colander
-
-from sqlalchemy.exc import DBAPIError
 
 from .models import (
     DBSession,
@@ -130,9 +119,10 @@ class TemplatedFormView(FormView):
 
 class LoginSchema(colander.Schema):
     username = colander.SchemaNode(colander.String())
-    password = colander.SchemaNode(colander.String(), widget=PasswordWidget())
+    password = colander.SchemaNode(colander.String(),
+                                   widget=deform.widget.PasswordWidget())
     redir = colander.SchemaNode(colander.String(),
-                                widget=HiddenWidget(),
+                                widget=deform.widget.HiddenWidget(),
                                 missing='/')
 
 
@@ -144,7 +134,7 @@ class LoginView(TemplatedFormView):
     buttons = ('login',)
 
     def appstruct(self):
-        dest = urlparse(self.request.url)
+        dest = urlparse.urlparse(self.request.url)
         redir = dest.path
         if redir == '/login':
             redir = '/'
@@ -183,7 +173,7 @@ class SignupView(TemplatedFormView):
 
     def before(self, form):
         if not self.request.registry.settings.get('invite_only', False):
-            form.schema['invite_code'].widget = HiddenWidget()
+            form.schema['invite_code'].widget = deform.widget.HiddenWidget()
 
     def signup_success(self, appstruct):
         needs_invite = self.request.registry.settings.get('invite_only', False)
@@ -204,12 +194,15 @@ class SignupView(TemplatedFormView):
                          headers=headers)
 
 
-# TODO this leaks memory,
-# See FileUploadTempStore on
-# http://docs.pylonsproject.org/projects/deform/en/latest/interfaces.html
-class MemoryTmpStore(dict):
-    def preview_url(self, name):
-        return None
+def file_upload_widget():
+    # TODO this leaks memory,
+    # See FileUploadTempStore on
+    # http://docs.pylonsproject.org/projects/deform/en/latest/interfaces.html
+    class MemoryTmpStore(dict):
+        def preview_url(self, name):
+            return None
+
+    return deform.widget.FileUploadWidget(MemoryTmpStore())
 
 
 @view_config(route_name='feedadd',
@@ -222,10 +215,10 @@ def view_feedadd(request):
 
     class FeedAddSchema(colander.Schema):
         url = colander.SchemaNode(colander.String())
-    form1 = Form(FeedAddSchema(),
-                 buttons=('add',),
-                 formid='form1',
-                 counter=counter)
+    form1 = deform.Form(FeedAddSchema(),
+                        buttons=('add',),
+                        formid='form1',
+                        counter=counter)
 
     def form1_success(request, appstruct):
         url = appstruct['url']
@@ -233,12 +226,12 @@ def view_feedadd(request):
         return 'Feed imported'
 
     class OPMLImportSchema(colander.Schema):
-        opml = colander.SchemaNode(FileData(),
-                                   widget=FileUploadWidget(MemoryTmpStore()))
-    form2 = Form(OPMLImportSchema(),
-                 buttons=('import',),
-                 formid='form2',
-                 counter=counter)
+        opml = colander.SchemaNode(deform.schema.FileData(),
+                                   widget=file_upload_widget())
+    form2 = deform.Form(OPMLImportSchema(),
+                        buttons=('import',),
+                        formid='form2',
+                        counter=counter)
 
     def form2_success(request, appstruct):
         opml_file = appstruct['opml']
@@ -279,7 +272,7 @@ def view_feedadd(request):
                     msg = on_success(request, appstruct)
                     info.append(msg)
                     html.append(form.render(appstruct))
-                except ValidationFailure as e:
+                except deform.ValidationFailure as e:
                     # the submitted values could not be validated
                     html.append(e.render())
             else:
@@ -396,11 +389,11 @@ class ProfileView(TemplatedFormView):
     class ProfileSchema(colander.Schema):
         oldpass = colander.SchemaNode(colander.String(),
                                       title='Old password',
-                                      widget=PasswordWidget()
+                                      widget=deform.widget.PasswordWidget()
                                       )
         newpass = colander.SchemaNode(colander.String(),
                                       title='New password',
-                                      widget=PasswordWidget()
+                                      widget=deform.widget.PasswordWidget()
                                       )
 
     schema = ProfileSchema()
@@ -476,7 +469,7 @@ def signal(request):
 class FeedUnsubscribeView(TemplatedFormView):
     class FeedUnsubscribeSchema(colander.Schema):
         feed_id = colander.SchemaNode(colander.Integer(),
-                                      widget=HiddenWidget())
+                                      widget=deform.widget.HiddenWidget())
 
     schema = FeedUnsubscribeSchema()
     buttons = ('unsubscribe',)
