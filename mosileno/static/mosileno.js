@@ -89,6 +89,13 @@ function mosileno_main() {
         g.src = '//hnbutton.appspot.com/static/hn.js';
         s.parentNode.insertBefore(g, s);
     }(document, 'script'));
+
+    // Rewrite Reddit button links to absolute ones
+    $(".reddit_button > a:nth-child(2):contains('reddit')").each(
+        function(){
+            $(this).attr('href', 'http://reddit.com/' + $(this).attr('href'))
+        }
+    );
 }
 
 $(document).ready(mosileno_main);

@@ -53,6 +53,9 @@ from mosileno.filter import lx
                        >
                        Tweet
                     </a>
+                    <script type="text/javascript"
+                            src="http://www.reddit.com/buttonlite.js?i=4&url=${item.link}"
+                    ></script>
                 </div>
                 <div class="itemsource">
                     <div class="itemfeed">
