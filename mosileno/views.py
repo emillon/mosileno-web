@@ -2,6 +2,7 @@ from pyramid.response import Response
 from pyramid.view import (
     view_config,
     forbidden_view_config,
+    notfound_view_config,
 )
 from pyramid.httpexceptions import HTTPFound
 from pyramid.security import (
@@ -479,3 +480,12 @@ class FeedUnsubscribeView(TemplatedFormView):
             self.successes = [msg]
         else:
             self.errors = ['You are not subscribed to "%s"' % feed.title]
+
+
+@notfound_view_config(renderer='page.mako')
+def notfound(request):
+    msg = """
+    Oops, 404 ! Unable to find this page. If you think this is a bug, please
+    report it using the "Report a bug" link below.
+    """
+    return tpl(request, content=msg)
