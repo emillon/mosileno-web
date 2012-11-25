@@ -18,7 +18,7 @@ from mosileno.filter import lx
             </div>
             <div class="vote-arrow">
                 <img id="down_${genid}"
-                    onmouseover="document.getElementById('up_${genid}').src = '${request.static_url('mosileno:static/arrows/down_arrow_hover.png')}'"
+                    onmouseover="document.getElementById('down_${genid}').src = '${request.static_url('mosileno:static/arrows/down_arrow_hover.png')}'"
                     onclick="document.getElementById('down_${genid}').src = '${request.static_url('mosileno:static/arrows/down_arrow_clicked.png')}'; $.post('/signal', {'source': 'home', 'action': 'linkdown', 'item': '${item.id}'})"
                     src="${request.static_url('mosileno:static/down_gray_tiny.png')}"
                     width="18"
