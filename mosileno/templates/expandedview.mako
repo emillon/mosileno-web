@@ -37,7 +37,13 @@ from mosileno.filter import lx
                     topic1, topic2
                 </div>
                 <div class="itemadditionallinks">
-                    link to comments or social network conversation
+                    <a href="http://news.ycombinator.com/submit"
+                       class="hn-share-button"
+                       data-title="${item.title}"
+                       data-url="${item.link}"
+                       >
+                       Vote on HN
+                    </a>
                 </div>
                 <div class="itemsource">
                     <div class="itemfeed">
