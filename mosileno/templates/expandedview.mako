@@ -17,17 +17,19 @@ from mosileno.filter import lx
             <div class="itemfooter">
                 <div class="vote-arrow">
                     <img id="up_${genid}"
-                        onmouseover="$('#up_${genid}').attr('src', '${request.static_url('mosileno:static/arrows/up_arrow_hover.png')}')"
-                        onclick="$('#up_${genid}').attr('src', '${request.static_url('mosileno:static/arrows/up_arrow_clicked.png')}'); signal('expandedview', '${item.id}', 'linkup')"
+                        class="rollover"
                         src="${request.static_url('mosileno:static/arrows/up_arrow_normal.png')}"
+                        data-rollover="${request.static_url('mosileno:static/arrows/up_arrow_hover.png')}"
+                        onclick="$('#up_${genid}').attr('src', '${request.static_url('mosileno:static/arrows/up_arrow_clicked.png')}'); signal('expandedview', '${item.id}', 'linkup')"
                         width="18"
                         />
                 </div>
                 <div class="vote-arrow">
                     <img id="down_${genid}"
-                        onmouseover="$('#down_${genid}').attr('src', '${request.static_url('mosileno:static/arrows/down_arrow_hover.png')}')"
-                        onclick="$('#down_${genid}').attr('src', '${request.static_url('mosileno:static/arrows/down_arrow_clicked.png')}'); signal('expandedview', '${item.id}', 'linkdown')"
+                        class="rollover"
                         src="${request.static_url('mosileno:static/arrows/down_arrow_normal.png')}"
+                        data-rollover="${request.static_url('mosileno:static/arrows/down_arrow_hover.png')}"
+                        onclick="$('#down_${genid}').attr('src', '${request.static_url('mosileno:static/arrows/down_arrow_clicked.png')}'); signal('expandedview', '${item.id}', 'linkdown')"
                         width="18"
                         />
                 </div>
