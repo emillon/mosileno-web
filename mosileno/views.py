@@ -14,12 +14,6 @@ from pyramid.renderers import (
     get_renderer,
     render,
 )
-from colander import (
-    Schema,
-    SchemaNode,
-    String,
-    Integer,
-)
 from deform.widget import (
     PasswordWidget,
     FileUploadWidget,
@@ -36,6 +30,7 @@ import tasks
 
 import opml
 import itertools
+import colander
 
 from sqlalchemy.exc import DBAPIError
 
@@ -133,10 +128,12 @@ class TemplatedFormView(FormView):
         pass
 
 
-class LoginSchema(Schema):
-    username = SchemaNode(String())
-    password = SchemaNode(String(), widget=PasswordWidget())
-    redir = SchemaNode(String(), widget=HiddenWidget(), missing='/')
+class LoginSchema(colander.Schema):
+    username = colander.SchemaNode(colander.String())
+    password = colander.SchemaNode(colander.String(), widget=PasswordWidget())
+    redir = colander.SchemaNode(colander.String(),
+                                widget=HiddenWidget(),
+                                missing='/')
 
 
 @view_config(route_name='login',
@@ -177,10 +174,10 @@ def logout(request):
              )
 class SignupView(TemplatedFormView):
     class SignupSchema(LoginSchema):
-        invite_code = SchemaNode(String(),
-                                 title='Invitation code',
-                                 missing='no code',
-                                 )
+        invite_code = colander.SchemaNode(colander.String(),
+                                          title='Invitation code',
+                                          missing='no code',
+                                          )
     schema = SignupSchema()
     buttons = ('signup',)
 
@@ -223,8 +220,8 @@ def view_feedadd(request):
 
     counter = itertools.count()
 
-    class FeedAddSchema(Schema):
-        url = SchemaNode(String())
+    class FeedAddSchema(colander.Schema):
+        url = colander.SchemaNode(colander.String())
     form1 = Form(FeedAddSchema(),
                  buttons=('add',),
                  formid='form1',
@@ -235,9 +232,9 @@ def view_feedadd(request):
         tasks.import_feed(request, url)
         return 'Feed imported'
 
-    class OPMLImportSchema(Schema):
-        opml = SchemaNode(FileData(),
-                          widget=FileUploadWidget(MemoryTmpStore()))
+    class OPMLImportSchema(colander.Schema):
+        opml = colander.SchemaNode(FileData(),
+                                   widget=FileUploadWidget(MemoryTmpStore()))
     form2 = Form(OPMLImportSchema(),
                  buttons=('import',),
                  formid='form2',
@@ -396,15 +393,15 @@ def view_feed(request):
              )
 class ProfileView(TemplatedFormView):
 
-    class ProfileSchema(Schema):
-        oldpass = SchemaNode(String(),
-                             title='Old password',
-                             widget=PasswordWidget()
-                             )
-        newpass = SchemaNode(String(),
-                             title='New password',
-                             widget=PasswordWidget()
-                             )
+    class ProfileSchema(colander.Schema):
+        oldpass = colander.SchemaNode(colander.String(),
+                                      title='Old password',
+                                      widget=PasswordWidget()
+                                      )
+        newpass = colander.SchemaNode(colander.String(),
+                                      title='New password',
+                                      widget=PasswordWidget()
+                                      )
 
     schema = ProfileSchema()
     buttons = ('save',)
@@ -477,8 +474,9 @@ def signal(request):
              renderer='form.mako'
              )
 class FeedUnsubscribeView(TemplatedFormView):
-    class FeedUnsubscribeSchema(Schema):
-        feed_id = SchemaNode(Integer(), widget=HiddenWidget())
+    class FeedUnsubscribeSchema(colander.Schema):
+        feed_id = colander.SchemaNode(colander.Integer(),
+                                      widget=HiddenWidget())
 
     schema = FeedUnsubscribeSchema()
     buttons = ('unsubscribe',)
