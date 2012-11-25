@@ -6,6 +6,20 @@ function signal(page, id, action) {
     $.post('/signal', data);
 }
 
+function upvote(page, item_id, img_id) {
+    var clicked = '/static/arrows/up_arrow_clicked.png';
+    $(img_id).attr('src', clicked);
+    $(img_id).unbind('mouseenter mouseleave');
+    signal(page, item_id, 'linkup');
+}
+
+function downvote(page, item_id, img_id) {
+    var clicked = '/static/arrows/down_arrow_clicked.png';
+    $(img_id).attr('src', clicked);
+    $(img_id).unbind('mouseenter mouseleave');
+    signal(page, item_id, 'linkdown');
+}
+
 function mosileno_main() {
     $(".rollover").hover(function(){
         // mouse over
