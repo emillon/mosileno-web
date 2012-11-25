@@ -17,13 +17,15 @@ from mosileno.filter import lx
             <div class="itemfooter">
                 <div class="vote-arrow">
                     <img id="up_${genid}" 
-onclick="document.getElementById('up_${genid}').style.visibility = 'hidden'; $.post('/signal', {'source': 'expandedview', 'action': 'linkup', 'item': '${item.id}'})" 
-src="${request.static_url('mosileno:static/up_gray_tiny.png')}" width="18"/>
+onmouseover="document.getElementById('up_${genid}').src = '${request.static_url('mosileno:static/arrows/up_arrow_hover.png')}"
+onclick="document.getElementById('up_${genid}').src = '${request.static_url('mosileno:static/arrows/up_arrow_clicked.png')}'; $.post('/signal', {'source': 'expandedview', 'action': 'linkup', 'item': '${item.id}'})" 
+src="${request.static_url('mosileno:static/arrows/up_arrow_normal.png')}" width="18"/>
                 </div>
                 <div class="vote-arrow">
                     <img id="down_${genid}" 
-onclick="document.getElementById('down_${genid}').style.visibility = 'hidden'; $.post('/signal', {'source': 'expandedview', 'action': 'linkdown', 'item': '${item.id}'})" 
-src="${request.static_url('mosileno:static/down_gray_tiny.png')}" width="18"/>
+onmouseover="document.getElementById('up_${genid}').src = '${request.static_url('mosileno:static/arrows/down_arrow_hover.png')}"
+onclick="document.getElementById('down_${genid}').src = '${request.static_url('mosileno:static/arrows/down_arrow_clicked.png')}'; $.post('/signal', {'source': 'expandedview', 'action': 'linkdown', 'item': '${item.id}'})" 
+src="${request.static_url('mosileno:static/arrows/down_arrow_normal.png')}" width="18"/>
                 </div>
                 <div class="itemtopics">
                     topic1, topic2

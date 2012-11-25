@@ -10,12 +10,14 @@ from mosileno.filter import lx
         <div class="itemshort">
             <div class="vote-arrow">
                 <img id="up_${genid}"
-onclick="document.getElementById('up_${genid}').style.visibility = 'hidden'; $.post('/signal', {'source': 'home', 'action': 'linkup', 'item': '${item.id}'})" 
+onmouseover="document.getElementById('up_${genid}').src = '${request.static_url('mosileno:static/arrows/up_arrow_hover.png')}"
+onclick="document.getElementById('up_${genid}').src = '${request.static_url('mosileno:static/arrows/up_arrow_clicked.png')}'; $.post('/signal', {'source': 'home', 'action': 'linkup', 'item': '${item.id}'})" 
 src="${request.static_url('mosileno:static/up_gray_tiny.png')}" width="18"/>
             </div>
             <div class="vote-arrow">
                 <img id="down_${genid}"
-onclick="document.getElementById('down_${genid}').style.visibility = 'hidden'; $.post('/signal', {'source': 'home', 'action': 'linkdown', 'item': '${item.id}'})" 
+onmouseover="document.getElementById('up_${genid}').src = '${request.static_url('mosileno:static/arrows/down_arrow_hover.png')}"
+onclick="document.getElementById('down_${genid}').src = '${request.static_url('mosileno:static/arrows/down_arrow_clicked.png')}'; $.post('/signal', {'source': 'home', 'action': 'linkdown', 'item': '${item.id}'})" 
 src="${request.static_url('mosileno:static/down_gray_tiny.png')}" width="18"/>
             </div>
             <a onclick="$.post('/signal', {'source': 'home', 'action': 'linkclick', 'item': '${item.id}'})" href="${item.link}" class="itemshortbody">
