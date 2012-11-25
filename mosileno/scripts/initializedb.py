@@ -14,6 +14,9 @@ from ..models import (
     Base,
 )
 
+from alembic.command import stamp
+from alembic.config import Config
+
 
 def usage(argv):
     cmd = os.path.basename(argv[0])
@@ -31,5 +34,8 @@ def main(argv=sys.argv):
     engine = engine_from_config(settings, 'sqlalchemy.')
     DBSession.configure(bind=engine)
     Base.metadata.create_all(engine)
+
+    alembic_config = Config(config_uri)
+    stamp(alembic_config, 'head')
     with transaction.manager:
         pass
