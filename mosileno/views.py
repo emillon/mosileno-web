@@ -22,6 +22,7 @@ import itertools
 import opml
 import urlparse
 
+import ranking
 import tasks
 
 from .models import (
@@ -324,7 +325,10 @@ def view_myfeeds(request, activetab, limit=20):
                      .join(Subscription)\
                      .filter(Subscription.user == user.id)\
                      .order_by(Item.date.desc())\
-                     .limit(limit)
+                     .limit(limit)\
+                     .all()
+    rank = lambda (i, _): ranking.reddit(request, i)
+    items.sort(key=rank, reverse=True)  # Highest scores first
     return _view_items(request, user, items,
                        activetab=activetab, activeview='all')
 
@@ -441,16 +445,17 @@ def signal(request):
         if not signal_exists:
             DBSession.add(Signal(source, action, itemid, userid))
 
-        vote = vote_map(action)
+        value = vote_map(action)
         vote_exists = DBSession.query(Vote)\
-                               .filter_by(vote=vote,
+                               .filter_by(value=value,
                                           item=itemid,
                                           user=userid)\
                                .first()
-        if vote and not vote_exists:
-            DBSession.add(Vote(vote, itemid, userid))
+        if value and not vote_exists:
+            vote = Vote(value, itemid, userid)
+            DBSession.add(vote)
         return Response(status_code=200)  # TODO refine
-    except:
+    except AssertionError:
         return Response(status_code=500)  # TODO refine
 
 
