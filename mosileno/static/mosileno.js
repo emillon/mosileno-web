@@ -39,14 +39,14 @@ function vote(dir, page, item_id, genid) {
     if (cur_src === arrow(dir, 'clicked')) {
         // cancel vote
         arrow_active(img_id, dir)
-        signal(page, item_id, 'link' + dir);
+        signal(page, item_id, 'link' + dir + 'cancel');
     } else {
         // register vote
         if (other_src === arrow(other_dir, 'clicked')) {
             arrow_active(other_id, other_dir);
         }
         arrow_inactive(img_id, dir);
-        signal(page, item_id, 'link' + dir + 'cancel');
+        signal(page, item_id, 'link' + dir);
     }
 }
 
