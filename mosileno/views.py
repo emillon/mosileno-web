@@ -426,7 +426,7 @@ def signal(request):
         assert(source in Signal.sources_ok)
 
         action = request.POST['action']
-        assert(action in Signal.sources_ok)
+        assert(action in Signal.actions_ok)
 
         itemid = request.POST['item']
         me = authenticated_userid(request)
