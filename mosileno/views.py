@@ -70,7 +70,7 @@ def _templated_feeds_view(page_name, request):
                          ),
                      request)
     else:
-        data = view_myfeeds(request, page_name)
+        data = view_myfeeds(request, page_name, limit=30)
         rsp = render(page_name + '.mako', data, request)
     return Response(rsp)
 
@@ -316,7 +316,7 @@ def _view_items(request, user, items,
                )
 
 
-def view_myfeeds(request, activetab):
+def view_myfeeds(request, activetab, limit=20):
     me = authenticated_userid(request)
     user = DBSession.query(User).filter(User.name == me).one()
     items = DBSession.query(Item, Feed)\
@@ -324,7 +324,7 @@ def view_myfeeds(request, activetab):
                      .join(Subscription)\
                      .filter(Subscription.user == user.id)\
                      .order_by(Item.date.desc())\
-                     .limit(20)
+                     .limit(limit)
     return _view_items(request, user, items,
                        activetab=activetab, activeview='all')
 
