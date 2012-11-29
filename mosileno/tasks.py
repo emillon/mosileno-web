@@ -13,6 +13,8 @@ from .models import (
 
 from celery.decorators import periodic_task
 from celery.task import task
+from celery.task.http import URL
+from celery import chain
 from pyramid.security import authenticated_userid
 from datetime import datetime, timedelta
 from time import mktime
@@ -195,3 +197,21 @@ def get_most_relevant_topics(topics_list):
     topics_id, _ = zip(*topics_list)
     topic_names = topics_tools.lda_topic_names()
     return [topic_names[tid] for tid in topics_id]
+
+
+@task
+def lda_full(itemid):
+    return chain(lda_article.s(itemid), extract_topic_distrib.s(itemid))
+
+
+@task
+def lda_article(itemid):
+    item = DBSession.query(Item).get(itemid)
+    tika = URL('http://localhost:9998/')
+    t = tika.get_async(doc=url)
+    return t
+
+
+@task
+def extract_topic_distrib(itemid, data):
+    return (itemid, data)
