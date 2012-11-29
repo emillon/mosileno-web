@@ -56,6 +56,7 @@ class Feed(Base):
     url = Column(Text, nullable=False)
     title = Column(Text, nullable=True)
     slug = Column(Text, nullable=True, unique=True)
+    etag = Column(Text)
 
     def __init__(self, url):
         self.url = url

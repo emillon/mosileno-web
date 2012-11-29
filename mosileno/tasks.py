@@ -17,19 +17,27 @@ from pyramid.security import authenticated_userid
 from datetime import datetime, timedelta
 from time import mktime
 import topics_tools
+from urllib2 import URLError
 
 
 def import_feed(request, url):
     feed = DBSession.query(Feed).filter_by(url=url).first()
+    new = False
     if not feed:
+        new = True
         feed = Feed(url)
         DBSession.add(feed)
     me = authenticated_userid(request)
     user = DBSession.query(User).filter(User.name == me).one()
-    sub = Subscription(user, feed)
-    DBSession.add(sub)
-    DBSession.expunge(feed)
-    fetch_title.delay(feed.id)
+    sub = DBSession.query(Subscription)\
+                   .filter_by(user=user.id, feed=feed.id)\
+                   .first()
+    if sub is None:
+        sub = Subscription(user, feed)
+        DBSession.add(sub)
+    if new:
+        DBSession.expunge(feed)
+        fetch_title.delay(feed.id)
     return feed.id
 
 
@@ -38,12 +46,45 @@ def slugify(s):
     return re.sub(r'\W+', '-', s)
 
 
+def get_feed(feedObj):
+    """
+    Wrapper around feedparser that deletes objects when gone.
+
+    Returns
+
+        The feed data if feed is ok
+        None otherwise (it may delete the object)
+    """
+    feed = feedparser.parse(feedObj.url, etag=feedObj.etag)
+    feedObj.etag = feed.get('etag')
+    if feed.bozo and isinstance(feed.bozo_exception, URLError):
+        DBSession.delete(feedObj)
+        return None
+    if feed.status in [404, 500]:
+        # Continue to poll
+        return None
+    if feed.status == 410:
+        DBSession.delete(feedObj)
+        return None
+    if feed.status == 304:
+        # ETag hit
+        return None
+    if feed.status == 301:
+        # Moved permanently
+        feedObj.url = feed.url
+        return feed
+    assert(feed.status in [200, 302])
+    return feed
+
+
 @task
 def fetch_title(feed_id):
     feedObj = DBSession.query(Feed).get(feed_id)
     if feedObj is None:
         raise fetch_title.retry(countdown=3)
-    feed = feedparser.parse(feedObj.url)
+    feed = get_feed(feedObj)
+    if feed is None:
+        return
     if hasattr(feed.feed, 'title'):
         title = feed.feed.title
         feedObj.title = title
@@ -61,9 +102,12 @@ def fetch_title(feed_id):
                      for l in feed.feed['links']
                      if l.get('type', None) == 'application/rss+xml'
                      ]
-            feedObj.url = feeds[0]
-            transaction.commit()
-            raise fetch_title.retry(countdown=3)
+            if feeds:
+                feedObj.url = feeds[0]
+                transaction.commit()
+                raise fetch_title.retry(countdown=3)
+            else:
+                DBSession.delete(feedObj)
         else:
             # Maybe signal to the user?
             DBSession.delete(feedObj)
@@ -88,7 +132,7 @@ def get_description(item):
     """
     if 'content' in item and item.content:
         return item.content[0].value
-    return item.description
+    return item.get('description')
 
 
 @task
@@ -97,7 +141,9 @@ def fetch_items(feed_id):
         feedObj = DBSession.query(Feed).get(feed_id)
         if feedObj is None:
             raise fetch_items.retry(countdown=3)
-        feed = feedparser.parse(feedObj.url)
+        feed = get_feed(feedObj)
+        if feed is None:
+            return
         for item in feed.entries:
             guid = make_guid(feedObj, item)
             already_in = DBSession.query(Item).filter_by(guid=guid).first()
@@ -111,8 +157,8 @@ def fetch_items(feed_id):
                 date = datetime.fromtimestamp(mktime(item_date))
             description = get_description(item)
             i = Item(feedObj,
-                     title=item.title,
-                     link=item.get('link', None),
+                     title=item.get('title'),
+                     link=item.get('link'),
                      description=description,
                      date=date,
                      guid=guid,

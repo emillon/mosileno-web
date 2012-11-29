@@ -191,7 +191,7 @@ def file_upload_widget():
 
 
 @view_config(route_name='feedadd',
-             renderer='form.mako',
+             renderer='addsrc.mako',
              permission='edit',
              )
 def view_feedadd(request):
@@ -200,6 +200,7 @@ def view_feedadd(request):
 
     class FeedAddSchema(colander.Schema):
         url = colander.SchemaNode(colander.String())
+
     form1 = deform.Form(FeedAddSchema(),
                         buttons=('add',),
                         formid='form1',
@@ -234,8 +235,23 @@ def view_feedadd(request):
                 worklist += element
         return '%d feeds imported' % n
 
+    class RedditImportSchema(colander.Schema):
+        subreddit = colander.SchemaNode(colander.String())
+
+    form3 = deform.Form(RedditImportSchema(),
+                        buttons=('connect',),
+                        formid='form3',
+                        counter=counter)
+
+    def form3_success(request, appstruct):
+        subreddit = appstruct['subreddit']
+        url = 'http://www.reddit.com/r/%s.rss' % subreddit
+        tasks.import_feed(request, url)
+        return 'You are now connected to /r/%s' % subreddit
+
     forms = [('form1', form1, form1_success),
-             ('form2', form2, form2_success)
+             ('form2', form2, form2_success),
+             ('form3', form3, form3_success),
              ]
 
     html = []
@@ -247,7 +263,12 @@ def view_feedadd(request):
         js |= set(resources['js'])
         css |= set(resources['css'])
 
-    if 'import' in request.POST or 'add' in request.POST:
+    is_submitted = False
+    for (_, form, _) in forms:
+        if form.buttons[0].name in request.POST:
+            is_submitted = True
+
+    if is_submitted:
         posted_formid = request.POST['__formid__']
         for (formid, form, on_success) in forms:
             if formid == posted_formid:
@@ -266,10 +287,10 @@ def view_feedadd(request):
         for (_, form, _) in forms:
             html.append(form.render())
 
-    html = ''.join(html)
-
     # values passed to template for rendering
-    d = {'form': html,
+    d = {'form_rss': html[0],
+         'form_opml': html[1],
+         'form_reddit': html[2],
          'info': info,
          'showmenu': True,
          'title': 'Import a source',
@@ -350,8 +371,12 @@ def view_feed(request):
                     .filter(Subscription.feed == feedid)\
                     .all()
 
-    if len(subs) != 1:
-        return tpl(request)  # Better than nothing. TODO add an error message
+    if len(subs) == 0:
+        return tpl(request,
+                   errors=['You are not subscribed to this feed'],
+                   items=[],
+                   feeds=[],
+                   )
 
     items = DBSession.query(Item)\
                      .filter(Item.feed == subs[0].feed)\
