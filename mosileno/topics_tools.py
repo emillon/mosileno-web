@@ -42,6 +42,7 @@ def topic_names(ldaobject):
     Badly written heuristic which founds one or two words to describe a 
     topic. Returns a list of couples [(topicid, topicdescription)]
     """
+    global __DEBUG__, __LEMMATIZE__
     topn = ldaobject.num_topics # should perhaps be less? 10?
     bests = []
     topicnames = []
@@ -76,7 +77,12 @@ def topic_names(ldaobject):
             topicnames[topicid] = ldaobject.id2word[bests[topicid][ind]]
             break
         best10 = bests[topicid][:10]
-        beststrl = [(topic[i], ldaobject.id2word[i]) for i in best10]
+        beststrl = []
+        if __LEMMATIZE__:
+            beststrl = [(topic[i], ldaobject.id2word[i].split('/')[0])
+                    for i in best10] # to remove POS-tag ("VB" in "be/VB")
+        else:
+            beststrl = [(topic[i], ldaobject.id2word[i]) for i in best10]
         if __DEBUG__ == 42:
             beststr = ' + '.join(['%.3f*%s' % v for v in beststrl])
             print "topic #", topicid, " described by:", topicnames[topicid]
