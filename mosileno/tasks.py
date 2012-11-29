@@ -2,6 +2,7 @@ import feedparser
 import transaction
 import unidecode
 import re
+import pickle
 
 from .models import (
     DBSession,
@@ -16,6 +17,20 @@ from celery.task import task
 from pyramid.security import authenticated_userid
 from datetime import datetime, timedelta
 from time import mktime
+from celery.signals import celeryd_init
+from gensim import utils
+
+if not utils.HAS_PATTERN:
+    import sys
+    print >> sys.stderr, "FATAL ERROR:"
+    print >> sys.stderr, "Y U NO HAS PATTERN?"
+    sys.exit(-1)
+lda_model = None
+
+@celeryd_init.connect
+def configure_workers(sender=None, conf=None, **kwargs):
+    with open('hn.ldamodel', 'r') as f:
+        lda_model = pickle.load(f)
 
 
 def import_feed(request, url):
@@ -125,3 +140,13 @@ def fetch_all_items():
         feeds = DBSession.query(Feed.id).all()
         for feed in feeds:
             fetch_items.delay(feed)
+
+
+@task
+def get_topic_distrib(text):
+    """ 
+    gets the topics distribution and the extracted text (from Tika) 
+    on the form [(topicid, probability)] for P(topic) > epsilon 
+    """
+    return lda_model[lda_model.id2word.doc2bow(text)]
+

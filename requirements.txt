@@ -17,3 +17,5 @@ unidecode
 waitress
 webtest
 zope.sqlalchemy
+pattern
+gensim
