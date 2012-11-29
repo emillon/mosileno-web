@@ -83,9 +83,13 @@ def topic_names(ldaobject):
             print beststr
     return zip(range(ldaobject.num_topics), topicnames)
 
+_lda_topic_names = None  # Lazily loaded
 
-init_topic_model() # IMPORTANT !!!
-lda_topic_names = dict(topic_names(lda_model))
+def lda_topic_names():
+    if _lda_topic_names is None:
+        init_topic_model()
+        _lda_topic_names = dict(topic_names(lda_model))
+    return _lda_topic_names
 
 
 def parse(text):

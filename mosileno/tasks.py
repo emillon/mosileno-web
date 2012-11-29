@@ -193,4 +193,5 @@ def get_most_relevant_topics(topics_list):
     topics_list.sort(cmp=lambda x, y: 1 if x[1] < y[1] else -1)
     topics_list = topics_list[:3] # ARBITRARY (at most 3 topic names)
     topics_id, _ = zip(*topics_list)
-    return [topics_tools.lda_topic_names[tid] for tid in topics_id]
+    topic_names = topics_tools.lda_topic_names()
+    return [topic_names[tid] for tid in topics_id]
