@@ -191,7 +191,7 @@ def file_upload_widget():
 
 
 @view_config(route_name='feedadd',
-             renderer='form.mako',
+             renderer='addsrc.mako',
              permission='edit',
              )
 def view_feedadd(request):
@@ -266,10 +266,9 @@ def view_feedadd(request):
         for (_, form, _) in forms:
             html.append(form.render())
 
-    html = ''.join(html)
-
     # values passed to template for rendering
-    d = {'form': html,
+    d = {'form1': html[0],
+         'form2': html[1],
          'info': info,
          'showmenu': True,
          'title': 'Import a source',
