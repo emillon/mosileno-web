@@ -20,17 +20,20 @@ from time import mktime
 from celery.signals import celeryd_init
 from gensim import utils
 
-if not utils.HAS_PATTERN:
-    import sys
-    print >> sys.stderr, "FATAL ERROR:"
-    print >> sys.stderr, "Y U NO HAS PATTERN?"
-    sys.exit(-1)
+#if not utils.HAS_PATTERN: TODO
+#    import sys
+#    print >> sys.stderr, "FATAL ERROR:"
+#    print >> sys.stderr, "Y U NO HAS PATTERN?"
+#    sys.exit(-1) /TODO
+def tokenize(text):
+    return [token.encode('utf8') for token in utils.tokenize(text, lower=True, errors='ignore') if 2 <= len(token) <= 20 and not token.startswith('_')]
+
 lda_model = None
 
-@celeryd_init.connect
-def configure_workers(sender=None, conf=None, **kwargs):
-    with open('hn.ldamodel', 'r') as f:
-        lda_model = pickle.load(f)
+#@celeryd_init.connect
+#def configure_workers(sender=None, conf=None, **kwargs):
+with open('topic-model/hn.ldamodel', 'r') as f:
+    lda_model = pickle.load(f)
 
 
 def import_feed(request, url):
@@ -148,5 +151,6 @@ def get_topic_distrib(text):
     gets the topics distribution and the extracted text (from Tika) 
     on the form [(topicid, probability)] for P(topic) > epsilon 
     """
-    return lda_model[lda_model.id2word.doc2bow(text)]
+    #return lda_model[lda_model.id2word.doc2bow(utils.lemmatize(text))] TODO
+    return lda_model[lda_model.id2word.doc2bow(tokenize(text))]
 
