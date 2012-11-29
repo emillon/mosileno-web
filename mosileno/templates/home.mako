@@ -37,6 +37,25 @@ from mosileno.filter import lx
             </a>
         </div>
     % endfor
+        <script type='text/javascript'>
+            var data = [];
+    % for (item, genid, feed) in items:
+            dd = {'id': ${item.id}, 'data': '${genid}'};
+            data.push(dd);
+    % endfor
+            //console.log(data)
+            $.post('/vote', JSON.stringify(data), function(r) {
+                $.each(r, function(i, x) {
+                    if (x.vote === 1) {
+                        arrow_inactive('#up_' + x.data, 'up');
+                    }
+                    if (x.vote === -1) {
+                        arrow_inactive('#down_' + x.data, 'down');
+                    }
+                    console.log(x.vote);
+                });
+            });
+        </script>
     </div>
 
 </div>

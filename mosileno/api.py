@@ -13,6 +13,7 @@ from pyramid.security import (
     authenticated_userid
 )
 
+
 @view_config(route_name='signal',
              renderer='json',
              )
@@ -54,3 +55,49 @@ def signal(request):
         vote = Vote(value, itemid, userid)
         DBSession.add(vote)
     return {}  # TODO refine
+
+
+@view_config(route_name='voteget',
+             renderer='json',
+             )
+def get_vote(request):
+    """
+    Input
+
+        A (json) list of ids/data. Data can be anything you want.
+
+            Ex:
+
+                [{'id': 1, 'data': 'xx'},
+                 {'id': 3, 'data': 'yy'},
+                 {'id': 4, 'data': 'zz'}
+                 ]
+
+    Output
+
+        The votes for these ids
+
+            Ex:
+
+                [{'id': 1, 'data': 'xx', 'vote': 1},
+                 {'id': 3, 'data': 'yy', 'vote': 1},
+                 {'id': 4, 'data': 'zz', 'vote': -1}
+                 ]
+    """
+    data_in = request.json_body
+
+    me = authenticated_userid(request)
+    userid = DBSession.query(User).filter_by(name=me).all()[0].id
+
+    def answer(x):
+        vote = DBSession.query(Vote)\
+                        .filter_by(user=userid, item=x['id'])\
+                        .first()
+        res = 0
+        if vote is not None:
+            res = vote.value
+        return {'id': x['id'],
+                'data': x['data'],
+                'vote': res
+                }
+    return [answer(x) for x in data_in]
