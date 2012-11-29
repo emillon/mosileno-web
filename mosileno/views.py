@@ -371,8 +371,12 @@ def view_feed(request):
                     .filter(Subscription.feed == feedid)\
                     .all()
 
-    if len(subs) != 1:
-        return tpl(request)  # Better than nothing. TODO add an error message
+    if len(subs) == 0:
+        return tpl(request,
+                   errors=['You are not subscribed to this feed'],
+                   items=[],
+                   feeds=[],
+                   )
 
     items = DBSession.query(Item)\
                      .filter(Item.feed == subs[0].feed)\
