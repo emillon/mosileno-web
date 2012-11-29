@@ -18,6 +18,15 @@
               type="text/css"
               media="screen"
           />
+      <script type="text/javascript"
+              src="${request.static_url('mosileno:static/jquery-1.8.2.min.js')}"
+       ></script>
+      <script type="text/javascript"
+              src="${request.static_url('mosileno:static/bootstrap.min.js')}"
+       ></script>
+      <script type="text/javascript"
+              src="${request.static_url('mosileno:static/mosileno.js')}"
+       ></script>
 
           % for reqt in (css_links or []):
             <link rel="stylesheet"
@@ -97,15 +106,6 @@
         </ul>
       </div>
 
-      <script type="text/javascript"
-              src="${request.static_url('mosileno:static/jquery-1.8.2.min.js')}"
-       ></script>
-      <script type="text/javascript"
-              src="${request.static_url('mosileno:static/bootstrap.min.js')}"
-       ></script>
-      <script type="text/javascript"
-              src="${request.static_url('mosileno:static/mosileno.js')}"
-       ></script>
 % if activetab:
       <script type="text/javascript">
           $('[data-tabname="${activetab}"]').addClass('active');
