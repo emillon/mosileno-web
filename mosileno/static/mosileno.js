@@ -95,21 +95,6 @@ function rollover_on(selector) {
 
 function mosileno_main() {
     rollover_on(".rollover");
-
-    // Activate HN widgets
-    (function(d, t) {
-        var g = d.createElement(t),
-            s = d.getElementsByTagName(t)[0];
-        g.src = '//hnbutton.appspot.com/static/hn.js';
-        s.parentNode.insertBefore(g, s);
-    }(document, 'script'));
-
-    // Rewrite Reddit button links to absolute ones
-    $(".reddit_button > a:nth-child(2):contains('reddit')").each(
-        function(){
-            $(this).attr('href', 'http://reddit.com/' + $(this).attr('href'))
-        }
-    );
 }
 
 $(document).ready(mosileno_main);
