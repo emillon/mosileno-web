@@ -37,19 +37,6 @@ def init_topic_model():
         sys.exit(-1)
 
 
-init_topic_model() # IMPORTANT !!!
-
-
-def parse(text):
-    def tokenize(text):
-        return [token.encode('utf8') for token in utils.tokenize(text, lower=True, errors='ignore') if 2 <= len(token) <= 20 and not token.startswith('_')]
-    global __LEMMATIZE__
-    if __LEMMATIZE__:
-        return utils.lemmatize(text)
-    else:
-        return tokenize(text)
-
-
 def topic_names(ldaobject):
     """ 
     Badly written heuristic which founds one or two words to describe a 
@@ -95,3 +82,19 @@ def topic_names(ldaobject):
             print "topic #", topicid, " described by:", topicnames[topicid]
             print beststr
     return zip(range(ldaobject.num_topics), topicnames)
+
+
+init_topic_model() # IMPORTANT !!!
+lda_topic_names = dict(topic_names(lda_model))
+
+
+def parse(text):
+    def tokenize(text):
+        return [token.encode('utf8') for token in utils.tokenize(text, lower=True, errors='ignore') if 2 <= len(token) <= 20 and not token.startswith('_')]
+    global __LEMMATIZE__
+    if __LEMMATIZE__:
+        return utils.lemmatize(text)
+    else:
+        return tokenize(text)
+
+
