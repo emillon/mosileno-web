@@ -182,6 +182,8 @@ def get_topic_distrib(text):
     gets the topics distribution and the extracted text (from Tika) 
     on the form [(topicid, probability)] for P(topic) > epsilon 
     """
+    if topics_tools.lda_model is None:
+        topics_tools.init_topic_model()
     lda = topics_tools.lda_model
     return lda[lda.id2word.doc2bow(topics_tools.parse(text))]
 
@@ -201,17 +203,18 @@ def get_most_relevant_topics(topics_list):
 
 @task
 def lda_full(itemid):
-    return chain(lda_article.s(itemid), extract_topic_distrib.s(itemid))
+    data = lda_article(itemid).get()
+    return get_topic_distrib(data)
 
 
 @task
 def lda_article(itemid):
     item = DBSession.query(Item).get(itemid)
     tika = URL('http://localhost:9998/')
-    t = tika.get_async(doc=url)
+    t = tika.get_async(doc=item.link)
     return t
 
 
 @task
-def extract_topic_distrib(itemid, data):
-    return (itemid, data)
+def extract_topic_distrib(data):
+    return data
