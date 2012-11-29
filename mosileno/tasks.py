@@ -21,15 +21,22 @@ from urllib2 import URLError
 
 def import_feed(request, url):
     feed = DBSession.query(Feed).filter_by(url=url).first()
+    new = False
     if not feed:
+        new = True
         feed = Feed(url)
         DBSession.add(feed)
     me = authenticated_userid(request)
     user = DBSession.query(User).filter(User.name == me).one()
-    sub = Subscription(user, feed)
-    DBSession.add(sub)
-    DBSession.expunge(feed)
-    fetch_title.delay(feed.id)
+    sub = DBSession.query(Subscription)\
+                   .filter_by(user=user.id, feed=feed.id)\
+                   .first()
+    if sub is None:
+        sub = Subscription(user, feed)
+        DBSession.add(sub)
+    if new:
+        DBSession.expunge(feed)
+        fetch_title.delay(feed.id)
     return feed.id
 
 
