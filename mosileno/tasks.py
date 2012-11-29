@@ -45,17 +45,44 @@ def slugify(s):
     return re.sub(r'\W+', '-', s)
 
 
+def get_feed(feedObj):
+    """
+    Wrapper around feedparser that deletes objects when gone.
+
+    Returns
+
+        The feed data if feed is ok
+        None otherwise (it may delete the object)
+    """
+    feed = feedparser.parse(feedObj.url, etag=feedObj.etag)
+    feedObj.etag = feed.get('etag')
+    if feed.bozo and isinstance(feed.bozo_exception, URLError):
+        DBSession.delete(feedObj)
+        return None
+    if feed.status in [404, 500]:
+        # Continue to poll
+        return None
+    if feed.status == 410:
+        DBSession.delete(feedObj)
+        return None
+    if feed.status == 304:
+        # ETag hit
+        return None
+    if feed.status == 301:
+        # Moved permanently
+        feedObj.url = feed.url
+        return feed
+    assert(feed.status in [200, 302])
+    return feed
+
+
 @task
 def fetch_title(feed_id):
     feedObj = DBSession.query(Feed).get(feed_id)
     if feedObj is None:
         raise fetch_title.retry(countdown=3)
-    feed = feedparser.parse(feedObj.url)
-    if feed.bozo and isinstance(feed.bozo_exception, URLError):
-        DBSession.delete(feedObj)
-        return
-    if feed.status == 404:
-        DBSession.delete(feedObj)
+    feed = get_feed(feedObj)
+    if feed is None:
         return
     if hasattr(feed.feed, 'title'):
         title = feed.feed.title
@@ -104,7 +131,7 @@ def get_description(item):
     """
     if 'content' in item and item.content:
         return item.content[0].value
-    return item.description
+    return item.get('description')
 
 
 @task
@@ -113,7 +140,9 @@ def fetch_items(feed_id):
         feedObj = DBSession.query(Feed).get(feed_id)
         if feedObj is None:
             raise fetch_items.retry(countdown=3)
-        feed = feedparser.parse(feedObj.url)
+        feed = get_feed(feedObj)
+        if feed is None:
+            return
         for item in feed.entries:
             guid = make_guid(feedObj, item)
             already_in = DBSession.query(Item).filter_by(guid=guid).first()
