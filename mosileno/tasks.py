@@ -16,6 +16,7 @@ from celery.task import task
 from pyramid.security import authenticated_userid
 from datetime import datetime, timedelta
 from time import mktime
+from urllib2 import URLError
 
 
 def import_feed(request, url):
@@ -43,6 +44,12 @@ def fetch_title(feed_id):
     if feedObj is None:
         raise fetch_title.retry(countdown=3)
     feed = feedparser.parse(feedObj.url)
+    if feed.bozo and isinstance(feed.bozo_exception, URLError):
+        DBSession.delete(feedObj)
+        return
+    if feed.status == 404:
+        DBSession.delete(feedObj)
+        return
     if hasattr(feed.feed, 'title'):
         title = feed.feed.title
         feedObj.title = title
@@ -60,9 +67,12 @@ def fetch_title(feed_id):
                      for l in feed.feed['links']
                      if l.get('type', None) == 'application/rss+xml'
                      ]
-            feedObj.url = feeds[0]
-            transaction.commit()
-            raise fetch_title.retry(countdown=3)
+            if feeds:
+                feedObj.url = feeds[0]
+                transaction.commit()
+                raise fetch_title.retry(countdown=3)
+            else:
+                DBSession.delete(feedObj)
         else:
             # Maybe signal to the user?
             DBSession.delete(feedObj)
@@ -110,8 +120,8 @@ def fetch_items(feed_id):
                 date = datetime.fromtimestamp(mktime(item_date))
             description = get_description(item)
             i = Item(feedObj,
-                     title=item.title,
-                     link=item.get('link', None),
+                     title=item.get('title'),
+                     link=item.get('link'),
                      description=description,
                      date=date,
                      guid=guid,
