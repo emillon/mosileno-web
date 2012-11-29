@@ -20,11 +20,18 @@ Here you can enter the URL of a website that you would like to follow. It can be
 either the URL of the feed itself (often ending in <code>.xml</code>), or the
 adress of the site itself.
 
-${form1 | n}
+${form_rss | n}
 <h2>Import OPML data</h2>
 
 OPML files represent a set of subscriptions. For example, you can export OPML
 data from your account on Google Reader or Netvibes and import it here. 
 
-${form2 | n}
+${form_opml | n}
+<h2>Connect Reddit</h2>
+
+<a href="http://reddit.com">Reddit</a> is a social website where users post
+links and vote to elect the most popular ones. You can connect a particular
+subreddit community.
+
+${form_reddit | n}
 </div>
