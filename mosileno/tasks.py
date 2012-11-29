@@ -134,7 +134,6 @@ def get_topic_distrib(text):
     gets the topics distribution and the extracted text (from Tika) 
     on the form [(topicid, probability)] for P(topic) > epsilon 
     """
-    #return lda_model[lda_model.id2word.doc2bow(utils.lemmatize(text))] TODO
     lda = topics_tools.lda_model
-    return lda[lda.id2word.doc2bow(topics_tools.tokenize(text))]
+    return lda[lda.id2word.doc2bow(topics_tools.parse(text))]
 
