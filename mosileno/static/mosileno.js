@@ -50,6 +50,20 @@ function vote(dir, page, item_id, genid) {
     }
 }
 
+function display_votes(data) {
+    $.post('/vote', JSON.stringify(data), function(r) {
+        $.each(r, function(i, x) {
+            if (x.vote === 1) {
+                arrow_inactive('#up_' + x.data, 'up');
+            }
+            if (x.vote === -1) {
+                arrow_inactive('#down_' + x.data, 'down');
+            }
+            console.log(x.vote);
+        });
+    });
+}
+
 function upvote(page, item_id, genid) {
     vote('up', page, item_id, genid)
 }

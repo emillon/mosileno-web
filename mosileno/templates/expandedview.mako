@@ -89,3 +89,11 @@ from mosileno.filter import lx
 <script type="text/javascript"
         src="https://platform.twitter.com/widgets.js"
  ></script>
+<script type='text/javascript'>
+   var data = [];
+% for (item, genid, feed) in items:
+   dd = {'id': ${item.id}, 'data': '${genid}'};
+   data.push(dd);
+% endfor
+    display_votes(data);
+</script>
