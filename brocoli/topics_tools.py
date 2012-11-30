@@ -74,7 +74,7 @@ def topic_names(ldaobject):
             if ind == 0:
                 # if it's the first we keep the default
                 break
-            topicnames[topicid] = ldaobject.id2word[bests[topicid][ind]]
+            topicnames[topicid] = ldaobject.id2word[bests[topicid][ind]].split('/')[0]
             break
         best10 = bests[topicid][:10]
         beststrl = []
