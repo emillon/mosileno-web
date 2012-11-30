@@ -21,7 +21,11 @@ DBSession.configure(bind=engine)
 
 user = DBSession.query(User).filter_by(name=username).one()
 
-items = DBSession.query(Item).all()
+items = DBSession.query(Item)\
+                 .join(Feed)\
+                 .join(Subscription)\
+                 .filter(Subscription.user == user.id)\
+                 .all()
 
 for item in items:
     with transaction.manager:
