@@ -33,7 +33,8 @@ from .models import (
     Feed,
     Invitation,
     Vote,
-    Signal
+    Signal,
+    ItemTopicName,
 )
 
 from .auth import (
@@ -72,6 +73,12 @@ def _templated_feeds_view(page_name, request):
                      request)
     else:
         data = view_myfeeds(request, page_name, limit=30)
+        def topics_for(item):
+            tns = DBSession.query(ItemTopicName)\
+                           .filter_by(item=item.id)\
+                           .all()
+            return ', '.join([tn.topicname for tn in tns])
+        data['topics_for'] = topics_for
         rsp = render(page_name + '.mako', data, request)
     return Response(rsp)
 
