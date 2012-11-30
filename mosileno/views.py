@@ -331,9 +331,10 @@ def _view_items(request, user, items,
                        .filter_by(item=item.id, user=user.id)\
                        .first()
         if its:
-            return int(10000 * its.score)
+            score = 10000 * its.score
         else:
-            return 0
+            score = 0
+        return int((score/1700) * 100)
 
     return tpl(request,
                items=items,

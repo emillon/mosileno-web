@@ -8,12 +8,20 @@ from mosileno.filter import lx
     <div class="span9">
     % for (item, genid, feed) in items:
         <div class="itemfull">
-                <a onclick="signal('expandedview', '${item.id}', 'linkclick')" href="${item.link}">
-                    <div class="itemtitle">${item.title}</div>
-                </a>
-                <div class=itembody>
-                    ${item.description | n, lx}
+            <div class="itemheader row">
+                <div>
+                    <a onclick="signal('expandedview', '${item.id}', 'linkclick')" href="${item.link}">
+                        <div class="itemtitle">${item.title}</div>
+                        <div class="progress pull-right" style="width: 60px">
+                            <div class="bar" style="width: ${score_for(item)}%">
+                            </div>
+                        </div>
+                    </a>
                 </div>
+            </div>
+            <div class=itembody>
+                ${item.description | n, lx}
+            </div>
             <div class="itemfooter">
                 <div class="vote-arrow">
                     <img id="up_${genid}"

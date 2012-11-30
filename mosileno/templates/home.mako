@@ -32,6 +32,10 @@ from mosileno.filter import lx
                 <div class="itemtitle">${item.title}</div>
                 <div class="itemdomain">domain.com</div>
                 <div class="itemsource">
+                    <div class="progress pull-right" style="width: 60px">
+                        <div class="bar" style="width: ${score_for(item)}%">
+                        </div>
+                    </div>
                     <div class="itemfeed">${feed.title}</div>
                 </div>
             </a>
