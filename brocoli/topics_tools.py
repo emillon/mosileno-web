@@ -1,4 +1,5 @@
 import pickle
+import requests
 import numpy
 import sys
 from gensim import utils
@@ -77,10 +78,10 @@ def topic_names(ldaobject):
         best10 = bests[topicid][:10]
     return zip(range(ldaobject.num_topics), topicnames)
 
+_lda_topic_names = None  # Lazily loaded
 
-init_topic_model() # IMPORTANT !!!
+init_topic_model()
 lda_topic_names = dict(topic_names(lda_model))
-
 
 def parse(text):
     def tokenize(text):
@@ -92,3 +93,8 @@ def parse(text):
         return tokenize(text)
 
 
+def tika(url):
+    rsp = requests.get('http://localhost:9998/', params={'doc': url})
+    if 'retval' not in rsp.json:
+        return None
+    return rsp.json['retval']

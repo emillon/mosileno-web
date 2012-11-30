@@ -6,6 +6,7 @@ from sqlalchemy import (
     Text,
     ForeignKey,
     DateTime,
+    Float,
 )
 
 from sqlalchemy.ext.declarative import declarative_base
@@ -149,3 +150,39 @@ class Signal(Base):
         self.action = action
         self.item = itemid
         self.user = userid
+
+class ItemTopic(Base):
+    __tablename__ = 'itemtopics'
+    id = Column(Integer, primary_key=True)
+    item = Column(Integer, ForeignKey('items.id', ondelete='SET NULL'))
+    topic = Column(Integer, nullable=False)
+    weight = Column(Float, nullable=False)
+
+    def __init__(self, item, topic, weight):
+        self.item = item
+        self.topic = topic
+        self.weight = weight
+
+
+class ItemTopicName(Base):
+    __tablename__ = 'itemtopicnames'
+    id = Column(Integer, primary_key=True)
+    item = Column(Integer, ForeignKey('items.id', ondelete='SET NULL'))
+    topicname = Column(Text, nullable=False)
+
+    def __init__(self, item, topicname):
+        self.item = item
+        self.topicname = topicname
+
+
+class ItemScore(Base):
+    __tablename__ = 'itemscores'
+    id = Column(Integer, primary_key=True)
+    item = Column(Integer, ForeignKey('items.id', ondelete='SET NULL'))
+    user = Column(Integer, ForeignKey('users.id', ondelete='SET NULL'))
+    score = Column(Float, nullable=False)
+
+    def __init__(self, item, user, score):
+        self.item = item
+        self.user = user
+        self.score = score

@@ -34,7 +34,8 @@ from mosileno.filter import lx
                         />
                 </div>
                 <div class="itemtopics">
-                    topic1, topic2
+                    ${topics_for(item)}
+                    (score: ${score_for(item)})
                 </div>
                 <div class="itemsource">
                     <div class="itemfeed">
