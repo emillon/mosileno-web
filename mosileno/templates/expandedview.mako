@@ -12,7 +12,7 @@ from mosileno.filter import lx
                 <div>
                     <a onclick="signal('expandedview', '${item.id}', 'linkclick')" href="${item.link}">
                         <div class="itemtitle">${item.title}</div>
-                        <div class="progress pull-right" style="width: 60px">
+                        <div class="progress pull-right" style="width: 60px; margin-top: 10px;">
                             <div class="bar" style="width: ${score_for(item)}%">
                             </div>
                         </div>
