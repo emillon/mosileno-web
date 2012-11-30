@@ -43,7 +43,9 @@ from mosileno.filter import lx
                 </div>
                 <div class="itemtopics">
                     ${topics_for(item)}
-                    (score: ${score_for(item)})
+                    <!-- (score: ${score_for(item)}) -->
+                </div>
+                <div class="itemdomain" id="${genid}_domain">
                 </div>
                 <div class="itemsource">
                     <div class="itemfeed">
@@ -83,6 +85,9 @@ from mosileno.filter import lx
 % for (item, genid, feed) in items:
    dd = {'id': ${item.id}, 'data': '${genid}'};
    data.push(dd);
+    $('#' + '${genid}' + '_domain').html(
+        '(' + $('<a>').prop('href', '${item.link}').prop('hostname') + ')'
+    );
 % endfor
     display_votes(data);
 </script>

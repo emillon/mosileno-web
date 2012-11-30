@@ -19,7 +19,9 @@
 }
 
 .itemdomain {
+    margin-left: 8px;
     font-style: italic;
+    color: #777;
     display: inline;
 }
 
