@@ -64,21 +64,6 @@ def _templated_feeds_view(page_name, request):
     else:
         user = DBSession.query(User).filter(User.name == logged_in).one()
         data = view_myfeeds(request, page_name, limit=30)
-        def topics_for(item):
-            tns = DBSession.query(ItemTopicName)\
-                           .filter_by(item=item.id)\
-                           .all()
-            return ', '.join([tn.topicname for tn in tns])
-        data['topics_for'] = topics_for
-        def score_for(item):
-            its = DBSession.query(ItemScore)\
-                           .filter_by(item=item.id, user=user.id)\
-                           .first()
-            if its:
-                return int(10000 * its.score)
-            else:
-                return 0
-        data['score_for'] = score_for
         rsp = render(page_name + '.mako', data, request)
     return Response(rsp)
 
@@ -336,12 +321,28 @@ def _view_items(request, user, items,
                      .filter(Subscription.user == user.id)\
                      .filter(Feed.title != None)
 
+    def topics_for(item):
+        tns = DBSession.query(ItemTopicName)\
+                       .filter_by(item=item.id)\
+                       .all()
+        return ', '.join([tn.topicname for tn in tns])
+    def score_for(item):
+        its = DBSession.query(ItemScore)\
+                       .filter_by(item=item.id, user=user.id)\
+                       .first()
+        if its:
+            return int(10000 * its.score)
+        else:
+            return 0
+
     return tpl(request,
                items=items,
                feeds=feeds,
                activeview=activeview,
                activetab=activetab,
                manage=manage,
+               score_for=score_for,
+               topics_for=topics_for,
                )
 
 
