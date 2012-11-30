@@ -19,7 +19,6 @@ from celery import chain
 from pyramid.security import authenticated_userid
 from datetime import datetime, timedelta
 from time import mktime
-import topics_tools
 from urllib2 import URLError
 
 
@@ -176,29 +175,6 @@ def fetch_all_items():
         feeds = DBSession.query(Feed.id).all()
         for feed in feeds:
             fetch_items.delay(feed)
-
-
-@task
-def get_topic_distrib(text):
-    """ 
-    gets the topics distribution and the extracted text (from Tika) 
-    on the form [(topicid, probability)] for P(topic) > epsilon 
-    """
-    lda = topics_tools.lda_model
-    return lda[lda.id2word.doc2bow(topics_tools.parse(text))]
-
-
-@task
-def get_most_relevant_topics(topics_list):
-    """
-    from a [(topicid, probability)] list (for P(topic) > epsilon),
-    it gets the "names" of the most probable topics
-    """
-    topics_list.sort(cmp=lambda x, y: 1 if x[1] < y[1] else -1)
-    topics_list = topics_list[:3] # ARBITRARY (at most 3 topic names)
-    topics_id, _ = zip(*topics_list)
-    topic_names = topics_tools.lda_topic_names()
-    return [topic_names[tid] for tid in topics_id]
 
 
 @task
