@@ -30,7 +30,7 @@ from mosileno.filter import lx
                href="${item.link}"
                class="itemshortbody">
                 <div class="itemtitle">${item.title}</div>
-                <div class="itemdomain">domain.com</div>
+                <div class="itemdomain" id="${genid}_domain"></div>
                 <div class="itemsource">
                     <div class="progress pull-right" style="width: 60px">
                         <div class="bar" style="width: ${score_for(item)}%">
@@ -46,6 +46,9 @@ from mosileno.filter import lx
     % for (item, genid, feed) in items:
             dd = {'id': ${item.id}, 'data': '${genid}'};
             data.push(dd);
+            $('#' + '${genid}' + '_domain').html(
+                $('<a>').prop('href', '${item.link}').prop('hostname')
+            );
     % endfor
             display_votes(data);
         </script>
