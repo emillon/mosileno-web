@@ -20,7 +20,8 @@
 
 .itemdomain {
     margin-left: 8px;
-    font-style: italic;
+    font-size: 0.82em;
+    vertical-align: top;
     color: #777;
     display: inline;
 }
