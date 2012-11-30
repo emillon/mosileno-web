@@ -9,6 +9,7 @@ from .models import (
     User,
     Subscription,
     Item,
+    ItemTopic,
 )
 
 from celery.decorators import periodic_task
@@ -166,6 +167,7 @@ def fetch_items(feed_id):
                      guid=guid,
                      )
             DBSession.add(i)
+        lda_full_feed.delay(feed_id)
 
 
 @periodic_task(run_every=timedelta(minutes=15))
@@ -182,8 +184,6 @@ def get_topic_distrib(text):
     gets the topics distribution and the extracted text (from Tika) 
     on the form [(topicid, probability)] for P(topic) > epsilon 
     """
-    if topics_tools.lda_model is None:
-        topics_tools.init_topic_model()
     lda = topics_tools.lda_model
     return lda[lda.id2word.doc2bow(topics_tools.parse(text))]
 
@@ -203,18 +203,25 @@ def get_most_relevant_topics(topics_list):
 
 @task
 def lda_full(itemid):
-    data = lda_article(itemid).get()
-    return get_topic_distrib(data)
+    with transaction.manager:
+        item = DBSession.query(Item).get(itemid)
+        tika = URL('http://localhost:9998/')
+        data = tika.get_async(doc=item.link).get()
+        logger = lda_full.get_logger()
+        tops = get_topic_distrib(data)
+        logger.info("tops = %s" % tops)
+        for (topic, score) in tops:
+            d = ItemTopic(itemid, topic, score)
+            DBSession.add(d)
 
+
+@task
+def lda_full_feed(feed_id):
+    with transaction.manager:
+        items = DBSession.query(Item).filter_by(feed=feed_id)
+        for item in items:
+            lda_full.delay(item.id).get()
 
 @task
 def lda_article(itemid):
-    item = DBSession.query(Item).get(itemid)
-    tika = URL('http://localhost:9998/')
-    t = tika.get_async(doc=item.link)
     return t
-
-
-@task
-def extract_topic_distrib(data):
-    return data

@@ -42,8 +42,6 @@ def topic_names(ldaobject):
     Badly written heuristic which founds one or two words to describe a 
     topic. Returns a list of couples [(topicid, topicdescription)]
     """
-    if lda_model is None:
-        init_topic_model()
     topn = ldaobject.num_topics # should perhaps be less? 10?
     bests = []
     topicnames = []
@@ -87,12 +85,8 @@ def topic_names(ldaobject):
 
 _lda_topic_names = None  # Lazily loaded
 
-def lda_topic_names():
-    if _lda_topic_names is None:
-        init_topic_model()
-        _lda_topic_names = dict(topic_names(lda_model))
-    return _lda_topic_names
-
+init_topic_model()
+lda_topic_names = dict(topic_names(lda_model))
 
 def parse(text):
     def tokenize(text):
