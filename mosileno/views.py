@@ -324,13 +324,15 @@ def _view_items(request, user, items,
                       .filter_by(user=user.id)\
                       .all()
 
+    def captopics(topicname):
+        return topicname.capitalize() if topicname != '' and topicname[0].islower() else topicname 
+    topics = [captopics(t.topicname) for t in topics]
+
     def topics_for(item):
         tns = DBSession.query(ItemTopicName)\
                        .filter_by(item=item.id)\
                        .all()
-        return ', '.join([tn.topicname.capitalize() 
-            if tn.topicname[0].islower() else tn.topicname 
-            for tn in tns if tn.topicname])
+        return ', '.join([captopics(tn.topicname) for tn in tns if tn.topicname])
     def score_for(item):
         its = DBSession.query(ItemScore)\
                        .filter_by(item=item.id, user=user.id)\
