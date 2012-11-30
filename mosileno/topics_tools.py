@@ -3,28 +3,28 @@ import numpy
 import sys
 from gensim import utils
 
-__DEBUG__ = 0 # with 42 we output topics, 42 is intentional so that you read
+DEBUG = 0 # with 42 we output topics, 42 is intentional so that you read
 # the code that it prints (this debug takes some additional CPU time!).
-__LEMMATIZE__ = False
+LEMMATIZE= False
 lda_model = None
 topic_model_filename = 'topic-model/hn%s.ldamodel'
 
 def init_topic_model():
     " Necessary spaghetti code to fall back on models "
-    global lda_model, topic_model_filename, __LEMMATIZE__
+    global lda_model, topic_model_filename, LEMMATIZE
     if utils.HAS_PATTERN:
-        __LEMMATIZE__ = True # we try and use pattern:
+        LEMMATIZE = True # we try and use pattern:
         # here we can change if we want to not use pattern and just tokenize
     else:
         print >> sys.stderr, "WARNING: you don't have the `pattern` library"
-    if __LEMMATIZE__:
+    if LEMMATIZE:
         try:
             with open((topic_model_filename % '_lemmatized'), 'r') as testf: pass
             topic_model_filename = (topic_model_filename % '_lemmatized')
         except IOError:
-            __LEMMATIZE__ = False
+            LEMMATIZE = False
             print >> sys.stderr, "WARNING: You don't have the lemmatized model, it's bad!"
-    if not __LEMMATIZE__:
+    if not LEMMATIZE:
         print >> sys.stderr, "WARNING: falling back to using the tokenized model..."
         topic_model_filename = (topic_model_filename % '')
     try:
@@ -42,7 +42,7 @@ def topic_names(ldaobject):
     Badly written heuristic which founds one or two words to describe a 
     topic. Returns a list of couples [(topicid, topicdescription)]
     """
-    global __DEBUG__, __LEMMATIZE__
+    global DEBUG, LEMMATIZE
     topn = ldaobject.num_topics # should perhaps be less? 10?
     bests = []
     topicnames = []
@@ -77,9 +77,9 @@ def topic_names(ldaobject):
             topicnames[topicid] = ldaobject.id2word[bests[topicid][ind]].split('/')[0]
             break
         best10 = bests[topicid][:10]
-        if __DEBUG__ == 42:
+        if DEBUG == 42:
             beststrl = []
-            if __LEMMATIZE__:
+            if LEMMATIZE:
                 beststrl = [(topic[i], ldaobject.id2word[i].split('/')[0])
                         for i in best10] # to remove POS-tag ("VB" in "be/VB")
             else:
@@ -97,8 +97,8 @@ lda_topic_names = dict(topic_names(lda_model))
 def parse(text):
     def tokenize(text):
         return [token.encode('utf8') for token in utils.tokenize(text, lower=True, errors='ignore') if 2 <= len(token) <= 20 and not token.startswith('_')]
-    global __LEMMATIZE__
-    if __LEMMATIZE__:
+    global LEMMATIZE
+    if LEMMATIZE:
         return utils.lemmatize(text)
     else:
         return tokenize(text)
