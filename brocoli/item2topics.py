@@ -11,8 +11,7 @@ from mosileno.models import (
 )
 from sqlalchemy import create_engine
 import transaction
-import requests
-from mosileno import topics_tools
+import topics_tools
 
 def get_topic_distrib(text):
     """ 
@@ -31,10 +30,9 @@ for item in items:
     print item.id
     with transaction.manager:
         item = DBSession.query(Item).get(item.id)
-        rsp = requests.get('http://localhost:9998/', params={'doc': item.link})
-        if 'retval' not in rsp.json:
+        data = topics_tools.tika(item.link)
+        if data is None:
             continue
-        data = rsp.json['retval']
         tops = get_topic_distrib(data)
         for (topic, score) in tops:
             d = ItemTopic(item.id, topic, score)
