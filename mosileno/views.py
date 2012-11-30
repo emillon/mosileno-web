@@ -328,7 +328,9 @@ def _view_items(request, user, items,
         tns = DBSession.query(ItemTopicName)\
                        .filter_by(item=item.id)\
                        .all()
-        return ', '.join([tn.topicname.capitalize() for tn in tns if tn.topicname])
+        return ', '.join([tn.topicname.capitalize() 
+            if tn.topicname[0].islower() else tn.topicname 
+            for tn in tns if tn.topicname])
     def score_for(item):
         its = DBSession.query(ItemScore)\
                        .filter_by(item=item.id, user=user.id)\

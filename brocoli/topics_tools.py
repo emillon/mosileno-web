@@ -132,11 +132,11 @@ def manual_HN_topic_names(ldaobject):
                     'cloud',
                     'web dev',
                     '', # cs, image, thank, web, page
-                    'OS',
+                    'operating sytems',
                     'HN metadata', # points and votes
                     'wikipedia & web',
                     'months',
-                    'RoR',
+                    'ruby on rails',
                     'patent law',
                     'entertainment',
                     '', # vote, zdnet, topic, search
