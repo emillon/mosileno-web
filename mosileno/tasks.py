@@ -166,7 +166,6 @@ def fetch_items(feed_id):
                      guid=guid,
                      )
             DBSession.add(i)
-        lda_full_feed.delay(feed_id)
 
 
 @periodic_task(run_every=timedelta(minutes=15))
@@ -175,29 +174,3 @@ def fetch_all_items():
         feeds = DBSession.query(Feed.id).all()
         for feed in feeds:
             fetch_items.delay(feed)
-
-
-@task
-def lda_full(itemid):
-    with transaction.manager:
-        item = DBSession.query(Item).get(itemid)
-        tika = URL('http://localhost:9998/')
-        data = tika.get_async(doc=item.link).get()
-        logger = lda_full.get_logger()
-        tops = get_topic_distrib(data)
-        logger.info("tops = %s" % tops)
-        for (topic, score) in tops:
-            d = ItemTopic(itemid, topic, score)
-            DBSession.add(d)
-
-
-@task
-def lda_full_feed(feed_id):
-    with transaction.manager:
-        items = DBSession.query(Item).filter_by(feed=feed_id)
-        for item in items:
-            lda_full.delay(item.id).get()
-
-@task
-def lda_article(itemid):
-    return t
