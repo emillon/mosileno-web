@@ -20,3 +20,4 @@ zope.sqlalchemy
 numpy
 pattern
 gensim
+requests
