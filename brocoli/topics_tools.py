@@ -52,8 +52,8 @@ def topic_names(ldaobject):
         topic /= topic.sum()
         bests.append(numpy.argsort(topic)[::-1][:topn])
     for topicid in range(ldaobject.num_topics):
-        topicnames.append(ldaobject.id2word[bests[topicid][0]] + " " 
-                + ldaobject.id2word[bests[topicid][1]])
+        topicnames.append(ldaobject.id2word[bests[topicid][0]].split('/')[0] + " " 
+                + ldaobject.id2word[bests[topicid][1]].split('/')[0])
         ind = 0
         while ind < topn:
             contsearch = False
@@ -78,13 +78,13 @@ def topic_names(ldaobject):
             topicnames[topicid] = ldaobject.id2word[bests[topicid][ind]].split('/')[0]
             break
         best10 = bests[topicid][:10]
-        beststrl = []
-        if __LEMMATIZE__:
-            beststrl = [(topic[i], ldaobject.id2word[i].split('/')[0])
-                    for i in best10] # to remove POS-tag ("VB" in "be/VB")
-        else:
-            beststrl = [(topic[i], ldaobject.id2word[i]) for i in best10]
         if __DEBUG__ == 42:
+            beststrl = []
+            if __LEMMATIZE__:
+                beststrl = [(topic[i], ldaobject.id2word[i].split('/')[0])
+                        for i in best10] # to remove POS-tag ("VB" in "be/VB")
+            else:
+                beststrl = [(topic[i], ldaobject.id2word[i]) for i in best10]
             beststr = ' + '.join(['%.3f*%s' % v for v in beststrl])
             print "topic #", topicid, " described by:", topicnames[topicid]
             print beststr
