@@ -1,5 +1,5 @@
 import pickle
-#import requests
+import requests
 import numpy
 import sys
 from gensim import utils
@@ -120,7 +120,7 @@ def manual_HN_topic_names(ldaobject):
                     'social news',
                     '', # datum, page, search, link, result
                     'design',
-                    'response?', # re, re, lot, problem, better
+                    '', # response? : re, re, lot, problem, better
                     'programming',
                     'online/social news',
                     'life',
@@ -138,7 +138,7 @@ def manual_HN_topic_names(ldaobject):
                     'months',
                     'RoR',
                     'patents law',
-                    'video games',
+                    'entertainment',
                     '', # vote, zdnet, topic, search
                     'startups']
         else:
