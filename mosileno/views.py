@@ -354,10 +354,10 @@ def view_myfeeds(request, activetab, limit=20):
                      .join(Subscription)\
                      .filter(Subscription.user == user.id)\
                      .order_by(Item.date.desc())\
-                     .limit(limit)\
                      .all()
     rank = lambda (i, _): ranking.clover(request, i)
     items.sort(key=rank, reverse=True)  # Highest scores first
+    items = items[:limit]
     return _view_items(request, user, items,
                        activetab=activetab, activeview='all')
 
