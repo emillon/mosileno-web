@@ -5,11 +5,7 @@ Ranking functions (reddit-style, HN-style, etc)
 import datetime
 import math
 
-from models import (
-    DBSession,
-    Vote,
-    User,
-)
+from models import *
 
 from pyramid.security import authenticated_userid
 
@@ -51,3 +47,14 @@ def reddit(request, item):
         (float(td.microseconds) / 1000000) - 1134028003
     score = round(order + sign * seconds / 45000, 7)
     return score
+
+
+def clover(request, item):
+    me = authenticated_userid(request)
+    user = DBSession.query(User).filter(User.name == me).one()
+    itemscore = DBSession.query(ItemScore)\
+                         .filter_by(user=user.id, item=item.id)\
+                         .first()
+    if itemscore is None:
+        return 0
+    return itemscore.score

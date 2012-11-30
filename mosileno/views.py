@@ -25,17 +25,7 @@ import urlparse
 import ranking
 import tasks
 
-from .models import (
-    DBSession,
-    User,
-    Subscription,
-    Item,
-    Feed,
-    Invitation,
-    Vote,
-    Signal,
-    ItemTopicName,
-)
+from .models import *
 
 from .auth import (
     auth_correct,
@@ -72,6 +62,7 @@ def _templated_feeds_view(page_name, request):
                          ),
                      request)
     else:
+        user = DBSession.query(User).filter(User.name == logged_in).one()
         data = view_myfeeds(request, page_name, limit=30)
         def topics_for(item):
             tns = DBSession.query(ItemTopicName)\
@@ -79,6 +70,15 @@ def _templated_feeds_view(page_name, request):
                            .all()
             return ', '.join([tn.topicname for tn in tns])
         data['topics_for'] = topics_for
+        def score_for(item):
+            its = DBSession.query(ItemScore)\
+                           .filter_by(item=item.id, user=user.id)\
+                           .first()
+            if its:
+                return int(10000 * its.score)
+            else:
+                return 0
+        data['score_for'] = score_for
         rsp = render(page_name + '.mako', data, request)
     return Response(rsp)
 
@@ -355,7 +355,7 @@ def view_myfeeds(request, activetab, limit=20):
                      .order_by(Item.date.desc())\
                      .limit(limit)\
                      .all()
-    rank = lambda (i, _): ranking.reddit(request, i)
+    rank = lambda (i, _): ranking.clover(request, i)
     items.sort(key=rank, reverse=True)  # Highest scores first
     return _view_items(request, user, items,
                        activetab=activetab, activeview='all')
