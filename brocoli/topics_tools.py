@@ -137,7 +137,7 @@ def manual_HN_topic_names(ldaobject):
                     'wikipedia & web',
                     'months',
                     'RoR',
-                    'patents law',
+                    'patent law',
                     'entertainment',
                     '', # vote, zdnet, topic, search
                     'startups']
@@ -149,7 +149,7 @@ def manual_HN_topic_names(ldaobject):
                 'technological innovation',
                 'server performance',
                 'web frameworks',
-                'patents law',
+                'patent law',
                 'months',
                 'cloud computing',
                 'computer science',
