@@ -3,8 +3,6 @@ import numpy
 import sys
 from gensim import utils
 
-DEBUG = 0 # with 42 we output topics, 42 is intentional so that you read
-# the code that it prints (this debug takes some additional CPU time!).
 LEMMATIZE= False
 lda_model = None
 topic_model_filename = 'topic-model/hn%s.ldamodel'
@@ -42,7 +40,7 @@ def topic_names(ldaobject):
     Badly written heuristic which founds one or two words to describe a 
     topic. Returns a list of couples [(topicid, topicdescription)]
     """
-    global DEBUG, LEMMATIZE
+    global LEMMATIZE
     topn = ldaobject.num_topics # should perhaps be less? 10?
     bests = []
     topicnames = []
@@ -77,16 +75,6 @@ def topic_names(ldaobject):
             topicnames[topicid] = ldaobject.id2word[bests[topicid][ind]].split('/')[0]
             break
         best10 = bests[topicid][:10]
-        if DEBUG == 42:
-            beststrl = []
-            if LEMMATIZE:
-                beststrl = [(topic[i], ldaobject.id2word[i].split('/')[0])
-                        for i in best10] # to remove POS-tag ("VB" in "be/VB")
-            else:
-                beststrl = [(topic[i], ldaobject.id2word[i]) for i in best10]
-            beststr = ' + '.join(['%.3f*%s' % v for v in beststrl])
-            print "topic #", topicid, " described by:", topicnames[topicid]
-            print beststr
     return zip(range(ldaobject.num_topics), topicnames)
 
 
