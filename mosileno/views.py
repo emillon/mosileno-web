@@ -320,6 +320,9 @@ def _view_items(request, user, items,
                      .join(Subscription)\
                      .filter(Subscription.user == user.id)\
                      .filter(Feed.title != None)
+    topics = DBSession.query(UserTopicName)\
+                      .filter_by(user=user.id)\
+                      .all()
 
     def topics_for(item):
         tns = DBSession.query(ItemTopicName)\
@@ -339,6 +342,7 @@ def _view_items(request, user, items,
     return tpl(request,
                items=items,
                feeds=feeds,
+               topics=topics,
                activeview=activeview,
                activetab=activetab,
                manage=manage,
@@ -385,6 +389,7 @@ def view_feed(request):
                    errors=['You are not subscribed to this feed'],
                    items=[],
                    feeds=[],
+                   topics=[],
                    )
 
     items = DBSession.query(Item)\

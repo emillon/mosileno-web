@@ -186,3 +186,14 @@ class ItemScore(Base):
         self.item = item
         self.user = user
         self.score = score
+
+
+class UserTopicName(Base):
+    __tablename__ = 'usertopicnames'
+    id = Column(Integer, primary_key=True)
+    user = Column(Integer, ForeignKey('users.id', ondelete='SET NULL'))
+    topicname = Column(Text, nullable=False)
+
+    def __init__(self, user, topicname):
+        self.user = user
+        self.topicname = topicname

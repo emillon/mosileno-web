@@ -5,6 +5,7 @@ from gensim import utils
 from sqlalchemy import create_engine
 import transaction
 from mosileno.models import *
+import operator
 
 if len(sys.argv) <= 1:
     print "Usage: topic2scores.py username user.params"
@@ -20,6 +21,14 @@ engine = create_engine('sqlite:///mosileno.sqlite')
 DBSession.configure(bind=engine)
 
 user = DBSession.query(User).filter_by(name=username).one()
+
+top_topics = sorted(enumerate(user_params), key=operator.itemgetter(1), reverse=True)
+
+for (t, _) in top_topics[:10]:
+    with transaction.manager:
+        tn = topics_tools.lda_topic_names[t]
+        utn = UserTopicName(user.id, tn)
+        DBSession.add(utn)
 
 items = DBSession.query(Item)\
                  .join(Feed)\

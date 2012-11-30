@@ -70,6 +70,10 @@ from mosileno.filter import lx
         % for feed in feeds:
                 <li data-activeview="${'feed-%s' % feed.slug}"><a href="/feed/${feed.slug}">${feed.title}</a></li>
         % endfor
+                <li class="nav-header">Topics</li>
+        % for topic in topics:
+                <li>${topic.topicname.capitalize()}</li>
+        % endfor
             </ul>
     </div>
 
