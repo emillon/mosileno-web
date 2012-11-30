@@ -162,3 +162,14 @@ class ItemTopic(Base):
         self.item = item
         self.topic = topic
         self.weight = weight
+
+
+class ItemTopicName(Base):
+    __tablename__ = 'itemtopicnames'
+    id = Column(Integer, primary_key=True)
+    item = Column(Integer, ForeignKey('items.id', ondelete='SET NULL'))
+    topicname = Column(Text, nullable=False)
+
+    def __init__(self, item, topicname):
+        self.item = item
+        self.topicname = topicname
