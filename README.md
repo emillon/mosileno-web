@@ -27,10 +27,11 @@ Install the dependencies
 
     pip install -r requirements.txt
 
-Download the topic model file (s.a. hn.ldamodel or hn\_lemmatized.ldamodel):
+Download the dev (test) topic model file 
+(s.a. hn.ldamodel or hn\_lemmatized.ldamodel):
 
     mkdir topic-model
-    curl -O https://dl.dropbox.com/u/14035465/hn_lemmatized.ldamodel
+    curl -O https://dl.dropbox.com/u/14035465/hn40_lemmatized.ldamodel
     mv *.ldamodel topic-model/
 
 Install the package
