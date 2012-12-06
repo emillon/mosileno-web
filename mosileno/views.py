@@ -406,6 +406,7 @@ def view_feed(request):
     return _view_items(request,
                        user,
                        items,
+                       activetab='expandedview',
                        activeview=activeview,
                        manage=feedObj,
                        )
