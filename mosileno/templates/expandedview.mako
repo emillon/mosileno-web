@@ -8,7 +8,7 @@ from mosileno.filter import lx
     <div class="span9">
     % for (item, genid, feed) in items:
         <div class="itemfull">
-            <div class="itemheader row">
+            <div class="itemheader">
                 <div>
                     <a onclick="signal('expandedview', '${item.id}', 'linkclick')" href="${item.link}">
                         <div class="itemtitle">${item.title}</div>
@@ -19,7 +19,7 @@ from mosileno.filter import lx
                     </a>
                 </div>
             </div>
-            <div class=itembody>
+            <div class="itembody">
                 ${item.description | n, lx}
             </div>
             <div class="itemfooter">
