@@ -151,6 +151,7 @@ class Signal(Base):
         self.item = itemid
         self.user = userid
 
+
 class ItemTopic(Base):
     __tablename__ = 'itemtopics'
     id = Column(Integer, primary_key=True)
