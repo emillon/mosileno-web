@@ -37,7 +37,7 @@ of topics.
       |             (      )             |
       |             |~----~|             |
       +-----------  |  DB  | <-----------+
-                    ~----~
+                     ~----~
 
 This is also a global pass.
 
