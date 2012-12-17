@@ -14,7 +14,7 @@ Workflow
              |                |
 
             tika           science
-    items ---------> text ---------> topics
+    items ---------> text ---------> itemtopics
 
       ^                                |
       |             .----.             |
@@ -24,5 +24,21 @@ Workflow
                     ~----~
 
 This is global to the whole database.
+
+### topic2names
+
+Populates `itemtopicnames` using information in `itemtopics` + hardcoded names
+of topics.
+
+    items ------> itemtopics ----> itemtopicnames
+
+      ^                                  |
+      |              .----.              |
+      |             (      )             |
+      |             |~----~|             |
+      +-----------  |  DB  | <-----------+
+                    ~----~
+
+This is also a global pass.
 
 [logo]: http://i.imgur.com/TmHKI.png
