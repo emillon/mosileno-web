@@ -20,6 +20,7 @@ from pyramid.security import authenticated_userid
 from datetime import datetime, timedelta
 from time import mktime
 from urllib2 import URLError
+from xml.sax import SAXException
 
 
 def import_feed(request, url):
@@ -57,7 +58,11 @@ def get_feed(feedObj):
         The feed data if feed is ok
         None otherwise (it may delete the object)
     """
-    feed = feedparser.parse(feedObj.url, etag=feedObj.etag)
+    try:
+        feed = feedparser.parse(feedObj.url, etag=feedObj.etag)
+    except SAXException:
+        DBSession.delete(feedObj)
+        return None
     feedObj.etag = feed.get('etag')
     if feed.bozo and isinstance(feed.bozo_exception, URLError):
         DBSession.delete(feedObj)
