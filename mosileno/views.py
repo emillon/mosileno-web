@@ -507,3 +507,11 @@ def notfound(request):
     report it using the "Report a bug" link below.
     """
     return tpl(request, content=msg)
+
+
+@view_config(route_name='admin',
+             renderer='page.mako',
+             permission='admin',
+             )
+def view_admin(request):
+    return tpl(request, content='Welcome to admin panel')

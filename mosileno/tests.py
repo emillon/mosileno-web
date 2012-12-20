@@ -313,7 +313,9 @@ class FunctionalTests(unittest.TestCase):
         from mosileno import main
         params = {'sqlalchemy.url': 'sqlite://',
                   'mako.directories': 'mosileno:templates',
-                  'pyramid.includes': 'pyramid_deform',
+                  'pyramid.includes': ['pyramid_deform',
+                                       'pyramid_tm',
+                                       ],
                   }
         app = main({}, **params)
         engine = DBSession.get_bind(mapper=None)
@@ -410,3 +412,37 @@ class FunctionalTests(unittest.TestCase):
         res = res.follow()
         #res = self.testapp.post('/signal', {'source': 'home',
             #'action': 'linkup', 'item': '1'}, status=200) TODO
+
+    def test_admin_deny_anonymous(self):
+        """
+        Admin panel is denied to anonymous users
+        """
+        url = '/admin'
+        res = self.testapp.get(url)
+        self.assertIn('Password', res.body)
+
+    def test_admin_deny_logged_in(self):
+        """
+        Admin panel is denied to ordinary citizens
+        """
+        username = 'alfred'
+        password = 'alfredo'
+        self._register_user(username, password)
+        res = self.testapp.get('/login')
+        res = self._login_helper(username, password, res)
+        url = '/admin'
+        res = self.testapp.get(url)
+        self.assertIn('Password', res.body)
+
+    def test_admin_allow(self):
+        """
+        Admin panel is granted to admin user
+        """
+        username = 'admin'
+        password = 'admino'
+        self._register_user(username, password)
+        res = self.testapp.get('/login')
+        res = self._login_helper(username, password, res)
+        url = '/admin'
+        res = self.testapp.get(url)
+        self.assertNotIn('Password', res.body)

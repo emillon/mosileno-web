@@ -33,6 +33,7 @@ class RootFactory(object):
     __name__ = ''
     __acl__ = [
         (Allow, Authenticated, 'edit'),
+        (Allow, 'admin', 'admin'),
     ]
 
     def __init__(self, request):
