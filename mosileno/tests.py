@@ -34,8 +34,7 @@ from .views import (
 from .tasks import import_feed
 
 
-DOCS = {'feed': """
-             <?xml version="1.0" encoding="utf-8"?>
+DOCS = {'feed': """<?xml version="1.0" encoding="utf-8"?>
              <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
                  <channel>
                      <title>Feed title</title>
