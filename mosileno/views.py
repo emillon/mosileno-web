@@ -366,12 +366,10 @@ def view_myfeeds(request, activetab, limit=20):
     items = DBSession.query(Item, Feed)\
                      .join(Feed)\
                      .join(Subscription)\
+                     .join(ItemScore)\
                      .filter(Subscription.user == user.id)\
-                     .order_by(Item.date.desc())\
-                     .all()
-    rank = lambda (i, _): ranking.clover(user, i)
-    items.sort(key=rank, reverse=True)  # Highest scores first
-    items = items[:limit]
+                     .order_by(ItemScore.score.desc())\
+                     .limit(limit)
     return _view_items(request, user, items,
                        activetab=activetab, activeview='all')
 

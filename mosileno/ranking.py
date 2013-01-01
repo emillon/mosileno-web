@@ -47,12 +47,3 @@ def reddit(request, item):
         (float(td.microseconds) / 1000000) - 1134028003
     score = round(order + sign * seconds / 45000, 7)
     return score
-
-
-def clover(user, item):
-    itemscore = DBSession.query(ItemScore)\
-                         .filter_by(user=user.id, item=item.id)\
-                         .first()
-    if itemscore is None:
-        return 0
-    return itemscore.score
