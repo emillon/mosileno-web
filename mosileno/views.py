@@ -302,7 +302,7 @@ def _view_items(request, user, items,
         request : the current request
         user    : the user currently logged in
         items   : the items to display, as a list of
-                  (item, feed title)
+                  (item, feed title, score)
 
     Keyword arguments
         activeview : the data-activeview value that will be set class=active
@@ -315,7 +315,8 @@ def _view_items(request, user, items,
     Returns
         a dictionary meant to be rendered by home/expandedview.mako.
     """
-    items = [(i, "collapse%d" % n, t) for (n, (i, t)) in enumerate(items)]
+    items = [(i, "collapse%d" % n, t, s)
+             for (n, (i, t, s)) in enumerate(items)]
     feeds = DBSession.query(Feed)\
                      .join(Subscription)\
                      .filter(Subscription.user == user.id)\
@@ -341,15 +342,6 @@ def _view_items(request, user, items,
     def score_width(score):
         return int(score * 588)
 
-    def score_for(item):
-        its = DBSession.query(ItemScore)\
-                       .filter_by(item=item.id, user=user.id)\
-                       .first()
-        if its:
-            return score_width(its.score)
-        else:
-            return 0
-
     return tpl(request,
                items=items,
                feeds=feeds,
@@ -357,7 +349,7 @@ def _view_items(request, user, items,
                activeview=activeview,
                activetab=activetab,
                manage=manage,
-               score_for=score_for,
+               score_width=score_width,
                topics_for=topics_for,
                )
 
@@ -366,6 +358,7 @@ def view_myfeeds(request, activetab, limit=20):
     me = authenticated_userid(request)
     user = DBSession.query(User).filter(User.name == me).one()
     items = DBSession.query(Item, Feed)\
+                     .add_column(ItemScore.score)\
                      .join(Feed)\
                      .join(Subscription)\
                      .join(ItemScore)\

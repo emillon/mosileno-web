@@ -6,14 +6,14 @@ from mosileno.filter import lx
 <div class="row-fluid">
 
     <div class="span9">
-    % for (item, genid, feed) in items:
+    % for (item, genid, feed, score) in items:
         <div class="itemfull">
             <div class="itemheader">
                 <div>
                     <a onclick="signal('expandedview', '${item.id}', 'linkclick')" href="${item.link}">
                         <div class="itemtitle">${item.title}</div>
                         <div class="progress pull-right" style="width: 60px; margin-top: 10px;">
-                            <div class="bar" style="width: ${score_for(item)}%">
+                            <div class="bar" style="width: ${score_width(score)}%">
                             </div>
                         </div>
                     </a>
@@ -43,7 +43,6 @@ from mosileno.filter import lx
                 </div>
                 <div class="itemtopics">
                     ${topics_for(item)}
-                    <!-- (score: ${score_for(item)}) -->
                 </div>
                 <div class="itemdomain" id="${genid}_domain">
                 </div>
@@ -82,7 +81,7 @@ from mosileno.filter import lx
 </div>
 <script type='text/javascript'>
    var data = [];
-% for (item, genid, feed) in items:
+% for (item, genid, feed, score) in items:
    dd = {'id': ${item.id}, 'data': '${genid}'};
    data.push(dd);
     $('#' + '${genid}' + '_domain').html(

@@ -6,7 +6,7 @@ from mosileno.filter import lx
 <div class="row-fluid">
 
     <div class="span11">
-    % for (item, genid, feed) in items:
+    % for (item, genid, feed, score) in items:
         <div class="itemshort">
             <div class="vote-arrow">
                 <img id="up_${genid}"
@@ -34,7 +34,7 @@ from mosileno.filter import lx
                 <div class="itemdomain" id="${genid}_domain"></div>
                 <div class="itemsource">
                     <div class="progress pull-right" style="width: 60px">
-                        <div class="bar" style="width: ${score_for(item)}%">
+                        <div class="bar" style="width: ${score_width(score)}%">
                         </div>
                     </div>
                     <div class="itemfeed">${feed.title}</div>
@@ -43,7 +43,7 @@ from mosileno.filter import lx
     % endfor
         <script type='text/javascript'>
             var data = [];
-    % for (item, genid, feed) in items:
+    % for (item, genid, feed, score) in items:
             dd = {'id': ${item.id}, 'data': '${genid}'};
             data.push(dd);
             $('#' + '${genid}' + '_domain').html(
