@@ -338,15 +338,17 @@ def _view_items(request, user, items,
         tns = [captopics(tn.topicname) for tn in tns if tn.topicname]
         return ', '.join(tns)
 
+    def score_width(score):
+        return int(score * 588)
+
     def score_for(item):
         its = DBSession.query(ItemScore)\
                        .filter_by(item=item.id, user=user.id)\
                        .first()
         if its:
-            score = 10000 * its.score
+            return score_width(its.score)
         else:
-            score = 0
-        return int((score / 1700) * 100)
+            return 0
 
     return tpl(request,
                items=items,
