@@ -49,9 +49,7 @@ def reddit(request, item):
     return score
 
 
-def clover(request, item):
-    me = authenticated_userid(request)
-    user = DBSession.query(User).filter(User.name == me).one()
+def clover(user, item):
     itemscore = DBSession.query(ItemScore)\
                          .filter_by(user=user.id, item=item.id)\
                          .first()
