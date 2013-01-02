@@ -1,5 +1,4 @@
-import pickle
-import requests
+import cPickle
 import numpy
 import sys
 from gensim import utils
@@ -28,7 +27,7 @@ def init_topic_model():
         topic_model_filename = (topic_model_filename % '')
     try:
         with open(topic_model_filename, 'r') as f:
-            lda_model = pickle.load(f)
+            lda_model = cPickle.load(f)
         print "*** Loaded topic model", topic_model_filename, "***"
     except IOError:
         print >> sys.stderr, ("ERROR: topic model %s inexistent or corrupted"
@@ -281,8 +280,3 @@ def parse(text):
         return tokenize(text)
 
 
-def tika(url):
-    rsp = requests.get('http://localhost:9998/', params={'doc': url})
-    if 'retval' not in rsp.json:
-        return None
-    return rsp.json['retval']
