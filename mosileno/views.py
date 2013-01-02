@@ -510,8 +510,32 @@ def notfound(request):
 
 
 @view_config(route_name='admin',
-             renderer='page.mako',
+             renderer='admin.mako',
              permission='admin',
              )
 def view_admin(request):
-    return tpl(request, content='Welcome to admin panel')
+    feeds = DBSession.query(Feed)
+    return tpl(request, feeds=feeds)
+
+
+@view_config(route_name='admintrigger',
+             renderer='page.mako',
+             permission='admin',
+             )
+def view_admin_trigger(request):
+    slug = request.matchdict['slug']
+    action_name = request.matchdict['action']
+    method = 'async'
+    if 'sync' in request.params:
+        method = 'sync'
+    feed = DBSession.query(Feed).filter_by(slug=slug).one()
+    actions = {'fetch_title': tasks.fetch_title,
+               'fetch_items': tasks.fetch_items,
+               }
+    action = actions[action_name]
+    msg = 'Triggered (%s) action : %s on feed #%d' % (method, action, feed.id)
+    if method == 'async':
+        action.delay(feed.id)
+    else:
+        action(feed.id)
+    return tpl(request, content=msg)
