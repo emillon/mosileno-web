@@ -55,5 +55,7 @@ def main(global_config, **settings):
     config.add_route('profile', '/profile')
     config.add_route('signal', '/signal')
     config.add_route('voteget', '/vote')
+    config.add_route('admin', '/admin')
+    config.add_route('admintrigger', '/admin/{slug}/{action}')
     config.scan()
     return config.make_wsgi_app()

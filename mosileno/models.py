@@ -23,6 +23,7 @@ from pyramid.security import (
     Authenticated,
     Deny,
     Everyone,
+    authenticated_userid,
 )
 
 DBSession = scoped_session(sessionmaker(extension=ZopeTransactionExtension()))
@@ -33,6 +34,7 @@ class RootFactory(object):
     __name__ = ''
     __acl__ = [
         (Allow, Authenticated, 'edit'),
+        (Allow, 'admin', 'admin'),
     ]
 
     def __init__(self, request):
@@ -50,6 +52,11 @@ class User(Base):
         salt = bcrypt.gensalt(workfactor)
         self.password = bcrypt.hashpw(password, salt)
 
+    @staticmethod
+    def logged_in(request):
+        me = authenticated_userid(request)
+        return DBSession.query(User).filter_by(name=me).one()
+
 
 class Feed(Base):
     __tablename__ = 'feeds'
@@ -61,6 +68,20 @@ class Feed(Base):
 
     def __init__(self, url):
         self.url = url
+
+    @staticmethod
+    def by_slug(slug, fail=True):
+        """
+        Attempt to find a Feed with given slug.
+        exists -> return it
+        else   -> fail=True  -> raise an exception
+                  fail=False -> return None
+        """
+        q = DBSession.query(Feed).filter_by(slug=slug)
+        if fail:
+            return q.one()
+        else:
+            return q.first()
 
 
 class Subscription(Base):

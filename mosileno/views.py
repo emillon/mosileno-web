@@ -355,8 +355,7 @@ def _view_items(request, user, items,
 
 
 def view_myfeeds(request, activetab, limit=20):
-    me = authenticated_userid(request)
-    user = DBSession.query(User).filter(User.name == me).one()
+    user = User.logged_in(request)
     items = DBSession.query(Item, Feed)\
                      .add_column(ItemScore.score)\
                      .join(Feed)\
@@ -375,10 +374,9 @@ def view_myfeeds(request, activetab, limit=20):
              )
 def view_feed(request):
     slug = request.matchdict['slug']
-    feedObj = DBSession.query(Feed).filter_by(slug=slug).one()
+    feedObj = Feed.by_slug(slug)
     feedid = feedObj.id
-    me = authenticated_userid(request)
-    user = DBSession.query(User).filter(User.name == me).one()
+    user = User.logged_in(request)
 
     # check that we're allowed
     subs = DBSession.query(Subscription)\
@@ -471,16 +469,13 @@ class FeedUnsubscribeView(TemplatedFormView):
 
     def appstruct(self):
         slug = self.request.matchdict['slug']
-        feed = DBSession.query(Feed).filter_by(slug=slug).one()
+        feed = Feed.by_slug(slug)
         return {'feed_id': feed.id}
 
     def unsubscribe_success(self, appstruct):
         feed_id = appstruct['feed_id']
         feed = DBSession.query(Feed).get(feed_id)
-
-        me = authenticated_userid(self.request)
-        user = DBSession.query(User).filter_by(name=me).one()
-
+        user = User.logged_in(request)
         sub = DBSession.query(Subscription)\
                        .filter_by(user=user.id)\
                        .filter_by(feed=feed_id)\
@@ -499,4 +494,36 @@ def notfound(request):
     Oops, 404 ! Unable to find this page. If you think this is a bug, please
     report it using the "Report a bug" link below.
     """
+    return tpl(request, content=msg)
+
+
+@view_config(route_name='admin',
+             renderer='admin.mako',
+             permission='admin',
+             )
+def view_admin(request):
+    feeds = DBSession.query(Feed)
+    return tpl(request, feeds=feeds)
+
+
+@view_config(route_name='admintrigger',
+             renderer='page.mako',
+             permission='admin',
+             )
+def view_admin_trigger(request):
+    slug = request.matchdict['slug']
+    action_name = request.matchdict['action']
+    method = 'async'
+    if 'sync' in request.params:
+        method = 'sync'
+    feed = Feed.by_slug(slug)
+    actions = {'fetch_title': tasks.fetch_title,
+               'fetch_items': tasks.fetch_items,
+               }
+    action = actions[action_name]
+    msg = 'Triggered (%s) action : %s on feed #%d' % (method, action, feed.id)
+    if method == 'async':
+        action.delay(feed.id)
+    else:
+        action(feed.id)
     return tpl(request, content=msg)
