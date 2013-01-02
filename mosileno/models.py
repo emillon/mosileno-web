@@ -23,6 +23,7 @@ from pyramid.security import (
     Authenticated,
     Deny,
     Everyone,
+    authenticated_userid,
 )
 
 DBSession = scoped_session(sessionmaker(extension=ZopeTransactionExtension()))
@@ -50,6 +51,11 @@ class User(Base):
         self.name = login
         salt = bcrypt.gensalt(workfactor)
         self.password = bcrypt.hashpw(password, salt)
+
+    @staticmethod
+    def logged_in(request):
+        me = authenticated_userid(request)
+        return DBSession.query(User).filter_by(name=me).one()
 
 
 class Feed(Base):

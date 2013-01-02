@@ -16,7 +16,6 @@ from celery.decorators import periodic_task
 from celery.task import task
 from celery.task.http import URL
 from celery import chain
-from pyramid.security import authenticated_userid
 from datetime import datetime, timedelta
 from time import mktime
 from urllib2 import URLError
@@ -30,8 +29,7 @@ def import_feed(request, url):
         new = True
         feed = Feed(url)
         DBSession.add(feed)
-    me = authenticated_userid(request)
-    user = DBSession.query(User).filter(User.name == me).one()
+    user = User.logged_in(request)
     sub = DBSession.query(Subscription)\
                    .filter_by(user=user.id, feed=feed.id)\
                    .first()

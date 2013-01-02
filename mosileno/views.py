@@ -361,8 +361,7 @@ def _view_items(request, user, items,
 
 
 def view_myfeeds(request, activetab, limit=20):
-    me = authenticated_userid(request)
-    user = DBSession.query(User).filter(User.name == me).one()
+    user = User.logged_in(request)
     items = DBSession.query(Item, Feed)\
                      .join(Feed)\
                      .join(Subscription)\
@@ -384,8 +383,7 @@ def view_feed(request):
     slug = request.matchdict['slug']
     feedObj = Feed.by_slug(slug)
     feedid = feedObj.id
-    me = authenticated_userid(request)
-    user = DBSession.query(User).filter(User.name == me).one()
+    user = User.logged_in(request)
 
     # check that we're allowed
     subs = DBSession.query(Subscription)\
@@ -484,10 +482,7 @@ class FeedUnsubscribeView(TemplatedFormView):
     def unsubscribe_success(self, appstruct):
         feed_id = appstruct['feed_id']
         feed = DBSession.query(Feed).get(feed_id)
-
-        me = authenticated_userid(self.request)
-        user = DBSession.query(User).filter_by(name=me).one()
-
+        user = User.logged_in(request)
         sub = DBSession.query(Subscription)\
                        .filter_by(user=user.id)\
                        .filter_by(feed=feed_id)\

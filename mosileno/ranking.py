@@ -7,8 +7,6 @@ import math
 
 from models import *
 
-from pyramid.security import authenticated_userid
-
 
 def norm_date(dt):
     """
@@ -24,8 +22,7 @@ def norm_date(dt):
 
 def reddit(request, item):
     date = norm_date(item.date)
-    me = authenticated_userid(request)
-    user = DBSession.query(User).filter(User.name == me).one()
+    user = User.logged_in(request)
     ups = DBSession.query(Vote)\
                    .filter_by(user=user.id,
                               item=item.id,
@@ -50,8 +47,7 @@ def reddit(request, item):
 
 
 def clover(request, item):
-    me = authenticated_userid(request)
-    user = DBSession.query(User).filter(User.name == me).one()
+    user = User.logged_in(request)
     itemscore = DBSession.query(ItemScore)\
                          .filter_by(user=user.id, item=item.id)\
                          .first()

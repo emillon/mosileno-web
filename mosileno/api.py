@@ -9,10 +9,6 @@ from .models import (
     Vote,
 )
 
-from pyramid.security import (
-    authenticated_userid
-)
-
 
 @view_config(route_name='signal',
              renderer='json',
@@ -32,11 +28,11 @@ def signal(request):
     assert(action in Signal.actions_ok)
 
     itemid = request.POST['item']
-    me = authenticated_userid(request)
-    if me is None:
+    user = User.logged_in(request)
+    if user is None:
         request.response_status = '401 Unauthorized'
         return {}
-    userid = DBSession.query(User).filter_by(name=me).all()[0].id
+    userid = user.id
     signal_exists = DBSession.query(Signal)\
                              .filter_by(action=action,
                                         item=itemid,
@@ -85,13 +81,11 @@ def get_vote(request):
                  ]
     """
     data_in = request.json_body
-
-    me = authenticated_userid(request)
-    userid = DBSession.query(User).filter_by(name=me).all()[0].id
+    user = User.logged_in(request)
 
     def answer(x):
         vote = DBSession.query(Vote)\
-                        .filter_by(user=userid, item=x['id'])\
+                        .filter_by(user=user.id, item=x['id'])\
                         .first()
         res = 0
         if vote is not None:
