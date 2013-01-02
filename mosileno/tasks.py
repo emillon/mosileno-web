@@ -96,7 +96,7 @@ def fetch_title(feed_id):
         title = feed.feed.title
         feedObj.title = title
         slug = slugify(title)
-        already_in = DBSession.query(Feed).filter_by(slug=slug).first()
+        already_in = Feed.by_slug(slug, fail=False)
         if already_in:
             slug = "%s%d" % (slug, feedObj.id)
         feedObj.slug = slug

@@ -63,6 +63,20 @@ class Feed(Base):
     def __init__(self, url):
         self.url = url
 
+    @staticmethod
+    def by_slug(slug, fail=True):
+        """
+        Attempt to find a Feed with given slug.
+        exists -> return it
+        else   -> fail=True  -> raise an exception
+                  fail=False -> return None
+        """
+        q = DBSession.query(Feed).filter_by(slug=slug)
+        if fail:
+            return q.one()
+        else:
+            return q.first()
+
 
 class Subscription(Base):
     __tablename__ = 'subscriptions'

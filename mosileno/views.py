@@ -382,7 +382,7 @@ def view_myfeeds(request, activetab, limit=20):
              )
 def view_feed(request):
     slug = request.matchdict['slug']
-    feedObj = DBSession.query(Feed).filter_by(slug=slug).one()
+    feedObj = Feed.by_slug(slug)
     feedid = feedObj.id
     me = authenticated_userid(request)
     user = DBSession.query(User).filter(User.name == me).one()
@@ -478,7 +478,7 @@ class FeedUnsubscribeView(TemplatedFormView):
 
     def appstruct(self):
         slug = self.request.matchdict['slug']
-        feed = DBSession.query(Feed).filter_by(slug=slug).one()
+        feed = Feed.by_slug(slug)
         return {'feed_id': feed.id}
 
     def unsubscribe_success(self, appstruct):
@@ -528,7 +528,7 @@ def view_admin_trigger(request):
     method = 'async'
     if 'sync' in request.params:
         method = 'sync'
-    feed = DBSession.query(Feed).filter_by(slug=slug).one()
+    feed = Feed.by_slug(slug)
     actions = {'fetch_title': tasks.fetch_title,
                'fetch_items': tasks.fetch_items,
                }
